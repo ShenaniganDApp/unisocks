@@ -1,5 +1,5 @@
 [build]
-  command = "CI=false yarn build"
+  command = "yarn build"
   functions = "functions-build"
   publish = "build"
    

@@ -137,7 +137,7 @@ export default function BuyAndSell({
         setValidationError(error)
       }
     }
-  }, [ready, buying, validateBuy, state.count])
+  }, [ready, buying, validateBuy, state.count, state.drippSelected])
 
   // sell state validation
   useEffect(() => {

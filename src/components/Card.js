@@ -6,7 +6,6 @@ import Tilt from 'react-tilt'
 import { amountFormatter } from '../utils'
 
 import Gallery from './Gallery'
-import { propTypes } from 'qrcode.react'
 
 export default function Card({ totalDrippSupply, dollarPrice, reserveDrippToken, imageSrc, name, symbol }) {
   return (

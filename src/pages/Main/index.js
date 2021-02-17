@@ -265,8 +265,8 @@ export default function Main({ stats, status }) {
     )
   }
 
-  const [shweatpantsDollarPrice, setSHWEATPANTSDollarPrice] = useState()
-  const [alvinDollarPrice, setALVINDollarPrice] = useState()
+  const [, setSHWEATPANTSDollarPrice] = useState()
+  const [, setALVINDollarPrice] = useState()
   useEffect(() => {
     try {
       const SHWEATPANTSExchangeRateETH = getExchangeRate(reserveSHWEATPANTSToken, reserveSHWEATPANTSETH)
@@ -411,10 +411,10 @@ export default function Main({ stats, status }) {
       balanceETH,
       balanceSelectedToken,
       reserveALVINETH,
-      reserveALVINToken,
-      reserveSHWEATPANTSETH,
       reserveSHWEATPANTSToken,
       reserveSelectedTokenETH,
+      reserveALVINToken,
+      reserveALVINETH,
       reserveSelectedTokenToken,
       selectedTokenSymbol
     ]
