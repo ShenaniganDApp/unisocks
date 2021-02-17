@@ -4,44 +4,87 @@ import { useAppContext } from '../../context'
 import { Header } from '../Body'
 import { amountFormatter } from '../../utils'
 
-export default function Body({ totalSupply, reserveSOCKSToken, ready, balanceSOCKS }) {
+export default function Body({
+  totalSHWEATPANTSSupply,
+  totalALVINSupply,
+  reserveSHWEATPANTSToken,
+  reserveALVINToken,
+  ready,
+  balanceSHWEATPANTS,
+  balanceALVIN
+}) {
   const [state] = useAppContext()
 
   return (
     <AppWrapper overlay={state.visible}>
-      <Header totalSupply={totalSupply} ready={ready} balanceSOCKS={balanceSOCKS} setShowConnect={() => {}} />
+      <Header
+        totalSHWEATPANTSSupply={totalSHWEATPANTSSupply}
+        totalALVINSupply={totalALVINSupply}
+        ready={ready}
+        balanceSHWEATPANTS={balanceSHWEATPANTS}
+        balanceALVIN={balanceALVIN}
+        setShowConnect={() => {}}
+      />
       <Content>
-        <Title>SOCKS Stats</Title>
+        <Title>Dripp Stats</Title>
         <Description>
           <p>
-            <span role="img" aria-label="socks">
-              🧦
+            <span role="img" aria-label="alvin">
+              🧸
             </span>
-            Initial SOCKS
+            Initial ALVIN
           </p>
-          <p>500</p>
+          <p>100</p>
         </Description>
         <Description>
           <p>
-            <span role="img" aria-label="socks">
+            <span role="img" aria-label="alvin">
               🔥
             </span>
-            Redeemed SOCKS
+            Redeemed ALVIN
           </p>
-          <p>{500 - totalSupply}</p>
+          <p>{100 - totalALVINSupply}</p>
         </Description>
         <Description>
           <p>
-            <span role="img" aria-label="socks">
+            <span role="img" aria-label="alvin">
               💦
             </span>
-            SOCKS Pool
+            ALVIN Pool
           </p>
-          <p>{amountFormatter(reserveSOCKSToken, 18, 0)}</p>
+          <p>{amountFormatter(reserveALVINToken, 18, 0)}</p>
+        </Description>
+        <Divider />
+        <Description>
+          <p>
+            <span role="img" aria-label="shweatpants">
+              👖
+            </span>
+            Initial SHWEATPANTS
+          </p>
+          <p>100</p>
+        </Description>
+        <Description>
+          <p>
+            <span role="img" aria-label="shweatpants">
+              🔥
+            </span>
+            Redeemed SHWEATPANTS
+          </p>
+          <p>{100 - totalSHWEATPANTSSupply}</p>
+        </Description>
+        <Description>
+          <p>
+            <span role="img" aria-label="shweatpants">
+              💦
+            </span>
+            SHWEATPANTS Pool
+          </p>
+          <p>{amountFormatter(reserveSHWEATPANTSToken, 18, 0)}</p>
         </Description>
         <Shim />
         <Footer>
-          The price of SOCKS changes when tokens are bought and sold.
+          The price of DRIPP Items changes when tokens are bought and sold.
           <br />
           <br />
           <a
@@ -121,4 +164,11 @@ const Description = styled.div`
   p {
     margin: 0;
   }
+`
+
+const Divider = styled.div`
+  width: 90%;
+  background-color: white;
+  height: 1px;
+  margin: 1rem;
 `

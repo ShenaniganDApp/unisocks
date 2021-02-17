@@ -7,7 +7,8 @@ import SelectToken from './SelectToken'
 import IncrementToken from './IncrementToken'
 import { useAppContext } from '../context'
 import { ERROR_CODES, amountFormatter, TRADE_TYPES } from '../utils'
-import test from './Gallery/test.png'
+import shweatpants from './Gallery/SHE.png'
+import agaave from './Gallery/agaave.png'
 // import { ethers } from 'ethers'
 
 export function useCount() {
@@ -65,9 +66,8 @@ export default function BuyAndSell({
   validateBuy,
   buy,
   validateSell,
-  dollarPrice,
   pending,
-  reserveSOCKSToken,
+  reserveDrippToken,
   sell,
   dollarize,
   setCurrentTransaction,
@@ -95,7 +95,7 @@ export default function BuyAndSell({
   const [validationError, setValidationError] = useState()
 
   function link(hash) {
-    return `https://etherscan.io/tx/${hash}`
+    return `https://blockscout.com/poa/xdai/tx/${hash}`
   }
 
   function getText(account, buying, errorMessage, ready, pending, hash) {
@@ -106,13 +106,13 @@ export default function BuyAndSell({
         if (pending && hash) {
           return 'Waiting for confirmation'
         } else {
-          return 'Sell Socks'
+          return `Sell ${state.drippSelected }`
         }
       } else {
         if (pending && hash) {
           return 'Waiting for confirmation'
         } else {
-          return 'Buy Socks'
+          return `Buy ${state.drippSelected }`
         }
       }
     } else {
@@ -124,7 +124,7 @@ export default function BuyAndSell({
   useEffect(() => {
     if (ready && buying) {
       try {
-        const { error: validationError, ...validationState } = validateBuy(String(state.count))
+        const { error: validationError, ...validationState } = validateBuy(String(state.count, state.drippSelected ))
         setBuyValidationState(validationState)
         setValidationError(validationError || null)
 
@@ -205,16 +205,16 @@ export default function BuyAndSell({
         {/* <button onClick={() => fake()}>test</button> */}
         <Unicorn>
           <span role="img" aria-label="unicorn">
-            🦄
+            {state.drippSelected === 'ALVIN' ? '🐝' : '🤸‍♀️'}
           </span>{' '}
           Pay
         </Unicorn>
-        <ImgStyle src={test} alt="Logo" />
+        <ImgStyle src={state.drippSelected === 'ALVIN' ? agaave : shweatpants} alt="Logo" />
         <InfoFrame pending={pending}>
           <CurrentPrice>
             {/* {dollarPrice && `$${amountFormatter(dollarPrice, 18, 2)} USD`} */}
             <USDPrice>{renderFormData()}</USDPrice>
-            <SockCount>{reserveSOCKSToken && `${amountFormatter(reserveSOCKSToken, 18, 0)}/500 available`}</SockCount>
+            <SockCount>{reserveDrippToken && `${amountFormatter(reserveDrippToken, 18, 0)}/100 available`}</SockCount>
           </CurrentPrice>
           <IncrementToken />
         </InfoFrame>
@@ -244,7 +244,7 @@ export default function BuyAndSell({
       )}
       {shouldRenderUnlock ? (
         <ButtonFrame
-          text={`Unlock ${buying ? selectedTokenSymbol : 'SOCKS'}`}
+          text={`Unlock ${buying ? selectedTokenSymbol : state.drippSelected}`}
           type={'cta'}
           pending={pending}
           onClick={() => {
@@ -267,8 +267,8 @@ export default function BuyAndSell({
               })
             } else {
               ;(buying
-                ? buy(buyValidationState.maximumInputValue, buyValidationState.outputValue)
-                : sell(sellValidationState.inputValue, sellValidationState.minimumOutputValue)
+                ? buy(buyValidationState.maximumInputValue, buyValidationState.outputValue, 'SHWEATPANTS')
+                : sell(sellValidationState.inputValue, sellValidationState.minimumOutputValue, 'SHWEATPANTS')
               ).then(response => {
                 setCurrentTransaction(
                   response.hash,
@@ -368,7 +368,7 @@ const ButtonFrame = styled(Button)`
 
 const EtherscanLink = styled.a`
   text-decoration: none;
-  color: ${props => props.theme.uniswapPink};
+  color: ${props => props.theme.shenaniganPink};
   font-style: normal;
   font-weight: 400;
   font-size: 12px;

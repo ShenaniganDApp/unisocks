@@ -50,16 +50,16 @@ const IncrementButton = styled.span`
 `
 
 export default function IncrementToken({ initialValue, max }) {
-  const [count, incrementCount, decrementCount] = useCount(initialValue, max)
+  const [count, increment, decrement] = useCount(initialValue, max)
 
   return (
     <SelectFrame>
-      <IncrementButton justify={'flex-start'} onClick={decrementCount}>
+      <IncrementButton justify={'flex-start'} onClick={decrement}>
         -
       </IncrementButton>
       <SelectMenu>{count}</SelectMenu>
 
-      <IncrementButton justify={'flex-end'} onClick={incrementCount}>
+      <IncrementButton justify={'flex-end'} onClick={increment}>
         +
       </IncrementButton>
     </SelectFrame>

@@ -44,6 +44,7 @@ export async function handler(event) {
     address: _address,
     timestamp,
     'number-burned': numberBurned,
+    drippItem,
     signature
   } = data
 
@@ -56,7 +57,7 @@ export async function handler(event) {
 
   const m1 = `PLEASE VERIFY YOUR ADDRESS.\nYour data will never be shared publicly.`
   const m2 = `Name: ${name}\nStreet Address: ${line1}\nUnit: ${line2}\nCity: ${city}\nState: ${state}\nZIP: ${zip}\nCountry: ${country}\nEmail: ${email}`
-  const m3 = `Ethereum Address: ${address}\nTime: ${timestamp}\nSOCKS Redeemed: ${numberBurned}`
+  const m3 = `Ethereum Address: ${address}\nTime: ${timestamp}\nDripp Redeemed: ${numberBurned}\nDripp Item: ${drippItem}`
 
   const addressOfSigner = ethers.utils.verifyMessage(`${m1}\n\n${m2}\n${m3}`, signature)
   const isInvalid = addressOfSigner !== address
@@ -69,7 +70,8 @@ export async function handler(event) {
     await client.query(
       q.Create(q.Collection('addresses'), {
         data: {
-          numberOfSocks: Number(numberBurned),
+          numberOfDripp: Number(numberBurned),
+          item: drippItem,
           timestamp: Number(timestamp),
           addressPhysical: {
             name,

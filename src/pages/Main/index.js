@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import { useWeb3Context } from 'web3-react'
-import { ethers } from 'ethers'
+import { ethers, BigNumber } from 'ethers'
 
 import { TOKEN_SYMBOLS, TOKEN_ADDRESSES, ERROR_CODES } from '../../utils'
 import {
@@ -82,15 +82,18 @@ function getExchangeRate(inputValue, outputValue, invert = false) {
 function calculateAmount(
   inputTokenSymbol,
   outputTokenSymbol,
-  SOCKSAmount,
-  reserveSOCKSETH,
-  reserveSOCKSToken,
+  drippAmount,
+  reserveDrippETH,
+  reserveDrippToken,
   reserveSelectedTokenETH,
   reserveSelectedTokenToken
 ) {
   // eth to token - buy
-  if (inputTokenSymbol === TOKEN_SYMBOLS.ETH && outputTokenSymbol === TOKEN_SYMBOLS.SOCKS) {
-    const amount = calculateEtherTokenInputFromOutput(SOCKSAmount, reserveSOCKSETH, reserveSOCKSToken)
+  if (
+    inputTokenSymbol === TOKEN_SYMBOLS.ETH &&
+    (outputTokenSymbol === TOKEN_SYMBOLS.SHWEATPANTS || outputTokenSymbol === TOKEN_SYMBOLS.ALVIN)
+  ) {
+    const amount = calculateEtherTokenInputFromOutput(drippAmount, reserveDrippETH, reserveDrippToken)
     if (amount.lte(ethers.constants.Zero) || amount.gte(ethers.constants.MaxUint256)) {
       throw Error()
     }
@@ -98,8 +101,11 @@ function calculateAmount(
   }
 
   // token to eth - sell
-  if (inputTokenSymbol === TOKEN_SYMBOLS.SOCKS && outputTokenSymbol === TOKEN_SYMBOLS.ETH) {
-    const amount = calculateEtherTokenOutputFromInput(SOCKSAmount, reserveSOCKSToken, reserveSOCKSETH)
+  if (
+    (outputTokenSymbol === TOKEN_SYMBOLS.SHWEATPANTS || outputTokenSymbol === TOKEN_SYMBOLS.ALVIN) &&
+    outputTokenSymbol === TOKEN_SYMBOLS.ETH
+  ) {
+    const amount = calculateEtherTokenOutputFromInput(drippAmount, reserveDrippToken, reserveDrippETH)
     if (amount.lte(ethers.constants.Zero) || amount.gte(ethers.constants.MaxUint256)) {
       throw Error()
     }
@@ -108,11 +114,11 @@ function calculateAmount(
   }
 
   // token to token - buy or sell
-  const buyingSOCKS = outputTokenSymbol === TOKEN_SYMBOLS.SOCKS
+  const buyingDripp = outputTokenSymbol === TOKEN_SYMBOLS.SHWEATPANTS || outputTokenSymbol === TOKEN_SYMBOLS.ALVIN
 
-  if (buyingSOCKS) {
+  if (buyingDripp) {
     // eth needed to buy x socks
-    const intermediateValue = calculateEtherTokenInputFromOutput(SOCKSAmount, reserveSOCKSETH, reserveSOCKSToken)
+    const intermediateValue = calculateEtherTokenInputFromOutput(drippAmount, reserveDrippETH, reserveDrippToken)
     // calculateEtherTokenOutputFromInput
     if (intermediateValue.lte(ethers.constants.Zero) || intermediateValue.gte(ethers.constants.MaxUint256)) {
       throw Error()
@@ -129,7 +135,7 @@ function calculateAmount(
     return amount
   } else {
     // eth gained from selling x socks
-    const intermediateValue = calculateEtherTokenOutputFromInput(SOCKSAmount, reserveSOCKSToken, reserveSOCKSETH)
+    const intermediateValue = calculateEtherTokenOutputFromInput(drippAmount, reserveDrippToken, reserveDrippETH)
     if (intermediateValue.lte(ethers.constants.Zero) || intermediateValue.gte(ethers.constants.MaxUint256)) {
       throw Error()
     }
@@ -153,54 +159,72 @@ export default function Main({ stats, status }) {
   const [selectedTokenSymbol, setSelectedTokenSymbol] = useState(TOKEN_SYMBOLS.ETH)
 
   // get exchange contracts
-  const exchangeContractSOCKS = useExchangeContract(TOKEN_ADDRESSES.SOCKS)
+  const exchangeContractSHWEATPANTS = useExchangeContract(TOKEN_ADDRESSES.SHWEATPANTS)
+  const exchangeContractALVIN = useExchangeContract(TOKEN_ADDRESSES.ALVIN)
   const exchangeContractSelectedToken = useExchangeContract(TOKEN_ADDRESSES[selectedTokenSymbol])
-  const exchangeContractDAI = useExchangeContract(TOKEN_ADDRESSES.DAI)
 
   // get token contracts
-  const tokenContractSOCKS = useTokenContract(TOKEN_ADDRESSES.SOCKS)
+  const tokenContractSHWEATPANTS = useTokenContract(TOKEN_ADDRESSES.SHWEATPANTS)
+  const tokenContractALVIN = useTokenContract(TOKEN_ADDRESSES.ALVIN)
   const tokenContractSelectedToken = useTokenContract(TOKEN_ADDRESSES[selectedTokenSymbol])
 
   // get balances
   const balanceETH = useAddressBalance(account, TOKEN_ADDRESSES.ETH)
-  const balanceSOCKS = useAddressBalance(account, TOKEN_ADDRESSES.SOCKS)
+  const balanceSHWEATPANTS = useAddressBalance(account, TOKEN_ADDRESSES.SHWEATPANTS)
+  const balanceALVIN = useAddressBalance(account, TOKEN_ADDRESSES.ALVIN)
   const balanceSelectedToken = useAddressBalance(account, TOKEN_ADDRESSES[selectedTokenSymbol])
 
   // totalsupply
-  const totalSupply = useTotalSupply(tokenContractSOCKS)
+  const totalSHWEATPANTSSupply = useTotalSupply(tokenContractSHWEATPANTS)
+  const totalALVINSupply = useTotalSupply(tokenContractALVIN)
 
   // get allowances
-  const allowanceSOCKS = useAddressAllowance(
+  const allowanceSHWEATPANTS = useAddressAllowance(
     account,
-    TOKEN_ADDRESSES.SOCKS,
-    exchangeContractSOCKS && exchangeContractSOCKS.address
+    TOKEN_ADDRESSES.SHWEATPANTS,
+    exchangeContractSHWEATPANTS && exchangeContractSHWEATPANTS.address
   )
+  const allowanceALVIN = useAddressAllowance(
+    account,
+    TOKEN_ADDRESSES.ALVIN,
+    exchangeContractALVIN && exchangeContractALVIN.address
+  )
+
   const allowanceSelectedToken = useExchangeAllowance(account, TOKEN_ADDRESSES[selectedTokenSymbol])
 
   // get reserves
-  const reserveSOCKSETH = useAddressBalance(exchangeContractSOCKS && exchangeContractSOCKS.address, TOKEN_ADDRESSES.ETH)
-  const reserveSOCKSToken = useAddressBalance(
-    exchangeContractSOCKS && exchangeContractSOCKS.address,
-    TOKEN_ADDRESSES.SOCKS
+  const reserveSHWEATPANTSETH = useAddressBalance(
+    exchangeContractSHWEATPANTS && exchangeContractSHWEATPANTS.address,
+    TOKEN_ADDRESSES.ETH
+  )
+  const reserveSHWEATPANTSToken = useAddressBalance(
+    exchangeContractSHWEATPANTS && exchangeContractSHWEATPANTS.address,
+    TOKEN_ADDRESSES.SHWEATPANTS
+  )
+  const reserveALVINETH = useAddressBalance(exchangeContractALVIN && exchangeContractALVIN.address, TOKEN_ADDRESSES.ETH)
+  const reserveALVINToken = useAddressBalance(
+    exchangeContractALVIN && exchangeContractALVIN.address,
+    TOKEN_ADDRESSES.ALVIN
   )
   const { reserveETH: reserveSelectedTokenETH, reserveToken: reserveSelectedTokenToken } = useExchangeReserves(
     TOKEN_ADDRESSES[selectedTokenSymbol]
   )
 
-  const reserveDAIETH = useAddressBalance(exchangeContractDAI && exchangeContractDAI.address, TOKEN_ADDRESSES.ETH)
-  const reserveDAIToken = useAddressBalance(exchangeContractDAI && exchangeContractDAI.address, TOKEN_ADDRESSES.DAI)
-
   const [USDExchangeRateETH, setUSDExchangeRateETH] = useState()
   const [USDExchangeRateSelectedToken, setUSDExchangeRateSelectedToken] = useState()
 
   const ready = !!(
-    (account === null || allowanceSOCKS) &&
+    (account === null || allowanceSHWEATPANTS) &&
+    (account === null || allowanceALVIN) &&
     (selectedTokenSymbol === 'ETH' || account === null || allowanceSelectedToken) &&
     (account === null || balanceETH) &&
-    (account === null || balanceSOCKS) &&
+    (account === null || balanceSHWEATPANTS) &&
+    (account === null || balanceALVIN) &&
     (account === null || balanceSelectedToken) &&
-    reserveSOCKSETH &&
-    reserveSOCKSToken &&
+    reserveSHWEATPANTSETH &&
+    reserveALVINETH &&
+    reserveSHWEATPANTSToken &&
+    reserveALVINToken &&
     (selectedTokenSymbol === 'ETH' || reserveSelectedTokenETH) &&
     (selectedTokenSymbol === 'ETH' || reserveSelectedTokenToken) &&
     selectedTokenSymbol &&
@@ -208,14 +232,15 @@ export default function Main({ stats, status }) {
   )
 
   useEffect(() => {
+    //@TODO
     try {
-      const exchangeRateDAI = getExchangeRate(reserveDAIETH, reserveDAIToken)
+      const exchangeRateDAI = BigNumber.from('100000000000000000000')
 
       if (selectedTokenSymbol === TOKEN_SYMBOLS.ETH) {
         setUSDExchangeRateETH(exchangeRateDAI)
       } else {
         const exchangeRateSelectedToken = getExchangeRate(reserveSelectedTokenETH, reserveSelectedTokenToken)
-        if (exchangeRateDAI && exchangeRateSelectedToken) {
+        if (exchangeRateSelectedToken) {
           setUSDExchangeRateSelectedToken(
             exchangeRateDAI
               .mul(ethers.utils.bigNumberify(10).pow(ethers.utils.bigNumberify(18)))
@@ -227,7 +252,7 @@ export default function Main({ stats, status }) {
       setUSDExchangeRateETH()
       setUSDExchangeRateSelectedToken()
     }
-  }, [reserveDAIETH, reserveDAIToken, reserveSelectedTokenETH, reserveSelectedTokenToken, selectedTokenSymbol])
+  }, [ reserveSelectedTokenETH, reserveSelectedTokenToken, selectedTokenSymbol])
 
   function _dollarize(amount, exchangeRate) {
     return amount.mul(exchangeRate).div(ethers.utils.bigNumberify(10).pow(ethers.utils.bigNumberify(18)))
@@ -240,61 +265,104 @@ export default function Main({ stats, status }) {
     )
   }
 
-  const [dollarPrice, setDollarPrice] = useState()
+  const [shweatpantsDollarPrice, setSHWEATPANTSDollarPrice] = useState()
+  const [alvinDollarPrice, setALVINDollarPrice] = useState()
   useEffect(() => {
     try {
-      const SOCKSExchangeRateETH = getExchangeRate(reserveSOCKSToken, reserveSOCKSETH)
-      setDollarPrice(
-        SOCKSExchangeRateETH.mul(USDExchangeRateETH).div(
+      const SHWEATPANTSExchangeRateETH = getExchangeRate(reserveSHWEATPANTSToken, reserveSHWEATPANTSETH)
+      setSHWEATPANTSDollarPrice(
+        SHWEATPANTSExchangeRateETH.mul(USDExchangeRateETH).div(
+          ethers.utils.bigNumberify(10).pow(ethers.utils.bigNumberify(18))
+        )
+      )
+      const ALVINExchangeRateETH = getExchangeRate(reserveALVINToken, reserveALVINETH)
+      setALVINDollarPrice(
+        ALVINExchangeRateETH.mul(USDExchangeRateETH).div(
           ethers.utils.bigNumberify(10).pow(ethers.utils.bigNumberify(18))
         )
       )
     } catch {
-      setDollarPrice()
+      setSHWEATPANTSDollarPrice()
+      setALVINDollarPrice()
     }
-  }, [USDExchangeRateETH, reserveSOCKSETH, reserveSOCKSToken])
+  }, [USDExchangeRateETH, reserveSHWEATPANTSETH, reserveSHWEATPANTSToken, reserveALVINETH, reserveALVINToken])
 
-  async function unlock(buyingSOCKS = true) {
-    const contract = buyingSOCKS ? tokenContractSelectedToken : tokenContractSOCKS
-    const spenderAddress = buyingSOCKS ? exchangeContractSelectedToken.address : exchangeContractSOCKS.address
+  async function unlock(buyingSHWEATPANTS, buyingALVIN) {
+    //@TODO
+    if (buyingSHWEATPANTS) {
+      const contract = buyingSHWEATPANTS ? tokenContractSelectedToken : tokenContractSHWEATPANTS
+      const spenderAddress = buyingSHWEATPANTS
+        ? exchangeContractSelectedToken.address
+        : exchangeContractSHWEATPANTS.address
+      const estimatedGasLimit = await contract.estimate.approve(spenderAddress, ethers.constants.MaxUint256)
+      const estimatedGasPrice = await library
+        .getGasPrice()
+        .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
 
-    const estimatedGasLimit = await contract.estimate.approve(spenderAddress, ethers.constants.MaxUint256)
-    const estimatedGasPrice = await library
-      .getGasPrice()
-      .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
+      return contract.approve(spenderAddress, ethers.constants.MaxUint256, {
+        gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
+        gasPrice: estimatedGasPrice
+      })
+    } else if (buyingALVIN) {
+      const contract = buyingALVIN ? tokenContractSelectedToken : tokenContractALVIN
+      const spenderAddress = buyingALVIN ? exchangeContractSelectedToken.address : exchangeContractALVIN.address
+      const estimatedGasLimit = await contract.estimate.approve(spenderAddress, ethers.constants.MaxUint256)
+      const estimatedGasPrice = await library
+        .getGasPrice()
+        .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
 
-    return contract.approve(spenderAddress, ethers.constants.MaxUint256, {
-      gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
-      gasPrice: estimatedGasPrice
-    })
+      return contract.approve(spenderAddress, ethers.constants.MaxUint256, {
+        gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
+        gasPrice: estimatedGasPrice
+      })
+    } else {
+      return
+    }
   }
 
   // buy functionality
   const validateBuy = useCallback(
-    numberOfSOCKS => {
+    (numberOfDripp, tokenSymbol) => {
       // validate passed amount
       let parsedValue
       try {
-        parsedValue = ethers.utils.parseUnits(numberOfSOCKS, 18)
+        parsedValue = ethers.utils.parseUnits(numberOfDripp, 18)
       } catch (error) {
         error.code = ERROR_CODES.INVALID_AMOUNT
         throw error
       }
 
       let requiredValueInSelectedToken
-      try {
-        requiredValueInSelectedToken = calculateAmount(
-          selectedTokenSymbol,
-          TOKEN_SYMBOLS.SOCKS,
-          parsedValue,
-          reserveSOCKSETH,
-          reserveSOCKSToken,
-          reserveSelectedTokenETH,
-          reserveSelectedTokenToken
-        )
-      } catch (error) {
-        error.code = ERROR_CODES.INVALID_TRADE
-        throw error
+      if (tokenSymbol === 'ALVIN') {
+        try {
+          requiredValueInSelectedToken = calculateAmount(
+            selectedTokenSymbol,
+            TOKEN_SYMBOLS.ALVIN,
+            parsedValue,
+            reserveALVINETH,
+            reserveALVINToken,
+            reserveSelectedTokenETH,
+            reserveSelectedTokenToken
+          )
+        } catch (error) {
+          error.code = ERROR_CODES.INVALID_TRADE
+          throw error
+        }
+      } else if (tokenSymbol === 'SHWEATPANTS') {
+        try {
+          requiredValueInSelectedToken = calculateAmount(
+            selectedTokenSymbol,
+            TOKEN_SYMBOLS.ALVIN,
+            parsedValue,
+            reserveALVINETH,
+            reserveALVINToken,
+            reserveSelectedTokenETH,
+            reserveSelectedTokenToken
+          )
+        } catch (error) {
+          error.code = ERROR_CODES.INVALID_TRADE
+          throw error
+        }
       }
 
       // get max slippage amount
@@ -342,15 +410,17 @@ export default function Main({ stats, status }) {
       allowanceSelectedToken,
       balanceETH,
       balanceSelectedToken,
-      reserveSOCKSETH,
-      reserveSOCKSToken,
+      reserveALVINETH,
+      reserveALVINToken,
+      reserveSHWEATPANTSETH,
+      reserveSHWEATPANTSToken,
       reserveSelectedTokenETH,
       reserveSelectedTokenToken,
       selectedTokenSymbol
     ]
   )
 
-  async function buy(maximumInputValue, outputValue) {
+  async function buy(maximumInputValue, outputValue, sellTokenSymbol) {
     const deadline = Math.ceil(Date.now() / 1000) + DEADLINE_FROM_NOW
 
     const estimatedGasPrice = await library
@@ -358,14 +428,29 @@ export default function Main({ stats, status }) {
       .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
 
     if (selectedTokenSymbol === TOKEN_SYMBOLS.ETH) {
-      const estimatedGasLimit = await exchangeContractSOCKS.estimate.ethToTokenSwapOutput(outputValue, deadline, {
-        value: maximumInputValue
-      })
-      return exchangeContractSOCKS.ethToTokenSwapOutput(outputValue, deadline, {
-        value: maximumInputValue,
-        gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
-        gasPrice: estimatedGasPrice
-      })
+      if (sellTokenSymbol === 'SHWEATPANTS') {
+        const estimatedGasLimit = await exchangeContractSHWEATPANTS.estimate.ethToTokenSwapOutput(
+          outputValue,
+          deadline,
+          {
+            value: maximumInputValue
+          }
+        )
+        return exchangeContractSHWEATPANTS.ethToTokenSwapOutput(outputValue, deadline, {
+          value: maximumInputValue,
+          gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
+          gasPrice: estimatedGasPrice
+        })
+      } else if (sellTokenSymbol === 'ALVIN') {
+        const estimatedGasLimit = await exchangeContractALVIN.estimate.ethToTokenSwapOutput(outputValue, deadline, {
+          value: maximumInputValue
+        })
+        return exchangeContractALVIN.ethToTokenSwapOutput(outputValue, deadline, {
+          value: maximumInputValue,
+          gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
+          gasPrice: estimatedGasPrice
+        })
+      }
     } else {
       const estimatedGasLimit = await exchangeContractSelectedToken.estimate.tokenToTokenSwapOutput(
         outputValue,
@@ -390,11 +475,11 @@ export default function Main({ stats, status }) {
 
   // sell functionality
   const validateSell = useCallback(
-    numberOfSOCKS => {
+    (numberOfDripp, tokenSymbol) => {
       // validate passed amount
       let parsedValue
       try {
-        parsedValue = ethers.utils.parseUnits(numberOfSOCKS, 18)
+        parsedValue = ethers.utils.parseUnits(numberOfDripp, 18)
       } catch (error) {
         error.code = ERROR_CODES.INVALID_AMOUNT
         throw error
@@ -402,19 +487,36 @@ export default function Main({ stats, status }) {
 
       // how much ETH or tokens the sale will result in
       let requiredValueInSelectedToken
-      try {
-        requiredValueInSelectedToken = calculateAmount(
-          TOKEN_SYMBOLS.SOCKS,
-          selectedTokenSymbol,
-          parsedValue,
-          reserveSOCKSETH,
-          reserveSOCKSToken,
-          reserveSelectedTokenETH,
-          reserveSelectedTokenToken
-        )
-      } catch (error) {
-        error.code = ERROR_CODES.INVALID_EXCHANGE
-        throw error
+      if (tokenSymbol === 'ALVIN') {
+        try {
+          requiredValueInSelectedToken = calculateAmount(
+            TOKEN_SYMBOLS.ALVIN,
+            selectedTokenSymbol,
+            parsedValue,
+            reserveALVINETH,
+            reserveALVINToken,
+            reserveSelectedTokenETH,
+            reserveSelectedTokenToken
+          )
+        } catch (error) {
+          error.code = ERROR_CODES.INVALID_EXCHANGE
+          throw error
+        }
+      } else if (tokenSymbol === 'SHWEATPANTS') {
+        try {
+          requiredValueInSelectedToken = calculateAmount(
+            TOKEN_SYMBOLS.SHWEATPANTS,
+            selectedTokenSymbol,
+            parsedValue,
+            reserveSHWEATPANTSETH,
+            reserveSHWEATPANTSToken,
+            reserveSelectedTokenETH,
+            reserveSelectedTokenToken
+          )
+        } catch (error) {
+          error.code = ERROR_CODES.INVALID_EXCHANGE
+          throw error
+        }
       }
 
       // slippage-ized
@@ -431,8 +533,16 @@ export default function Main({ stats, status }) {
         }
       }
 
-      // validate minimum socks balance
-      if (balanceSOCKS.lt(parsedValue)) {
+      // validate minimum SHWEATPANTS balance
+      if (balanceSHWEATPANTS.lt(parsedValue)) {
+        const error = Error()
+        error.code = ERROR_CODES.INSUFFICIENT_SELECTED_TOKEN_BALANCE
+        if (!errorAccumulator) {
+          errorAccumulator = error
+        }
+      }
+      // validate minimum ALVIN balance
+      if (balanceALVIN.lt(parsedValue)) {
         const error = Error()
         error.code = ERROR_CODES.INSUFFICIENT_SELECTED_TOKEN_BALANCE
         if (!errorAccumulator) {
@@ -441,7 +551,16 @@ export default function Main({ stats, status }) {
       }
 
       // validate allowance
-      if (allowanceSOCKS.lt(parsedValue)) {
+      if (allowanceSHWEATPANTS.lt(parsedValue)) {
+        const error = Error()
+        error.code = ERROR_CODES.INSUFFICIENT_ALLOWANCE
+        if (!errorAccumulator) {
+          errorAccumulator = error
+        }
+      }
+
+      // validate allowance
+      if (allowanceSHWEATPANTS.lt(parsedValue)) {
         const error = Error()
         error.code = ERROR_CODES.INSUFFICIENT_ALLOWANCE
         if (!errorAccumulator) {
@@ -457,75 +576,131 @@ export default function Main({ stats, status }) {
       }
     },
     [
-      allowanceSOCKS,
+      allowanceSHWEATPANTS,
+      allowanceALVIN,
       balanceETH,
-      balanceSOCKS,
-      reserveSOCKSETH,
-      reserveSOCKSToken,
+      balanceSHWEATPANTS,
+      balanceALVIN,
+      reserveSHWEATPANTSETH,
+      reserveSHWEATPANTSToken,
       reserveSelectedTokenETH,
       reserveSelectedTokenToken,
       selectedTokenSymbol
     ]
   )
 
-  async function sell(inputValue, minimumOutputValue) {
+  async function sell(inputValue, minimumOutputValue, buyTokenSymbol) {
     const deadline = Math.ceil(Date.now() / 1000) + DEADLINE_FROM_NOW
 
     const estimatedGasPrice = await library
       .getGasPrice()
       .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
-
-    if (selectedTokenSymbol === TOKEN_SYMBOLS.ETH) {
-      const estimatedGasLimit = await exchangeContractSOCKS.estimate.tokenToEthSwapInput(
-        inputValue,
-        minimumOutputValue,
-        deadline
-      )
-      return exchangeContractSOCKS.tokenToEthSwapInput(inputValue, minimumOutputValue, deadline, {
-        gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
-        gasPrice: estimatedGasPrice
-      })
-    } else {
-      const estimatedGasLimit = await exchangeContractSOCKS.estimate.tokenToTokenSwapInput(
-        inputValue,
-        minimumOutputValue,
-        ethers.constants.One,
-        deadline,
-        TOKEN_ADDRESSES[selectedTokenSymbol]
-      )
-      return exchangeContractSOCKS.tokenToTokenSwapInput(
-        inputValue,
-        minimumOutputValue,
-        ethers.constants.One,
-        deadline,
-        TOKEN_ADDRESSES[selectedTokenSymbol],
-        {
+    if (buyTokenSymbol === 'ALVIN') {
+      if (selectedTokenSymbol === TOKEN_SYMBOLS.ETH) {
+        const estimatedGasLimit = await exchangeContractALVIN.estimate.tokenToEthSwapInput(
+          inputValue,
+          minimumOutputValue,
+          deadline
+        )
+        return exchangeContractALVIN.tokenToEthSwapInput(inputValue, minimumOutputValue, deadline, {
           gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
           gasPrice: estimatedGasPrice
-        }
-      )
+        })
+      } else {
+        const estimatedGasLimit = await exchangeContractALVIN.estimate.tokenToTokenSwapInput(
+          inputValue,
+          minimumOutputValue,
+          ethers.constants.One,
+          deadline,
+          TOKEN_ADDRESSES[selectedTokenSymbol]
+        )
+        return exchangeContractALVIN.tokenToTokenSwapInput(
+          inputValue,
+          minimumOutputValue,
+          ethers.constants.One,
+          deadline,
+          TOKEN_ADDRESSES[selectedTokenSymbol],
+          {
+            gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
+            gasPrice: estimatedGasPrice
+          }
+        )
+      }
+    } else if (buyTokenSymbol === 'SHWEATPANTS') {
+      if (selectedTokenSymbol === TOKEN_SYMBOLS.ETH) {
+        const estimatedGasLimit = await exchangeContractSHWEATPANTS.estimate.tokenToEthSwapInput(
+          inputValue,
+          minimumOutputValue,
+          deadline
+        )
+        return exchangeContractSHWEATPANTS.tokenToEthSwapInput(inputValue, minimumOutputValue, deadline, {
+          gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
+          gasPrice: estimatedGasPrice
+        })
+      } else {
+        const estimatedGasLimit = await exchangeContractSHWEATPANTS.estimate.tokenToTokenSwapInput(
+          inputValue,
+          minimumOutputValue,
+          ethers.constants.One,
+          deadline,
+          TOKEN_ADDRESSES[selectedTokenSymbol]
+        )
+        return exchangeContractSHWEATPANTS.tokenToTokenSwapInput(
+          inputValue,
+          minimumOutputValue,
+          ethers.constants.One,
+          deadline,
+          TOKEN_ADDRESSES[selectedTokenSymbol],
+          {
+            gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
+            gasPrice: estimatedGasPrice
+          }
+        )
+      }
     }
   }
 
-  async function burn(amount) {
+  async function burn(amount, tokenSymbol) {
     const parsedAmount = ethers.utils.parseUnits(amount, 18)
 
     const estimatedGasPrice = await library
       .getGasPrice()
       .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
+    if (tokenSymbol === 'ALVIN') {
+      const estimatedGasLimit = await tokenContractALVIN.estimate.burn(parsedAmount)
 
-    const estimatedGasLimit = await tokenContractSOCKS.estimate.burn(parsedAmount)
+      return tokenContractALVIN.burn(parsedAmount, {
+        gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
+        gasPrice: estimatedGasPrice
+      })
+    } else if (tokenSymbol === 'SHWEATPANTS') {
+      const estimatedGasLimit = await tokenContractSHWEATPANTS.estimate.burn(parsedAmount)
 
-    return tokenContractSOCKS.burn(parsedAmount, {
-      gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
-      gasPrice: estimatedGasPrice
-    })
+      return tokenContractSHWEATPANTS.burn(parsedAmount, {
+        gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
+        gasPrice: estimatedGasPrice
+      })
+    }
   }
 
   return stats ? (
-    <Stats reserveSOCKSToken={reserveSOCKSToken} totalSupply={totalSupply} ready={ready} balanceSOCKS={balanceSOCKS} />
+    <Stats
+      reserveSHWEATPANTSToken={reserveSHWEATPANTSToken}
+      reserveALVINToken={reserveALVINToken}
+      totalSHWEATPANTSSupply={totalSHWEATPANTSSupply}
+      totalALVINSupply={totalALVINSupply}
+      ready={ready}
+      balanceSHWEATPANTS={balanceSHWEATPANTS}
+      balanceALVIN={balanceALVIN}
+    />
   ) : status ? (
-    <Status totalSupply={totalSupply} ready={ready} balanceSOCKS={balanceSOCKS} />
+    <Status
+      totalSHWEATPANTSSupply={totalSHWEATPANTSSupply}
+      totalALVINSupply={totalALVINSupply}
+      ready={ready}
+      balanceSHWEATPANTS={balanceSHWEATPANTS}
+      balanceALVIN={balanceALVIN}
+    />
   ) : (
     <Body
       selectedTokenSymbol={selectedTokenSymbol}
@@ -538,10 +713,12 @@ export default function Main({ stats, status }) {
       sell={sell}
       burn={burn}
       dollarize={dollarize}
-      dollarPrice={dollarPrice}
-      balanceSOCKS={balanceSOCKS}
-      reserveSOCKSToken={reserveSOCKSToken}
-      totalSupply={totalSupply}
+      balanceSHWEATPANTS={balanceSHWEATPANTS}
+      balanceALVIN={balanceALVIN}
+      reserveSHWEATPANTSToken={reserveSHWEATPANTSToken}
+      totalSHWEATPANTSSupply={totalSHWEATPANTSSupply}
+      reserveALVINToken={reserveALVINToken}
+      totalALVINSupply={totalALVINSupply}
     />
   )
 }

@@ -69,9 +69,9 @@ export default function Checkout({
   validateSell,
   sell,
   burn,
-  balanceSOCKS,
+  balanceDripp,
   dollarPrice,
-  reserveSOCKSToken,
+  reserveDrippToken,
   dollarize,
   currentTransactionHash,
   currentTransactionType,
@@ -81,7 +81,8 @@ export default function Checkout({
   setShowConnect,
   showConnect,
   showWorks,
-  setShowWorks
+  setShowWorks,
+  tokenSymbol
 }) {
   const { library } = useWeb3Context()
   const [state, setState] = useAppContext()
@@ -161,7 +162,7 @@ export default function Checkout({
             currentTransactionHash={currentTransactionHash}
             setShowConnect={setShowConnect}
             dollarPrice={dollarPrice}
-            reserveSOCKSToken={reserveSOCKSToken}
+            reserveDrippToken={reserveDrippToken}
             pending={pending}
           />
         )
@@ -170,7 +171,7 @@ export default function Checkout({
           <Redeem
             ready={ready}
             burn={burn}
-            balanceSOCKS={balanceSOCKS}
+            balanceDripp={balanceDripp}
             dollarize={dollarize}
             setCurrentTransaction={setCurrentTransaction}
             setShowConnect={setShowConnect}

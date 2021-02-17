@@ -33,35 +33,35 @@ const Shim = styled.div`
   height: 1rem;
 `
 
-export default function RedeemButton({ balanceSOCKS }) {
+export default function RedeemButton({ balanceDripp, drippSelected }) {
   const [, setState] = useAppContext()
   const { account } = useWeb3Context()
 
   function handleToggleCheckout(tradeType) {
-    setState(state => ({ ...state, visible: !state.visible, tradeType }))
+    setState(state => ({ ...state, visible: !state.visible, tradeType, drippSelected }))
   }
 
   return (
     <BuyButtonFrame>
       <ButtonFrame
-        disabled={balanceSOCKS > 0 ? false : true}
+        disabled={balanceDripp > 0 ? false : true}
         text={'Sell'}
         type={'secondary'}
         onClick={() => {
-          handleToggleCheckout(TRADE_TYPES.SELL)
+          handleToggleCheckout(TRADE_TYPES.SELL, drippSelected)
         }}
       />
       <Shim />
       <ButtonFrame
         disabled={
           account === null ||
-          !balanceSOCKS ||
-          balanceSOCKS.lt(ethers.utils.bigNumberify(10).pow(ethers.utils.bigNumberify(18)))
+          !balanceDripp ||
+          balanceDripp.lt(ethers.utils.bigNumberify(10).pow(ethers.utils.bigNumberify(18)))
         }
         text={'Redeem'}
         type={'secondary'}
         onClick={() => {
-          handleToggleCheckout(TRADE_TYPES.REDEEM)
+          handleToggleCheckout(TRADE_TYPES.REDEEM, drippSelected)
         }}
       />
     </BuyButtonFrame>

@@ -1,8 +1,6 @@
 import * as React from 'react'
 import styled from 'styled-components'
 
-import test from './test.png'
-
 const GalleryFrame = styled.div`
   width: 100%;
   height: 80%;
@@ -21,10 +19,10 @@ const ImgStyle = styled.img`
   /* background-color: ${props => props.theme.black}; */
 `
 
-export default function Gallery() {
+export default function Gallery(props) {
   return (
     <GalleryFrame>
-      <ImgStyle src={test} alt="Logo" />
+      <ImgStyle src={props.src} alt="Logo" />
     </GalleryFrame>
   )
 }

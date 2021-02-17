@@ -24,7 +24,7 @@ const ButtonFrame = styled.button`
   opacity: ${props => (props.disabled ? 1 : 1)};
   pointer-events: ${props => (props.disabled ? 'none' : 'auto')};
   border-width: ${props => (props.type === 'cta' ? '0px' : props.disabled ? '0px' : '1px')};
-  border-color: ${props => (props.type === 'cta' ? 'none' : props.disabled ? 'none' : props.theme.uniswapPink)};
+  border-color: ${props => (props.type === 'cta' ? 'none' : props.disabled ? 'none' : props.theme.shenaniganPink)};
   background: ${props =>
     props.type === 'cta'
       ? props.disabled
@@ -44,7 +44,7 @@ const ButtonFrame = styled.button`
         : props.theme.white
       : props.disabled
       ? '#aeaeae'
-      : props.theme.uniswapPink};
+      : props.theme.shenaniganPink};
   transform: scale(1);
   transition: transform 0.3s ease;
 

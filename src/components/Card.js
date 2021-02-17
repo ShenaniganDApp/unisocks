@@ -6,23 +6,24 @@ import Tilt from 'react-tilt'
 import { amountFormatter } from '../utils'
 
 import Gallery from './Gallery'
+import { propTypes } from 'qrcode.react'
 
-export default function Card({ totalSupply, dollarPrice, reserveSOCKSToken }) {
+export default function Card({ totalDrippSupply, dollarPrice, reserveDrippToken, imageSrc, name, symbol }) {
   return (
     <Tilt
       style={{ background: '#000', borderRadius: '8px' }}
       options={{ scale: 1.01, max: 10, glare: true, 'max-glare': 1, speed: 1000 }}
     >
       <CardWrapper>
-        <Title>Unisocks Edition 0</Title>
-        <SubTitle>$SOCKS</SubTitle>
-        <Gallery />
+        <Title>{name}</Title>
+        <SubTitle>{symbol}</SubTitle>
+        <Gallery src={imageSrc} />
         <MarketData>
           <span>
             <CurrentPrice>{dollarPrice ? `$${amountFormatter(dollarPrice, 18, 2)} USD` : '$0.00'}</CurrentPrice>
             <SockCount>
-              {reserveSOCKSToken && totalSupply
-                ? `${amountFormatter(reserveSOCKSToken, 18, 0)}/${totalSupply} available`
+              {reserveDrippToken && totalDrippSupply
+                ? `${amountFormatter(reserveDrippToken, 18, 0)}/${totalDrippSupply} available`
                 : ''}
             </SockCount>
           </span>

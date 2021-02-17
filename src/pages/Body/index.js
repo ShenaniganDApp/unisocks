@@ -9,8 +9,17 @@ import BuyButtons from '../../components/Buttons'
 import RedeemButton from '../../components/RedeemButton'
 import Checkout from '../../components/Checkout'
 import { amountFormatter } from '../../utils'
+import agaave from '../../components/Gallery/agaave.png'
+import SHE from '../../components/Gallery/SHE.png'
 
-export function Header({ totalSupply, ready, balanceSOCKS, setShowConnect }) {
+export function Header({
+  totalSHWEATPANTSSupply,
+  totalALVINSupply,
+  ready,
+  balanceSHWEATPANTS,
+  balanceALVIN,
+  setShowConnect
+}) {
   const { account, setConnector } = useWeb3Context()
 
   function handleAccount() {
@@ -20,30 +29,45 @@ export function Header({ totalSupply, ready, balanceSOCKS, setShowConnect }) {
   }
 
   return (
-    <HeaderFrame balanceSOCKS={balanceSOCKS}>
+    <HeaderFrame balanceSHWEATPANTS={balanceSHWEATPANTS} balanceALVIN={balanceALVIN}>
       <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
         <Unicorn>
           <span role="img" aria-label="unicorn">
-            🦄
+            🤸‍♀️ | 🐝
           </span>{' '}
-          Unisocks
+          Dripp
         </Unicorn>
       </Link>
       <div style={{ display: 'flex', flexDirection: 'row' }}>
-        {totalSupply && (
+        {totalSHWEATPANTSSupply && (
           <Link to="/stats" style={{ textDecoration: 'none' }}>
             <Burned>
               <span role="img" aria-label="fire">
                 🔥
               </span>{' '}
-              {500 - totalSupply} <HideMobile>redeemed</HideMobile>
+              {100 - totalSHWEATPANTSSupply} <HideMobile>redeemed</HideMobile>
             </Burned>
           </Link>
         )}
-        <Account onClick={() => handleAccount()} balanceSOCKS={balanceSOCKS}>
+        {totalALVINSupply && (
+          <Link to="/stats" style={{ textDecoration: 'none' }}>
+            <Burned>
+              <span role="img" aria-label="fire">
+                🔥
+              </span>{' '}
+              {100 - totalALVINSupply} <HideMobile>redeemed</HideMobile>
+            </Burned>
+          </Link>
+        )}
+        <Account onClick={() => handleAccount()} balanceSHWEATPANTS={balanceSHWEATPANTS} balanceALVIN={balanceALVIN}>
           {account ? (
-            balanceSOCKS > 0 ? (
-              <SockCount>{balanceSOCKS && `${amountFormatter(balanceSOCKS, 18, 0)}`} SOCKS</SockCount>
+            balanceSHWEATPANTS > 0 ? (
+              <Flex style={{ flexDirection: 'column' }}>
+                <SockCount>
+                  {balanceSHWEATPANTS && `${amountFormatter(balanceSHWEATPANTS, 18, 0)}`} SHWEATPANTS
+                </SockCount>
+                <SockCount>{balanceALVIN && `${amountFormatter(balanceALVIN, 18, 0)}`} ALVIN</SockCount>
+              </Flex>
             ) : (
               <SockCount>{account.slice(0, 6)}...</SockCount>
             )
@@ -51,7 +75,7 @@ export function Header({ totalSupply, ready, balanceSOCKS, setShowConnect }) {
             <SockCount>Connect Wallet</SockCount>
           )}
 
-          <Status balanceSOCKS={balanceSOCKS} ready={ready} account={account} />
+          <Status balanceSHWEATPANTS={balanceSHWEATPANTS} balanceALVIN={balanceALVIN} ready={ready} account={account} />
         </Account>
       </div>
     </HeaderFrame>
@@ -145,9 +169,12 @@ export default function Body({
   burn,
   dollarize,
   dollarPrice,
-  balanceSOCKS,
-  reserveSOCKSToken,
-  totalSupply
+  balanceSHWEATPANTS,
+  balanceALVIN,
+  reserveSHWEATPANTSToken,
+  reserveALVINToken,
+  totalSHWEATPANTSSupply,
+  totalALVINSupply
 }) {
   const { account } = useWeb3Context()
   const [currentTransaction, _setCurrentTransaction] = useState({})
@@ -164,30 +191,40 @@ export default function Body({
   return (
     <AppWrapper overlay={state.visible}>
       <Header
-        totalSupply={totalSupply}
+        totalSHWEATPANTSSupply={totalSHWEATPANTSSupply}
+        totalALVINSupply={totalALVINSupply}
         ready={ready}
         dollarPrice={dollarPrice}
-        balanceSOCKS={balanceSOCKS}
+        balanceSHWEATPANTS={balanceSHWEATPANTS}
+        balanceALVIN={balanceALVIN}
         setShowConnect={setShowConnect}
       />
-      <Content>
-        <Card totalSupply={totalSupply} dollarPrice={dollarPrice} reserveSOCKSToken={reserveSOCKSToken} />{' '}
-        <Info>
-          <div style={{ marginBottom: '4px' }}>Buy and sell real socks with digital currency.</div>
-          <div style={{ marginBottom: '4px' }}>
-            Delivered on demand.{' '}
-            <a
-              href="/"
-              onClick={e => {
-                e.preventDefault()
-                setState(state => ({ ...state, visible: !state.visible }))
-                setShowWorks(true)
-              }}
-            >
-              Learn more
-            </a>
-          </div>
-          {/* <SubInfo>
+      <Flex>
+        <Content>
+          <Card
+            totalDrippSupply={totalALVINSupply}
+            dollarPrice={dollarPrice}
+            reserveDrippToken={reserveALVINToken}
+            imageSrc={agaave}
+            name={'Alvin'}
+            symbol={'$ALVIN'}
+          />{' '}
+          <Info>
+            <div style={{ marginBottom: '4px' }}>Buy and sell real swag with digital currency.</div>
+            <div style={{ marginBottom: '4px' }}>
+              Delivered on demand.{' '}
+              <a
+                href="/"
+                onClick={e => {
+                  e.preventDefault()
+                  setState(state => ({ ...state, visible: !state.visible }))
+                  setShowWorks(true)
+                }}
+              >
+                Learn more
+              </a>
+            </div>
+            {/* <SubInfo>
             An experiment in pricing and user experience by the team at Uniswap.{' '}
             <a
               href="/"
@@ -200,15 +237,62 @@ export default function Body({
               How it works.
             </a>
           </SubInfo> */}
-        </Info>
-        <BuyButtons balanceSOCKS={balanceSOCKS} />
-        <RedeemButton balanceSOCKS={balanceSOCKS} />
-        {!!account && (
-          <Link style={{ textDecoration: 'none' }} to="/status">
-            <OrderStatusLink>Check order status?</OrderStatusLink>
-          </Link>
-        )}
-      </Content>
+          </Info>
+          <BuyButtons balanceDripp={balanceALVIN} drippSelected={'ALVIN'} />
+          <RedeemButton balanceDripp={balanceALVIN} drippSelected={'ALVIN'} />
+          {!!account && (
+            <Link style={{ textDecoration: 'none' }} to="/status">
+              <OrderStatusLink>Check order status?</OrderStatusLink>
+            </Link>
+          )}
+        </Content>
+        <Content>
+          <Card
+            totalDrippSupply={totalSHWEATPANTSSupply}
+            dollarPrice={dollarPrice}
+            reserveDrippToken={reserveSHWEATPANTSToken}
+            imageSrc={SHE}
+            name={'Shweatpants'}
+            symbol={'$SHWEATPANTS'}
+          />{' '}
+          <Info>
+            <div style={{ marginBottom: '4px' }}>Buy and sell real swag with digital currency.</div>
+            <div style={{ marginBottom: '4px' }}>
+              Delivered on demand.{' '}
+              <a
+                href="/"
+                onClick={e => {
+                  e.preventDefault()
+                  setState(state => ({ ...state, visible: !state.visible }))
+                  setShowWorks(true)
+                }}
+              >
+                Learn more
+              </a>
+            </div>
+            {/* <SubInfo>
+            An experiment in pricing and user experience by the team at Uniswap.{' '}
+            <a
+              href="/"
+              onClick={e => {
+                e.preventDefault()
+                setState(state => ({ ...state, visible: !state.visible }))
+                setShowWorks(true)
+              }}
+            >
+              How it works.
+            </a>
+          </SubInfo> */}
+          </Info>
+          <BuyButtons balanceDripp={balanceSHWEATPANTS} drippSelected={'SHWEATPANTS'} />
+          <RedeemButton balanceDripp={balanceSHWEATPANTS} drippSelected={'SHWEATPANTS'} />
+          {!!account && (
+            <Link style={{ textDecoration: 'none' }} to="/status">
+              <OrderStatusLink>Check order status?</OrderStatusLink>
+            </Link>
+          )}
+        </Content>
+      </Flex>
       <Checkout
         selectedTokenSymbol={selectedTokenSymbol}
         setSelectedTokenSymbol={setSelectedTokenSymbol}
@@ -219,9 +303,9 @@ export default function Body({
         validateSell={validateSell}
         sell={sell}
         burn={burn}
-        balanceSOCKS={balanceSOCKS}
+        balanceDripp={state.drippSelected === 'SHWEATPANTS' ? balanceSHWEATPANTS : balanceALVIN}
         dollarPrice={dollarPrice}
-        reserveSOCKSToken={reserveSOCKSToken}
+        reserveDrippToken={state.drippSelected === 'SHWEATPANTS' ? reserveSHWEATPANTSToken : reserveALVINToken}
         dollarize={dollarize}
         showConnect={showConnect}
         setShowConnect={setShowConnect}
@@ -232,6 +316,7 @@ export default function Body({
         clearCurrentTransaction={clearCurrentTransaction}
         showWorks={showWorks}
         setShowWorks={setShowWorks}
+        tokenSymbol={state.drippSelected}
       />
     </AppWrapper>
   )
@@ -271,7 +356,7 @@ const Info = styled.div`
   /* margin-top: 16px; */
   background-color: ${props => '#f1f2f6'};
   a {
-    color: ${props => props.theme.uniswapPink};
+    color: ${props => props.theme.shenaniganPink};
     text-decoration: none;
     /* padding-top: 8px; */
     /* font-size: 14px; */
@@ -283,14 +368,22 @@ const Info = styled.div`
 `
 
 const OrderStatusLink = styled.p`
-  color: ${props => props.theme.uniswapPink};
+  color: ${props => props.theme.shenaniganPink};
   text-align: center;
   font-size: 0.6rem;
 `
 
 const Unicorn = styled.p`
-  color: ${props => props.theme.uniswapPink};
+  color: ${props => props.theme.shenaniganPink};
   font-weight: 600;
   margin: auto 0px;
   font-size: 16px;
+`
+
+const Flex = styled.div`
+  display: flex;
+  gap: 32px;
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
 `

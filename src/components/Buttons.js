@@ -34,8 +34,8 @@ const ButtonFrame = styled(Button)`
 export default function BuyButtons(props) {
   const [, setState] = useAppContext()
 
-  function handleToggleCheckout(tradeType) {
-    setState(state => ({ ...state, visible: !state.visible, tradeType }))
+  function handleToggleCheckout(tradeType, drippSelected) {
+    setState(state => ({ ...state, visible: !state.visible, tradeType, drippSelected }))
   }
 
   return (
@@ -45,7 +45,7 @@ export default function BuyButtons(props) {
         text={'Buy'}
         type={'cta'}
         onClick={() => {
-          handleToggleCheckout(TRADE_TYPES.BUY)
+          handleToggleCheckout(TRADE_TYPES.BUY, props.drippSelected)
         }}
       />
     </BuyButtonFrame>

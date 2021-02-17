@@ -9,7 +9,8 @@ import RedeemForm from './RedeemForm'
 import { amountFormatter } from '../utils'
 
 import IncrementToken from './IncrementToken'
-import test from './Gallery/test.png'
+import shweatpants from './Gallery/SHE.png'
+import agaave from './Gallery/agaave.png'
 import nfc from './Gallery/nfc.png'
 import sent from './Gallery/sent.png'
 
@@ -52,7 +53,7 @@ export function Controls({ closeCheckout, theme, type }) {
 
 export default function Redeem({
   burn,
-  balanceSOCKS,
+  balanceDripp,
   balance,
   ready,
   unlock,
@@ -86,7 +87,7 @@ export default function Redeem({
   })
 
   function link(hash) {
-    return `https://etherscan.io/tx/${hash}`
+    return `https://blockscout.com/poa/xdai//tx/${hash}`
   }
 
   function renderContent() {
@@ -95,7 +96,7 @@ export default function Redeem({
         <ButtonFrame
           className="button"
           disabled={false}
-          text={account === null ? 'Connect Wallet' : 'Redeem SOCKS'}
+          text={account === null ? 'Connect Wallet' : 'Redeem Dripp'}
           type={'cta'}
           onClick={() => {
             setConnector('Injected', { suppressAndThrowErrors: true }).catch(() => {
@@ -109,15 +110,19 @@ export default function Redeem({
         <>
           <TopFrame hasPickedAmount={hasPickedAmount}>
             <Controls closeCheckout={closeCheckout} />
-            <ImgStyle src={test} alt="Logo" hasPickedAmount={hasPickedAmount} />
+            <ImgStyle
+              src={state.drippSelected === 'SHWEATPANTS' ? shweatpants : agaave}
+              alt="Logo"
+              hasPickedAmount={hasPickedAmount}
+            />
             <InfoFrame pending={pending}>
               <Owned>
-                <SockCount>You own {balanceSOCKS && `${amountFormatter(balanceSOCKS, 18, 0)}`}</SockCount>
-                <p>Redeem SOCKS</p>
+                <SockCount>You own {balanceDripp && `${amountFormatter(balanceDripp, 18, 0)}`}</SockCount>
+                <p>Redeem {state.drippSelected}</p>
               </Owned>
               <IncrementToken
-                initialValue={Number(amountFormatter(balanceSOCKS, 18, 0))}
-                max={Number(amountFormatter(balanceSOCKS, 18, 0))}
+                initialValue={Number(amountFormatter(balanceDripp, 18, 0))}
+                max={Number(amountFormatter(balanceDripp, 18, 0))}
               />
             </InfoFrame>
           </TopFrame>
@@ -140,9 +145,15 @@ export default function Redeem({
             <Controls closeCheckout={closeCheckout} type="shipping" />
 
             <InfoFrame hasPickedAmount={hasPickedAmount}>
-              <ImgStyle src={test} alt="Logo" hasPickedAmount={hasPickedAmount} />
+              <ImgStyle
+                src={state.drippSelected === 'SHWEATPANTS' ? shweatpants : agaave}
+                alt="Logo"
+                hasPickedAmount={hasPickedAmount}
+              />
               <Owned>
-                <p>{state.count} Unisocks</p>
+                <p>
+                  {state.count} {state.drippSelected === 'SHWEATPANTS' ? 'Shenanigan Shweatpants' : 'Agaave Alvin'}
+                </p>
                 <p style={{ fontSize: '20px', fontWeight: '400', color: '#AEAEAE' }}>One size fits most</p>
                 <p style={{ fontSize: '14px', fontWeight: '500', marginTop: '16px', color: '#AEAEAE' }}>Edition 0</p>
               </Owned>
@@ -175,9 +186,15 @@ export default function Redeem({
           <TopFrame hasPickedAmount={hasPickedAmount}>
             <Controls closeCheckout={closeCheckout} type="confirm" />
             <InfoFrame hasPickedAmount={hasPickedAmount}>
-              <ImgStyle src={test} alt="Logo" hasPickedAmount={hasPickedAmount} />
+              <ImgStyle
+                src={state.drippSelected === 'SHENANIGAN' ? shweatpants : agaave}
+                alt="Logo"
+                hasPickedAmount={hasPickedAmount}
+              />
               <Owned>
-                <p style={{ fontSize: '18px' }}>{state.count} Unisocks</p>
+                <p style={{ fontSize: '18px' }}>
+                  {state.count} {state.drippSelected === 'SHWEATPANTS' ? 'Shenanigan Shweatpants' : 'Agaave Alvin'}
+                </p>
                 <p style={{ fontSize: '14px', fontWeight: '500' }}>One size fits most</p>
                 <p
                   style={{
@@ -192,11 +209,12 @@ export default function Redeem({
                 </p>
               </Owned>
             </InfoFrame>
+
             <InfoFrame hasPickedAmount={hasPickedAmount}>
               <ImgStyle src={nfc} alt="Logo" hasPickedAmount={hasPickedAmount} />
               <Bonus>Bonus</Bonus>
               <Owned>
-                <p style={{ fontSize: '18px' }}>{state.count} Unisocks NFT</p>
+                <p style={{ fontSize: '18px' }}>{state.count}NFT</p>
                 <p style={{ fontSize: '14px', fontWeight: '500' }}>Digital Collectible (10kb)</p>
                 <p
                   style={{
@@ -244,6 +262,30 @@ export default function Redeem({
                 })
             }}
           />
+          <ButtonFrame
+            className="button"
+            disabled={pending}
+            pending={pending}
+            // text={pending ? `Waiting for confirmation...` : `Redeem ${numberBurned} SOCKS`}
+            text={
+              pending ? `Waiting for confirmation...` : `Place order (Redeem ${numberBurned} ${state.drippSelected}`
+            }
+            type={'cta'}
+            onClick={() => {
+              burn(numberBurned.toString(), state.drippSelected)
+                .then(response => {
+                  setTransactionHash(response.hash)
+                })
+                .catch(error => {
+                  console.error(error)
+                  // setTransactionHash(
+                  //   true
+                  //     ? '0x888503cb966a67192afb74c740abaec0b7e8bda370bc8f853fb040eab247c63f'
+                  //     : '0x66dac079f7ee27ba7b2cae27eaabf64574c2011aacd007968be6d282b3c2065b'
+                  // )
+                })
+            }}
+          />
           <Back disabled={!!pending}>
             {pending ? (
               <EtherscanLink href={link(transactionHash)} target="_blank" rel="noopener noreferrer">
@@ -269,7 +311,7 @@ export default function Redeem({
             <ImgStyle src={sent} alt="Logo" hasPickedAmount={hasPickedAmount} hasBurnt={hasBurnt} />
             <InfoFrame>
               <Owned>
-                <p>You got socks!</p>
+                <p>You got dripp!</p>
               </Owned>
             </InfoFrame>
           </TopFrame>
@@ -381,7 +423,7 @@ const Bonus = styled.div`
   font-weight: 500;
   font-size: 12px;
   padding: 4px;
-  background-color: ${props => props.theme.uniswapPink};
+  background-color: ${props => props.theme.shenaniganPink};
   border-radius: 4px;
   position: absolute;
   top: 200px;
@@ -399,7 +441,7 @@ const SockCount = styled.span`
   font-size: 14px;
   width: 100%;
   margin-bottom: 0.5rem;
-  color: ${props => props.theme.uniswapPink};
+  color: ${props => props.theme.shenaniganPink};
   cursor: pointer;
 
   :hover {
@@ -417,7 +459,7 @@ const Back = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  /* color: ${props => props.theme.uniswapPink}; */
+  /* color: ${props => props.theme.shenaniganPink}; */
   text-align: center;
   span {
     cursor: pointer;
@@ -449,7 +491,7 @@ const RedeemFrame = styled(RedeemForm)`
 
 const EtherscanLink = styled.a`
   text-decoration: none;
-  color: ${props => props.theme.uniswapPink};
+  color: ${props => props.theme.shenaniganPink};
   font-style: normal;
   font-weight: 400;
   font-size: 12px;

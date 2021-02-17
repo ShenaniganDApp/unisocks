@@ -6,9 +6,11 @@ export const AppContext = React.createContext([{}, () => {}])
 
 const initialState = {
   visible: false,
-  count: 1,
+  shweatpantsCount: 1,
+  alvinCount: 1,
   valid: false,
-  tradeType: TRADE_TYPES.BUY
+  tradeType: TRADE_TYPES.BUY,
+  drippSelected: ''
 }
 
 export default function AppProvider({ children }) {

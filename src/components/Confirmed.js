@@ -217,7 +217,7 @@ const CheckoutPrompt = styled.p`
 `
 const EtherscanLink = styled.a`
   text-decoration: none;
-  color: ${props => props.theme.uniswapPink};
+  color: ${props => props.theme.shenaniganPink};
   font-style: normal;
   font-weight: 400;
   font-size: 12px;

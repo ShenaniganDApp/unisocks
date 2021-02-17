@@ -16,7 +16,7 @@ const OrderDiv = styled.div`
   margin-bottom: 1rem;
 `
 
-export default function Body({ totalSupply, ready, balanceSOCKS }) {
+export default function Body({ totalSHWEATPANTSSupply, totalALVINSupply, ready, balanceSHWEATPANTS, balanceALVIN }) {
   const [state] = useAppContext()
   const { library, account } = useWeb3Context()
 
@@ -66,11 +66,16 @@ export default function Body({ totalSupply, ready, balanceSOCKS }) {
   } else {
     return (
       <AppWrapper overlay={state.visible}>
-        <Header totalSupply={totalSupply} ready={ready} balanceSOCKS={balanceSOCKS} setShowConnect={() => {}} />
+        <Header
+          totalSHWEATPANTSSupply={totalSHWEATPANTSSupply}
+          totalALVINSupply={totalALVINSupply}
+          ready={ready}
+          balanceSHWEATPANTS={balanceSHWEATPANTS}
+          balanceALVIN={balanceALVIN}
+          setShowConnect={() => {}}
+        />
         <Content>
-          <p>
-            You can use this page to check the status of your Unisocks order, please bookmark it for future reference.
-          </p>
+          <p>You can use this page to check the status of your Dripp order, please bookmark it for future reference.</p>
 
           {error && <p>Error</p>}
 
@@ -91,7 +96,7 @@ export default function Body({ totalSupply, ready, balanceSOCKS }) {
                           timeStyle: 'short'
                         })}
                       </li>
-                      <li>SOCKS Redeemed: {d.numberOfSocks}</li>
+                      <li>${d.drippItem} Redeemed: {d.numberOfDripp}</li>
                       <li>
                         Status:{' '}
                         {d.invalid
