@@ -5,11 +5,13 @@ import { ethers, BigNumber } from 'ethers'
 import { TOKEN_SYMBOLS, TOKEN_ADDRESSES, ERROR_CODES } from '../../utils'
 import {
   useTokenContract,
-  useExchangeContract,
+  usePairContract,
+  useRouterContract,
+  useStakingContract,
   useAddressBalance,
   useAddressAllowance,
-  useExchangeReserves,
-  useExchangeAllowance,
+  usePairReserves,
+  usePairAllowance,
   useTotalSupply
 } from '../../hooks'
 import Body from '../Body'
@@ -156,12 +158,17 @@ export default function Main({ stats, status }) {
   const { library, account } = useWeb3Context()
 
   // selected token
-  const [selectedTokenSymbol, setSelectedTokenSymbol] = useState(TOKEN_SYMBOLS.ETH)
+  const [selectedTokenSymbol, setSelectedTokenSymbol] = useState(TOKEN_SYMBOLS.WXDAI)
+
+  //get router contact
+  const routerContract = useRouterContract(account)
+
+  //get Staking contracts
+  const stakingContract = useStakingContract(account);
 
   // get exchange contracts
-  const exchangeContractSHWEATPANTS = useExchangeContract(TOKEN_ADDRESSES.SHWEATPANTS)
-  const exchangeContractALVIN = useExchangeContract(TOKEN_ADDRESSES.ALVIN)
-  const exchangeContractSelectedToken = useExchangeContract(TOKEN_ADDRESSES[selectedTokenSymbol])
+  const pairContractSHWEATPANTS = usePairContract(TOKEN_ADDRESSES.SHWEATPANTS, TOKEN_ADDRESSES[selectedTokenSymbol])
+  const pairContractALVIN = usePairContract(TOKEN_ADDRESSES.ALVIN, TOKEN_ADDRESSES[selectedTokenSymbol])
 
   // get token contracts
   const tokenContractSHWEATPANTS = useTokenContract(TOKEN_ADDRESSES.SHWEATPANTS)
@@ -179,34 +186,29 @@ export default function Main({ stats, status }) {
   const totalALVINSupply = useTotalSupply(tokenContractALVIN)
 
   // get allowances
-  const allowanceSHWEATPANTS = useAddressAllowance(
+  const [allowanceSHWEATPANTS, allowanceSHWEATPANTSSelectedToken] = usePairAllowance(
     account,
     TOKEN_ADDRESSES.SHWEATPANTS,
-    exchangeContractSHWEATPANTS && exchangeContractSHWEATPANTS.address
+    pairContractSHWEATPANTS && pairContractSHWEATPANTS.address
   )
-  const allowanceALVIN = useAddressAllowance(
+  const [allowanceALVIN, allowanceALVINSelectedToken] = usePairAllowance(
     account,
     TOKEN_ADDRESSES.ALVIN,
-    exchangeContractALVIN && exchangeContractALVIN.address
+    pairContractALVIN && pairContractALVIN.address
   )
-
-  const allowanceSelectedToken = useExchangeAllowance(account, TOKEN_ADDRESSES[selectedTokenSymbol])
 
   // get reserves
   const reserveSHWEATPANTSETH = useAddressBalance(
-    exchangeContractSHWEATPANTS && exchangeContractSHWEATPANTS.address,
+    pairContractSHWEATPANTS && pairContractSHWEATPANTS.address,
     TOKEN_ADDRESSES.ETH
   )
   const reserveSHWEATPANTSToken = useAddressBalance(
-    exchangeContractSHWEATPANTS && exchangeContractSHWEATPANTS.address,
+    pairContractSHWEATPANTS && pairContractSHWEATPANTS.address,
     TOKEN_ADDRESSES.SHWEATPANTS
   )
-  const reserveALVINETH = useAddressBalance(exchangeContractALVIN && exchangeContractALVIN.address, TOKEN_ADDRESSES.ETH)
-  const reserveALVINToken = useAddressBalance(
-    exchangeContractALVIN && exchangeContractALVIN.address,
-    TOKEN_ADDRESSES.ALVIN
-  )
-  const { reserveETH: reserveSelectedTokenETH, reserveToken: reserveSelectedTokenToken } = useExchangeReserves(
+  const reserveALVINETH = useAddressBalance(pairContractALVIN && pairContractALVIN.address, TOKEN_ADDRESSES.ETH)
+  const reserveALVINToken = useAddressBalance(pairContractALVIN && pairContractALVIN.address, TOKEN_ADDRESSES.ALVIN)
+  const { reserveETH: reserveSelectedTokenETH, reserveToken: reserveSelectedTokenToken } = usePairReserves(
     TOKEN_ADDRESSES[selectedTokenSymbol]
   )
 
@@ -216,7 +218,8 @@ export default function Main({ stats, status }) {
   const ready = !!(
     (account === null || allowanceSHWEATPANTS) &&
     (account === null || allowanceALVIN) &&
-    (selectedTokenSymbol === 'ETH' || account === null || allowanceSelectedToken) &&
+    (selectedTokenSymbol === 'ETH' || account === null || allowanceSHWEATPANTSSelectedToken) &&
+    (selectedTokenSymbol === 'ETH' || account === null || allowanceALVINSelectedToken) &&
     (account === null || balanceETH) &&
     (account === null || balanceSHWEATPANTS) &&
     (account === null || balanceALVIN) &&
@@ -230,6 +233,8 @@ export default function Main({ stats, status }) {
     selectedTokenSymbol &&
     (USDExchangeRateETH || USDExchangeRateSelectedToken)
   )
+
+  console.log('allowanceSHWEATPANTS: ', allowanceSHWEATPANTS)
 
   useEffect(() => {
     //@TODO
@@ -252,7 +257,7 @@ export default function Main({ stats, status }) {
       setUSDExchangeRateETH()
       setUSDExchangeRateSelectedToken()
     }
-  }, [ reserveSelectedTokenETH, reserveSelectedTokenToken, selectedTokenSymbol])
+  }, [reserveSelectedTokenETH, reserveSelectedTokenToken, selectedTokenSymbol])
 
   function _dollarize(amount, exchangeRate) {
     return amount.mul(exchangeRate).div(ethers.utils.bigNumberify(10).pow(ethers.utils.bigNumberify(18)))
@@ -287,37 +292,35 @@ export default function Main({ stats, status }) {
     }
   }, [USDExchangeRateETH, reserveSHWEATPANTSETH, reserveSHWEATPANTSToken, reserveALVINETH, reserveALVINToken])
 
-  async function unlock(buyingSHWEATPANTS, buyingALVIN) {
+  async function unlock(buyingDripp = true, tokenSymbol) {
     //@TODO
-    if (buyingSHWEATPANTS) {
-      const contract = buyingSHWEATPANTS ? tokenContractSelectedToken : tokenContractSHWEATPANTS
-      const spenderAddress = buyingSHWEATPANTS
-        ? exchangeContractSelectedToken.address
-        : exchangeContractSHWEATPANTS.address
-      const estimatedGasLimit = await contract.estimate.approve(spenderAddress, ethers.constants.MaxUint256)
-      const estimatedGasPrice = await library
-        .getGasPrice()
-        .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
-
-      return contract.approve(spenderAddress, ethers.constants.MaxUint256, {
-        gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
-        gasPrice: estimatedGasPrice
-      })
-    } else if (buyingALVIN) {
-      const contract = buyingALVIN ? tokenContractSelectedToken : tokenContractALVIN
-      const spenderAddress = buyingALVIN ? exchangeContractSelectedToken.address : exchangeContractALVIN.address
-      const estimatedGasLimit = await contract.estimate.approve(spenderAddress, ethers.constants.MaxUint256)
-      const estimatedGasPrice = await library
-        .getGasPrice()
-        .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
-
-      return contract.approve(spenderAddress, ethers.constants.MaxUint256, {
-        gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
-        gasPrice: estimatedGasPrice
-      })
+    let contract
+    let spenderAddress
+    if (buyingDripp) {
+      contract = tokenContractSelectedToken
+      if (tokenSymbol === 'SHWEATPANTS') {
+        spenderAddress = pairContractSHWEATPANTS.address
+      } else if (tokenSymbol === 'ALVIN') {
+        spenderAddress = pairContractALVIN.address
+      }
     } else {
-      return
+      if (tokenSymbol === 'SHWEATPANTS') {
+        contract = tokenContractSHWEATPANTS
+        spenderAddress = pairContractSHWEATPANTS.address
+      } else if (tokenSymbol === 'ALVIN') {
+        contract = tokenContractALVIN
+        spenderAddress = pairContractALVIN.address
+      }
     }
+    const estimatedGasLimit = await contract.estimate.approve(spenderAddress, ethers.constants.MaxUint256)
+    const estimatedGasPrice = await library
+      .getGasPrice()
+      .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
+
+    return contract.approve(spenderAddress, ethers.constants.MaxUint256, {
+      gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
+      gasPrice: estimatedGasPrice
+    })
   }
 
   // buy functionality
@@ -352,10 +355,10 @@ export default function Main({ stats, status }) {
         try {
           requiredValueInSelectedToken = calculateAmount(
             selectedTokenSymbol,
-            TOKEN_SYMBOLS.ALVIN,
+            TOKEN_SYMBOLS.SHWEATPANTS,
             parsedValue,
-            reserveALVINETH,
-            reserveALVINToken,
+            reserveSHWEATPANTSETH,
+            reserveSHWEATPANTSToken,
             reserveSelectedTokenETH,
             reserveSelectedTokenToken
           )
@@ -390,7 +393,12 @@ export default function Main({ stats, status }) {
 
       // validate allowance
       if (selectedTokenSymbol !== 'ETH') {
-        if (allowanceSelectedToken && maximum && allowanceSelectedToken.lt(maximum)) {
+        if (
+          ((allowanceALVINSelectedToken || allowanceSHWEATPANTSSelectedToken) &&
+            maximum &&
+            allowanceALVINSelectedToken.lt(maximum)) ||
+          allowanceSHWEATPANTSSelectedToken
+        ) {
           const error = Error()
           error.code = ERROR_CODES.INSUFFICIENT_ALLOWANCE
           if (!errorAccumulator) {
@@ -407,7 +415,8 @@ export default function Main({ stats, status }) {
       }
     },
     [
-      allowanceSelectedToken,
+      allowanceALVINSelectedToken,
+      allowanceSHWEATPANTSSelectedToken,
       balanceETH,
       balanceSelectedToken,
       reserveALVINETH,
@@ -428,48 +437,33 @@ export default function Main({ stats, status }) {
       .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
 
     if (selectedTokenSymbol === TOKEN_SYMBOLS.ETH) {
-      if (sellTokenSymbol === 'SHWEATPANTS') {
-        const estimatedGasLimit = await exchangeContractSHWEATPANTS.estimate.ethToTokenSwapOutput(
-          outputValue,
-          deadline,
-          {
-            value: maximumInputValue
-          }
-        )
-        return exchangeContractSHWEATPANTS.ethToTokenSwapOutput(outputValue, deadline, {
-          value: maximumInputValue,
-          gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
-          gasPrice: estimatedGasPrice
-        })
-      } else if (sellTokenSymbol === 'ALVIN') {
-        const estimatedGasLimit = await exchangeContractALVIN.estimate.ethToTokenSwapOutput(outputValue, deadline, {
-          value: maximumInputValue
-        })
-        return exchangeContractALVIN.ethToTokenSwapOutput(outputValue, deadline, {
-          value: maximumInputValue,
-          gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
-          gasPrice: estimatedGasPrice
-        })
-      }
-    } else {
-      const estimatedGasLimit = await exchangeContractSelectedToken.estimate.tokenToTokenSwapOutput(
+      const path = [TOKEN_ADDRESSES.ETH, TOKEN_ADDRESSES[sellTokenSymbol]]
+      const estimatedGasLimit = await routerContract.estimate.swapETHForExactTokens(
         outputValue,
-        maximumInputValue,
-        ethers.constants.MaxUint256,
+        path,
+        account,
         deadline,
-        TOKEN_ADDRESSES.SOCKS
-      )
-      return exchangeContractSelectedToken.tokenToTokenSwapOutput(
-        outputValue,
-        maximumInputValue,
-        ethers.constants.MaxUint256,
-        deadline,
-        TOKEN_ADDRESSES.SOCKS,
         {
-          gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
-          gasPrice: estimatedGasPrice
+          value: maximumInputValue
         }
       )
+      return routerContract.swapETHForExactTokens(outputValue, path, account, deadline, {
+        value: maximumInputValue,
+        gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
+        gasPrice: estimatedGasPrice
+      })
+    } else {
+      const path = [TOKEN_ADDRESSES[selectedTokenSymbol], TOKEN_ADDRESSES.ETH, TOKEN_ADDRESSES[sellTokenSymbol]]
+      const estimatedGasLimit = await routerContract.estimate.swapExactTokensForTokens(
+        maximumInputValue,
+        outputValue,
+        path,
+        deadline
+      )
+      return routerContract.swapExactTokensForTokens(maximumInputValue, outputValue, path, deadline, {
+        gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
+        gasPrice: estimatedGasPrice
+      })
     }
   }
 
@@ -595,68 +589,31 @@ export default function Main({ stats, status }) {
     const estimatedGasPrice = await library
       .getGasPrice()
       .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
-    if (buyTokenSymbol === 'ALVIN') {
-      if (selectedTokenSymbol === TOKEN_SYMBOLS.ETH) {
-        const estimatedGasLimit = await exchangeContractALVIN.estimate.tokenToEthSwapInput(
-          inputValue,
-          minimumOutputValue,
-          deadline
-        )
-        return exchangeContractALVIN.tokenToEthSwapInput(inputValue, minimumOutputValue, deadline, {
-          gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
-          gasPrice: estimatedGasPrice
-        })
-      } else {
-        const estimatedGasLimit = await exchangeContractALVIN.estimate.tokenToTokenSwapInput(
-          inputValue,
-          minimumOutputValue,
-          ethers.constants.One,
-          deadline,
-          TOKEN_ADDRESSES[selectedTokenSymbol]
-        )
-        return exchangeContractALVIN.tokenToTokenSwapInput(
-          inputValue,
-          minimumOutputValue,
-          ethers.constants.One,
-          deadline,
-          TOKEN_ADDRESSES[selectedTokenSymbol],
-          {
-            gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
-            gasPrice: estimatedGasPrice
-          }
-        )
-      }
-    } else if (buyTokenSymbol === 'SHWEATPANTS') {
-      if (selectedTokenSymbol === TOKEN_SYMBOLS.ETH) {
-        const estimatedGasLimit = await exchangeContractSHWEATPANTS.estimate.tokenToEthSwapInput(
-          inputValue,
-          minimumOutputValue,
-          deadline
-        )
-        return exchangeContractSHWEATPANTS.tokenToEthSwapInput(inputValue, minimumOutputValue, deadline, {
-          gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
-          gasPrice: estimatedGasPrice
-        })
-      } else {
-        const estimatedGasLimit = await exchangeContractSHWEATPANTS.estimate.tokenToTokenSwapInput(
-          inputValue,
-          minimumOutputValue,
-          ethers.constants.One,
-          deadline,
-          TOKEN_ADDRESSES[selectedTokenSymbol]
-        )
-        return exchangeContractSHWEATPANTS.tokenToTokenSwapInput(
-          inputValue,
-          minimumOutputValue,
-          ethers.constants.One,
-          deadline,
-          TOKEN_ADDRESSES[selectedTokenSymbol],
-          {
-            gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
-            gasPrice: estimatedGasPrice
-          }
-        )
-      }
+    if (selectedTokenSymbol === TOKEN_SYMBOLS.ETH) {
+      const path = [TOKEN_ADDRESSES[buyTokenSymbol], TOKEN_ADDRESSES.ETH]
+      const estimatedGasLimit = await routerContract.estimate.swapTokensForExactETH(
+        minimumOutputValue,
+        inputValue,
+        path,
+        account,
+        deadline
+      )
+      return routerContract.swapTokensForExactETH(minimumOutputValue, inputValue, path, account, deadline, {
+        gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
+        gasPrice: estimatedGasPrice
+      })
+    } else {
+      const path = [TOKEN_ADDRESSES[buyTokenSymbol], TOKEN_ADDRESSES.ETH, TOKEN_ADDRESSES[selectedTokenSymbol]]
+      const estimatedGasLimit = await routerContract.estimate.swapExactTokensForTokens(
+        inputValue,
+        minimumOutputValue,
+        path,
+        deadline
+      )
+      return routerContract.swapExactTokensForTokens(inputValue, minimumOutputValue, path, deadline, {
+        gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
+        gasPrice: estimatedGasPrice
+      })
     }
   }
 

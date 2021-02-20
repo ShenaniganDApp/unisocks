@@ -3,8 +3,10 @@ import { useWeb3Context } from 'web3-react'
 import {
   isAddress,
   getTokenContract,
-  getExchangeContract,
-  getTokenExchangeAddressFromFactory,
+  getPairContract,
+  getRouterContract,
+  getStakingContract,
+  getTokenPairAddressFromFactory,
   getEtherBalance,
   getTokenBalance,
   getTokenAllowance,
@@ -40,32 +42,55 @@ export function useTokenContract(tokenAddress, withSignerIfPossible = true) {
   }, [account, library, tokenAddress, withSignerIfPossible])
 }
 
-export function useExchangeContract(tokenAddress, withSignerIfPossible = true) {
+export function usePairContract(tokenAddressA, tokenAddressB, withSignerIfPossible = true) {
   const { library, account } = useWeb3Context()
 
-  const [exchangeAddress, setExchangeAddress] = useState()
+  const [pairAddress, setPairAddress] = useState()
+
   useEffect(() => {
-    if (isAddress(tokenAddress)) {
+    if (isAddress(tokenAddressA) && isAddress(tokenAddressB)) {
       let stale = false
-      getTokenExchangeAddressFromFactory(tokenAddress, library).then(exchangeAddress => {
+      getTokenPairAddressFromFactory(tokenAddressA, tokenAddressB, library).then(pairAddress => {
         if (!stale) {
-          setExchangeAddress(exchangeAddress)
+          setPairAddress(pairAddress)
         }
       })
       return () => {
         stale = true
-        setExchangeAddress()
+        setPairAddress()
       }
     }
-  }, [library, tokenAddress])
-
+  }, [library, tokenAddressA, tokenAddressB])
   return useMemo(() => {
     try {
-      return getExchangeContract(exchangeAddress, library, withSignerIfPossible ? account : undefined)
+      return getPairContract(pairAddress, library, withSignerIfPossible ? account : undefined)
     } catch {
       return null
     }
-  }, [exchangeAddress, library, withSignerIfPossible, account])
+  }, [pairAddress, library, withSignerIfPossible, account])
+}
+
+export function useRouterContract(withSignerIfPossible = true) {
+  const { library, account } = useWeb3Context()
+
+  return useMemo(() => {
+    try {
+      return getRouterContract(library, withSignerIfPossible ? account : undefined)
+    } catch {
+      return null
+    }
+  }, [library, withSignerIfPossible, account])
+}
+export function useStakingContract(withSignerIfPossible = true) {
+  const { library, account } = useWeb3Context()
+
+  return useMemo(() => {
+    try {
+      return getStakingContract(library, withSignerIfPossible ? account : undefined)
+    } catch {
+      return null
+    }
+  }, [library, withSignerIfPossible, account])
 }
 
 export function useAddressBalance(address, tokenAddress) {
@@ -139,11 +164,11 @@ export function useTotalSupply(contract) {
   return totalSupply && Math.round(Number(utils.formatEther(totalSupply)))
 }
 
-export function useExchangeReserves(tokenAddress) {
-  const exchangeContract = useExchangeContract(tokenAddress)
+export function usePairReserves(tokenAddress) {
+  const pairContract = usePairContract(tokenAddress, TOKEN_ADDRESSES.ETH)
 
-  const reserveETH = useAddressBalance(exchangeContract && exchangeContract.address, TOKEN_ADDRESSES.ETH)
-  const reserveToken = useAddressBalance(exchangeContract && exchangeContract.address, tokenAddress)
+  const reserveETH = useAddressBalance(pairContract && pairContract.address, TOKEN_ADDRESSES.ETH)
+  const reserveToken = useAddressBalance(pairContract && pairContract.address, tokenAddress)
 
   return { reserveETH, reserveToken }
 }
@@ -185,8 +210,9 @@ export function useAddressAllowance(address, tokenAddress, spenderAddress) {
   return allowance
 }
 
-export function useExchangeAllowance(address, tokenAddress) {
-  const exchangeContract = useExchangeContract(tokenAddress)
-
-  return useAddressAllowance(address, tokenAddress, exchangeContract && exchangeContract.address)
+export function usePairAllowance(address, tokenAddressA, tokenAddressB) {
+  const pairContract = usePairContract(tokenAddressA, tokenAddressB)
+  const allowanceTokenA = useAddressAllowance(address, tokenAddressA, pairContract && pairContract.address)
+  const allowanceTokenB = useAddressAllowance(address, tokenAddressB, pairContract && pairContract.address)
+  return [allowanceTokenA, allowanceTokenB]
 }

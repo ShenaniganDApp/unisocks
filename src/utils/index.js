@@ -1,19 +1,24 @@
 import { ethers } from 'ethers'
 
 import ERC20_ABI from './erc20.json'
-import EXCHANGE_ABI from './exchange.json'
+import PAIR_ABI from './pair.json'
 import FACTORY_ABI from './factory.json'
+import ROUTER_ABI from './router.json'
+import STAKING_ABI from './staking.json'
 
 import UncheckedJsonRpcSigner from './signer'
 
 const FACTORY_ADDRESS = '0xA818b4F111Ccac7AA31D0BCc0806d64F2E0737D7'
+const ROUTER_ADDRESS = '0x1C232F01118CB8B424793ae03F870aa7D0ac7f77'
+const STAKING_ADDRESS = '0x9052cb69AcE5563175B980E5B84b2646e938a1eB'
 
 export const TOKEN_ADDRESSES = {
   ETH: 'ETH',
-  SHWEATPANTS: "0x898e8897437d7245a2d09a29B2Cd06a2C1ca388b",
-  ALVIN: "0x3008Ff3e688346350b0C07B8265d256dddD97215",
-  HNY:"0x71850b7e9ee3f13ab46d67167341e4bdc905eef9",
-  PRTCLE:"0xb5d592f85ab2d955c25720ebe6ff8d4d1e1be300"
+  WXDAI: '0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d',
+  SHWEATPANTS: '0x898e8897437d7245a2d09a29B2Cd06a2C1ca388b',
+  ALVIN: '0x3008Ff3e688346350b0C07B8265d256dddD97215',
+  HNY: '0x71850b7e9ee3f13ab46d67167341e4bdc905eef9',
+  PRTCLE: '0xb5d592f85ab2d955c25720ebe6ff8d4d1e1be300'
 }
 
 export const TOKEN_SYMBOLS = Object.keys(TOKEN_ADDRESSES).reduce((o, k) => {
@@ -64,12 +69,20 @@ export function getTokenContract(tokenAddress, library, account) {
   return getContract(tokenAddress, ERC20_ABI, library, account)
 }
 
-export function getExchangeContract(exchangeAddress, library, account) {
-  return getContract(exchangeAddress, EXCHANGE_ABI, library, account)
+export function getPairContract(pairAddress, library, account) {
+  return getContract(pairAddress, PAIR_ABI, library, account)
 }
 
-export async function getTokenExchangeAddressFromFactory(tokenAddress, library, account) {
-  return getContract(FACTORY_ADDRESS, FACTORY_ABI, library, account).getExchange(tokenAddress)
+export function getRouterContract(library, account) {
+  return getContract(ROUTER_ADDRESS, ROUTER_ABI, library, account)
+}
+
+export function getStakingContract(library, account) {
+  return getContract(STAKING_ADDRESS, STAKING_ABI, library, account)
+}
+
+export async function getTokenPairAddressFromFactory(tokenAddressA, tokenAddressB, library, account) {
+  return getContract(FACTORY_ADDRESS, FACTORY_ABI, library, account).getPair(tokenAddressA, tokenAddressB)
 }
 
 // get the ether balance of an address
@@ -97,7 +110,6 @@ export async function getTokenAllowance(address, tokenAddress, spenderAddress, l
         `'${address}' or '${tokenAddress}' or '${spenderAddress}'.`
     )
   }
-
   return getContract(tokenAddress, ERC20_ABI, library).allowance(address, spenderAddress)
 }
 

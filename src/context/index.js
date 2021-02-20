@@ -6,8 +6,7 @@ export const AppContext = React.createContext([{}, () => {}])
 
 const initialState = {
   visible: false,
-  shweatpantsCount: 1,
-  alvinCount: 1,
+  count: 1,
   valid: false,
   tradeType: TRADE_TYPES.BUY,
   drippSelected: ''

@@ -82,7 +82,6 @@ export default function Checkout({
   showConnect,
   showWorks,
   setShowWorks,
-  tokenSymbol
 }) {
   const { library } = useWeb3Context()
   const [state, setState] = useAppContext()
