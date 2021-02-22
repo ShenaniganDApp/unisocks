@@ -5,18 +5,17 @@ import { Link } from 'react-router-dom'
 
 import { useAppContext } from '../../context'
 import Card from '../../components/Card'
-import BuyButtons from '../../components/Buttons'
-import RedeemButton from '../../components/RedeemButton'
-import StakeButton from '../../components/StakeButton'
-import Checkout from '../../components/Checkout'
-import { amountFormatter } from '../../utils'
+import { amountFormatter, TOKEN_ADDRESSES, STAKING_ADDRESS, STAKING_ADDRESSES } from '../../utils'
 import agaave from '../../components/Gallery/agaave.png'
 import SHE from '../../components/Gallery/SHE.png'
-import Button from '../../components/Button'
+import Input from '../../components/Input'
+import StakeButton from '../../components/Button'
+import { useAddressAllowance, useAddressBalance } from '../../hooks'
 
 export function Header({
-  totalSHWEATPANTSSupply,
-  totalALVINSupply,
+  stakedPRTCLEToken,
+  stakedHNYToken,
+  stakedHNYPRTCLEToken,
   ready,
   balanceSHWEATPANTS,
   balanceALVIN,
@@ -42,24 +41,34 @@ export function Header({
         </Unicorn>
       </Link>
       <div style={{ display: 'flex', flexDirection: 'row' }}>
-        {totalSHWEATPANTSSupply && (
+        {stakedPRTCLEToken && (
           <Link to="/stats" style={{ textDecoration: 'none' }}>
-            <Burned>
+            <Staked>
               <span role="img" aria-label="fire">
-                🤸‍♀️
+                🔒
               </span>{' '}
-              {100 - totalSHWEATPANTSSupply} <HideMobile>redeemed</HideMobile>
-            </Burned>
+              {stakedPRTCLEToken} <HideMobile>PRTCLE</HideMobile>
+            </Staked>
           </Link>
         )}
-        {totalALVINSupply && (
+        {stakedHNYToken && (
           <Link to="/stats" style={{ textDecoration: 'none' }}>
-            <Burned>
+            <Staked>
               <span role="img" aria-label="fire">
-                🐝
+                🔒
               </span>{' '}
-              {100 - totalALVINSupply} <HideMobile>redeemed</HideMobile>
-            </Burned>
+              {stakedHNYToken} <HideMobile>HNY</HideMobile>
+            </Staked>
+          </Link>
+        )}
+        {stakedHNYPRTCLEToken && (
+          <Link to="/stats" style={{ textDecoration: 'none' }}>
+            <Staked>
+              <span role="img" aria-label="fire">
+                🔒
+              </span>{' '}
+              {stakedHNYPRTCLEToken} <HideMobile>HNY-PRTCLE</HideMobile>
+            </Staked>
           </Link>
         )}
         <Flex style={{ flexDirection: 'column' }}>
@@ -114,7 +123,7 @@ const Account = styled.div`
   }
 `
 
-const Burned = styled.div`
+const Staked = styled.div`
   background-color: none;
   border: 1px solid red;
   margin-right: 1rem;
@@ -161,16 +170,13 @@ const Status = styled.div`
   // props.account === null ? props.theme.orange : props.theme.green};
 `
 
-export default function Body({
-  selectedTokenSymbol,
-  setSelectedTokenSymbol,
+export default function Staking({
+  setStakingSymbols,
   ready,
   unlock,
-  validateBuy,
-  buy,
-  validateSell,
-  sell,
-  burn,
+  stake,
+  withdrawTokenStake,
+  withdrawLPStake,
   dollarize,
   dollarPrice,
   balanceSHWEATPANTS,
@@ -178,7 +184,10 @@ export default function Body({
   reserveSHWEATPANTSToken,
   reserveALVINToken,
   totalSHWEATPANTSSupply,
-  totalALVINSupply
+  totalALVINSupply,
+  stakedPRTCLEToken,
+  stakedHNYToken,
+  stakedHNYPRTCLEToken
 }) {
   const { account } = useWeb3Context()
   const [currentTransaction, _setCurrentTransaction] = useState({})
@@ -195,8 +204,9 @@ export default function Body({
   return (
     <AppWrapper overlay={state.visible}>
       <Header
-        totalSHWEATPANTSSupply={totalSHWEATPANTSSupply}
-        totalALVINSupply={totalALVINSupply}
+        stakedPRTCLEToken={stakedPRTCLEToken}
+        stakedHNYToken={stakedHNYToken}
+        stakedHNYPRTCLEToken={stakedHNYPRTCLEToken}
         ready={ready}
         dollarPrice={dollarPrice}
         balanceSHWEATPANTS={balanceSHWEATPANTS}
@@ -243,13 +253,17 @@ export default function Body({
             </a>
           </SubInfo> */}
             </Info>
-            <BuyButtons balanceDripp={balanceALVIN} drippSelected={'ALVIN'} />
-            <RedeemButton balanceDripp={balanceALVIN} drippSelected={'ALVIN'} />
-            {!!account && (
-              <Link style={{ textDecoration: 'none' }} to="/status">
-                <OrderStatusLink>Check order status?</OrderStatusLink>
-              </Link>
-            )}
+            <Input
+              title={'HNY'}
+              background={'radial-gradient(circle at 50% 100%, #ffc3ab, #fafae2 49.48%, #cbf3ef )'}
+              balance={useAddressBalance(account, TOKEN_ADDRESSES.HNY)}
+              stakedToken={stakedHNYToken}
+              stake={stake}
+              withdraw={withdrawTokenStake}
+              tokenAllowance={useAddressAllowance(STAKING_ADDRESS, TOKEN_ADDRESSES.HNY, account)}
+              unlock={unlock}
+              tokenSymbol={'HNY'}
+            />
           </Content>
           <Content>
             <Card
@@ -289,42 +303,36 @@ export default function Body({
             </a>
           </SubInfo> */}
             </Info>
-            <BuyButtons balanceDripp={balanceSHWEATPANTS} drippSelected={'SHWEATPANTS'} />
-            <RedeemButton balanceDripp={balanceSHWEATPANTS} drippSelected={'SHWEATPANTS'} />
-            {!!account && (
-              <Link style={{ textDecoration: 'none' }} to="/status">
-                <OrderStatusLink>Check order status?</OrderStatusLink>
-              </Link>
-            )}
+            <Input
+              title={'PRTCLE'}
+              background={'radial-gradient(circle at 50% 150%, #ff4, #e6ffff 49.48%, #ff006c )'}
+              balance={useAddressBalance(account, TOKEN_ADDRESSES.PRTCLE)}
+              stakedToken={stakedPRTCLEToken}
+              stake={stake}
+              withdraw={withdrawTokenStake}
+              account={account}
+              tokenSymbol={'PRTCLE'}
+              tokenAllowance={useAddressAllowance(STAKING_ADDRESS, TOKEN_ADDRESSES.PRTCLE, account)}
+              unlock={unlock}
+            />
           </Content>
         </Flex>
-        <StakeButton text="Stake" />
+        <Input
+          title={'HNY-PRTCLE'}
+          background={'linear-gradient(107deg,#cbf3ef,#fafae2 49.48%,#ff006c)'}
+          balance={useAddressBalance(account, STAKING_ADDRESSES.HNYPRTCLE)}
+          tokenSymbol={'HNYPRTCLE'}
+          stakedToken={stakedHNYPRTCLEToken}
+          stake={stake}
+          withdraw={withdrawLPStake}
+          tokenAllowance={useAddressAllowance(STAKING_ADDRESS, STAKING_ADDRESSES.HNYPRTCLE, account)}
+          unlock={unlock}
+          isLiquidity
+        />
+        <Link to="/" style={{ textDecoration: 'none', cursor: 'pointer' }}>
+          <StakeButton text="Back to Buy" style={{ width: '75%', margin: '0 auto' }} />
+        </Link>
       </div>
-      <Checkout
-        selectedTokenSymbol={selectedTokenSymbol}
-        setSelectedTokenSymbol={setSelectedTokenSymbol}
-        ready={ready}
-        unlock={unlock}
-        validateBuy={validateBuy}
-        buy={buy}
-        validateSell={validateSell}
-        sell={sell}
-        burn={burn}
-        balanceDripp={state.drippSelected === 'SHWEATPANTS' ? balanceSHWEATPANTS : balanceALVIN}
-        dollarPrice={dollarPrice}
-        reserveDrippToken={state.drippSelected === 'SHWEATPANTS' ? reserveSHWEATPANTSToken : reserveALVINToken}
-        dollarize={dollarize}
-        showConnect={showConnect}
-        setShowConnect={setShowConnect}
-        currentTransactionHash={currentTransaction.hash}
-        currentTransactionType={currentTransaction.type}
-        currentTransactionAmount={currentTransaction.amount}
-        setCurrentTransaction={setCurrentTransaction}
-        clearCurrentTransaction={clearCurrentTransaction}
-        showWorks={showWorks}
-        setShowWorks={setShowWorks}
-        tokenSymbol={state.drippSelected}
-      />
     </AppWrapper>
   )
 }

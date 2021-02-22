@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react'
 import { useWeb3Context } from 'web3-react'
 import { ethers, BigNumber } from 'ethers'
 
-import { TOKEN_SYMBOLS, TOKEN_ADDRESSES, ERROR_CODES } from '../../utils'
+import { TOKEN_SYMBOLS, TOKEN_ADDRESSES, ERROR_CODES, STAKING_ADDRESSES, STAKING_SYMBOLS } from '../../utils'
 import {
   useTokenContract,
   usePairContract,
@@ -12,11 +12,13 @@ import {
   useAddressAllowance,
   usePairReserves,
   usePairAllowance,
-  useTotalSupply
+  useTotalSupply,
+  useStakedToken
 } from '../../hooks'
 import Body from '../Body'
 import Stats from '../Stats'
 import Status from '../Status'
+import Staking from '../Staking'
 
 // denominated in bips
 const GAS_MARGIN = ethers.utils.bigNumberify(1000)
@@ -154,17 +156,18 @@ function calculateAmount(
   }
 }
 
-export default function Main({ stats, status }) {
+export default function Main({ stats, status, staking }) {
   const { library, account } = useWeb3Context()
 
   // selected token
   const [selectedTokenSymbol, setSelectedTokenSymbol] = useState(TOKEN_SYMBOLS.WXDAI)
+  const [stakingTokenSymbol, setStakingTokenSymbol] = useState(STAKING_SYMBOLS.PRTCLE)
 
   //get router contact
   const routerContract = useRouterContract(account)
 
   //get Staking contracts
-  const stakingContract = useStakingContract(account);
+  const stakingContract = useStakingContract(account)
 
   // get exchange contracts
   const pairContractSHWEATPANTS = usePairContract(TOKEN_ADDRESSES.SHWEATPANTS, TOKEN_ADDRESSES[selectedTokenSymbol])
@@ -174,12 +177,13 @@ export default function Main({ stats, status }) {
   const tokenContractSHWEATPANTS = useTokenContract(TOKEN_ADDRESSES.SHWEATPANTS)
   const tokenContractALVIN = useTokenContract(TOKEN_ADDRESSES.ALVIN)
   const tokenContractSelectedToken = useTokenContract(TOKEN_ADDRESSES[selectedTokenSymbol])
+  const tokenContractStakingToken = useTokenContract(STAKING_ADDRESSES[selectedTokenSymbol])
 
   // get balances
   const balanceETH = useAddressBalance(account, TOKEN_ADDRESSES.ETH)
   const balanceSHWEATPANTS = useAddressBalance(account, TOKEN_ADDRESSES.SHWEATPANTS)
   const balanceALVIN = useAddressBalance(account, TOKEN_ADDRESSES.ALVIN)
-  const balanceSelectedToken = useAddressBalance(account, TOKEN_ADDRESSES[selectedTokenSymbol])
+  const balanceSelectedToken = useAddressBalance(account, TOKEN_ADDRESSES[stakingTokenSymbol])
 
   // totalsupply
   const totalSHWEATPANTSSupply = useTotalSupply(tokenContractSHWEATPANTS)
@@ -212,6 +216,10 @@ export default function Main({ stats, status }) {
     TOKEN_ADDRESSES[selectedTokenSymbol]
   )
 
+  const stakedPRTCLEToken = useStakedToken(account, STAKING_ADDRESSES.PRTCLE, false)
+  const stakedHNYToken = useStakedToken(account, STAKING_ADDRESSES.HNY, false)
+  const stakedHNYPRTCLEToken = useStakedToken(account, STAKING_ADDRESSES.HNYPRTCLE, true)
+
   const [USDExchangeRateETH, setUSDExchangeRateETH] = useState()
   const [USDExchangeRateSelectedToken, setUSDExchangeRateSelectedToken] = useState()
 
@@ -233,8 +241,6 @@ export default function Main({ stats, status }) {
     selectedTokenSymbol &&
     (USDExchangeRateETH || USDExchangeRateSelectedToken)
   )
-
-  console.log('allowanceSHWEATPANTS: ', allowanceSHWEATPANTS)
 
   useEffect(() => {
     //@TODO
@@ -294,6 +300,7 @@ export default function Main({ stats, status }) {
 
   async function unlock(buyingDripp = true, tokenSymbol) {
     //@TODO
+    setStakingTokenSymbol(tokenSymbol)
     let contract
     let spenderAddress
     if (buyingDripp) {
@@ -310,6 +317,9 @@ export default function Main({ stats, status }) {
       } else if (tokenSymbol === 'ALVIN') {
         contract = tokenContractALVIN
         spenderAddress = pairContractALVIN.address
+      } else {
+        contract = tokenContractStakingToken
+        spenderAddress = account
       }
     }
     const estimatedGasLimit = await contract.estimate.approve(spenderAddress, ethers.constants.MaxUint256)
@@ -437,7 +447,7 @@ export default function Main({ stats, status }) {
       .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
 
     if (selectedTokenSymbol === TOKEN_SYMBOLS.ETH) {
-      const path = [TOKEN_ADDRESSES.ETH, TOKEN_ADDRESSES[sellTokenSymbol]]
+      const path = [TOKEN_ADDRESSES.WXDAI, TOKEN_ADDRESSES[sellTokenSymbol]]
       const estimatedGasLimit = await routerContract.estimate.swapETHForExactTokens(
         outputValue,
         path,
@@ -453,7 +463,7 @@ export default function Main({ stats, status }) {
         gasPrice: estimatedGasPrice
       })
     } else {
-      const path = [TOKEN_ADDRESSES[selectedTokenSymbol], TOKEN_ADDRESSES.ETH, TOKEN_ADDRESSES[sellTokenSymbol]]
+      const path = [TOKEN_ADDRESSES[selectedTokenSymbol], TOKEN_ADDRESSES.WXDAI, TOKEN_ADDRESSES[sellTokenSymbol]]
       const estimatedGasLimit = await routerContract.estimate.swapExactTokensForTokens(
         maximumInputValue,
         outputValue,
@@ -590,7 +600,7 @@ export default function Main({ stats, status }) {
       .getGasPrice()
       .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
     if (selectedTokenSymbol === TOKEN_SYMBOLS.ETH) {
-      const path = [TOKEN_ADDRESSES[buyTokenSymbol], TOKEN_ADDRESSES.ETH]
+      const path = [TOKEN_ADDRESSES[buyTokenSymbol], TOKEN_ADDRESSES.WXDAI]
       const estimatedGasLimit = await routerContract.estimate.swapTokensForExactETH(
         minimumOutputValue,
         inputValue,
@@ -603,7 +613,7 @@ export default function Main({ stats, status }) {
         gasPrice: estimatedGasPrice
       })
     } else {
-      const path = [TOKEN_ADDRESSES[buyTokenSymbol], TOKEN_ADDRESSES.ETH, TOKEN_ADDRESSES[selectedTokenSymbol]]
+      const path = [TOKEN_ADDRESSES[buyTokenSymbol], TOKEN_ADDRESSES.WXDAI, TOKEN_ADDRESSES[selectedTokenSymbol]]
       const estimatedGasLimit = await routerContract.estimate.swapExactTokensForTokens(
         inputValue,
         minimumOutputValue,
@@ -640,6 +650,69 @@ export default function Main({ stats, status }) {
     }
   }
 
+  async function stake(amount, tokenSymbol, isLiquidity) {
+    if (isLiquidity) {
+      const estimatedGasPrice = await library
+        .getGasPrice()
+        .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
+      const estimatedGasLimit = await stakingContract.estimate.stakeLP(STAKING_ADDRESSES[tokenSymbol], amount)
+
+      return stakingContract.stake(STAKING_ADDRESSES[tokenSymbol], amount, {
+        gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
+        gasPrice: estimatedGasPrice
+      })
+    } else {
+      const estimatedGasPrice = await library
+        .getGasPrice()
+        .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
+      const estimatedGasLimit = await stakingContract.estimate.stake(STAKING_ADDRESSES[tokenSymbol], amount)
+
+      return stakingContract.stake(STAKING_ADDRESSES[tokenSymbol], amount, {
+        gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
+        gasPrice: estimatedGasPrice
+      })
+    }
+  }
+
+  async function withdrawTokenStake(amount, tokenSymbol, isLiquidity) {
+    if (isLiquidity) {
+      const estimatedGasPrice = await library
+        .getGasPrice()
+        .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
+      const estimatedGasLimit = await stakingContract.estimate.withdrawLPStake(STAKING_ADDRESSES[tokenSymbol], amount)
+
+      return stakingContract.withdrawLPStake(STAKING_ADDRESSES[tokenSymbol], amount, {
+        gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
+        gasPrice: estimatedGasPrice
+      })
+    } else {
+      const estimatedGasPrice = await library
+        .getGasPrice()
+        .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
+      const estimatedGasLimit = await stakingContract.estimate.withdrawTokenStake(
+        STAKING_ADDRESSES[tokenSymbol],
+        amount
+      )
+
+      return stakingContract.withdrawTokenStake(STAKING_ADDRESSES[tokenSymbol], amount, {
+        gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
+        gasPrice: estimatedGasPrice
+      })
+    }
+  }
+
+  async function claim(tokenSymbol) {
+    const estimatedGasPrice = await library
+      .getGasPrice()
+      .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
+    const estimatedGasLimit = await stakingContract.estimate.claim(STAKING_ADDRESSES[tokenSymbol])
+
+    return stakingContract.claim(STAKING_ADDRESSES[tokenSymbol], {
+      gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
+      gasPrice: estimatedGasPrice
+    })
+  }
+
   return stats ? (
     <Stats
       reserveSHWEATPANTSToken={reserveSHWEATPANTSToken}
@@ -649,6 +722,9 @@ export default function Main({ stats, status }) {
       ready={ready}
       balanceSHWEATPANTS={balanceSHWEATPANTS}
       balanceALVIN={balanceALVIN}
+      stakedPRTCLEToken={stakedPRTCLEToken}
+      stakedHNYToken={stakedHNYToken}
+      stakedHNYPRTCLEToken={stakedHNYPRTCLEToken}
     />
   ) : status ? (
     <Status
@@ -657,6 +733,27 @@ export default function Main({ stats, status }) {
       ready={ready}
       balanceSHWEATPANTS={balanceSHWEATPANTS}
       balanceALVIN={balanceALVIN}
+    />
+  ) : staking ? (
+    <Staking
+      selectedTokenSymbol={selectedTokenSymbol}
+      setSelectedTokenSymbol={setSelectedTokenSymbol}
+      setStakingTokenSymbol={setStakingTokenSymbol}
+      ready={ready}
+      unlock={unlock}
+      dollarize={dollarize}
+      stake={stake}
+      withdrawTokenStake={withdrawTokenStake}
+      claim={claim}
+      balanceSHWEATPANTS={balanceSHWEATPANTS}
+      balanceALVIN={balanceALVIN}
+      reserveSHWEATPANTSToken={reserveSHWEATPANTSToken}
+      totalSHWEATPANTSSupply={totalSHWEATPANTSSupply}
+      reserveALVINToken={reserveALVINToken}
+      totalALVINSupply={totalALVINSupply}
+      stakedPRTCLEToken={stakedPRTCLEToken}
+      stakedHNYToken={stakedHNYToken}
+      stakedHNYPRTCLEToken={stakedHNYPRTCLEToken}
     />
   ) : (
     <Body
@@ -670,12 +767,18 @@ export default function Main({ stats, status }) {
       sell={sell}
       burn={burn}
       dollarize={dollarize}
+      stake={stake}
+      withdrawTokenStake={withdrawTokenStake}
+      claim={claim}
       balanceSHWEATPANTS={balanceSHWEATPANTS}
       balanceALVIN={balanceALVIN}
       reserveSHWEATPANTSToken={reserveSHWEATPANTSToken}
       totalSHWEATPANTSSupply={totalSHWEATPANTSSupply}
       reserveALVINToken={reserveALVINToken}
       totalALVINSupply={totalALVINSupply}
+      stakedPRTCLEToken={stakedPRTCLEToken}
+      stakedHNYToken={stakedHNYToken}
+      stakedHNYPRTCLEToken={stakedHNYPRTCLEToken}
     />
   )
 }

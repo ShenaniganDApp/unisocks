@@ -5,14 +5,14 @@ import Button from './Button'
 import { useAppContext } from '../context'
 import { TRADE_TYPES } from '../utils'
 
-const BuyButtonFrame = styled.div`
+const StakeButtonFrame = styled.div`
   margin: 0.5rem 0rem 0.5rem 0rem;
   display: flex;
   align-items: center;
   flex-direction: center;
   flex-direction: row;
   color: ${props => props.theme.black};
-  pointer-events: none;
+
   div {
     width: 100%;
   }
@@ -23,7 +23,8 @@ const BuyButtonFrame = styled.div`
   }
 `
 const ButtonFrame = styled(Button)`
-  width: 100%;
+  width: 75%;
+  margin: 0 auto;
 `
 
 // const Shim = styled.div`
@@ -31,23 +32,11 @@ const ButtonFrame = styled(Button)`
 //   height: 2rem;
 // `
 
-export default function BuyButtons(props) {
+export default function StakeButton(props) {
   const [, setState] = useAppContext()
-
-  function handleToggleCheckout(tradeType, drippSelected) {
-    setState(state => ({ ...state, visible: !state.visible, tradeType, drippSelected }))
-  }
-
   return (
-    <BuyButtonFrame>
-      <ButtonFrame
-        disabled={false}
-        text={'Buy'}
-        type={'cta'}
-        onClick={() => {
-          handleToggleCheckout(TRADE_TYPES.BUY, props.drippSelected)
-        }}
-      />
-    </BuyButtonFrame>
+    <StakeButtonFrame>
+      <ButtonFrame disabled={false} text={props.text} type={'cta'} />
+    </StakeButtonFrame>
   )
 }

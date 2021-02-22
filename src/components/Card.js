@@ -51,7 +51,7 @@ const CardWrapper = styled.div`
   justify-content: center;
   align-items: center;
   cursor: default;
-  padding: 24px;
+  padding: 20px;
   z-index: 1;
   transform: perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1);
 `

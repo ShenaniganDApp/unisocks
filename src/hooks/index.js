@@ -10,7 +10,9 @@ import {
   getEtherBalance,
   getTokenBalance,
   getTokenAllowance,
-  TOKEN_ADDRESSES
+  getStakedToken,
+  TOKEN_ADDRESSES,
+  STAKING_ADDRESSES
 } from '../utils'
 import { utils } from 'ethers'
 
@@ -81,6 +83,7 @@ export function useRouterContract(withSignerIfPossible = true) {
     }
   }, [library, withSignerIfPossible, account])
 }
+
 export function useStakingContract(withSignerIfPossible = true) {
   const { library, account } = useWeb3Context()
 
@@ -215,4 +218,39 @@ export function usePairAllowance(address, tokenAddressA, tokenAddressB) {
   const allowanceTokenA = useAddressAllowance(address, tokenAddressA, pairContract && pairContract.address)
   const allowanceTokenB = useAddressAllowance(address, tokenAddressB, pairContract && pairContract.address)
   return [allowanceTokenA, allowanceTokenB]
+}
+
+export function useStakedToken(address, tokenAddress, isLiquidity) {
+  const { library } = useWeb3Context()
+
+  const [stakedToken, setStakedToken] = useState()
+
+  const updateStakedToken = useCallback(() => {
+    if (isAddress(address) && isAddress(tokenAddress)) {
+      let stale = false
+      getStakedToken(address, tokenAddress, isLiquidity, library)
+        .then(staked => {
+          if (!stale) {
+            setStakedToken(staked.toString())
+          }
+        })
+        .catch(() => {
+          if (!stale) {
+            setStakedToken(null)
+          }
+        })
+      return () => {
+        stale = true
+        setStakedToken()
+      }
+    }
+  }, [address, library, isLiquidity, tokenAddress])
+
+  useEffect(() => {
+    return updateStakedToken()
+  }, [updateStakedToken])
+
+  useBlockEffect(updateStakedToken)
+
+  return stakedToken
 }

@@ -228,7 +228,7 @@ export default function BuyAndSell({
           </CheckoutPrompt>
           <CheckoutPrompt>
             <EtherscanLink href={link(currentTransactionHash)} target="_blank" rel="noopener noreferrer">
-              View on Etherscan.
+              View on Blockscout.
             </EtherscanLink>
           </CheckoutPrompt>
         </CheckoutControls>

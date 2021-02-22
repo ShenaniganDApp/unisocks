@@ -38,6 +38,7 @@ export default function App() {
                   <Route exact strict path="/" render={() => <Main />} />
                   <Route exact strict path="/status" render={() => <Main status />} />
                   <Route exact strict path="/stats" render={() => <Main stats />} />
+                  <Route exact strict path="/staking" render={() => <Main staking />} />
                   <Redirect to="/" />
                 </Switch>
               </BrowserRouter>

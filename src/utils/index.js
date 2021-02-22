@@ -10,7 +10,7 @@ import UncheckedJsonRpcSigner from './signer'
 
 const FACTORY_ADDRESS = '0xA818b4F111Ccac7AA31D0BCc0806d64F2E0737D7'
 const ROUTER_ADDRESS = '0x1C232F01118CB8B424793ae03F870aa7D0ac7f77'
-const STAKING_ADDRESS = '0x9052cb69AcE5563175B980E5B84b2646e938a1eB'
+export const STAKING_ADDRESS = '0x1F23Aa79962c510F0f2A3E7b2F315fa5D73Dc3d7'
 
 export const TOKEN_ADDRESSES = {
   ETH: 'ETH',
@@ -21,11 +21,21 @@ export const TOKEN_ADDRESSES = {
   PRTCLE: '0xb5d592f85ab2d955c25720ebe6ff8d4d1e1be300'
 }
 
+export const STAKING_ADDRESSES = {
+  HNY: '0x71850b7e9ee3f13ab46d67167341e4bdc905eef9',
+  PRTCLE: '0xb5d592f85ab2d955c25720ebe6ff8d4d1e1be300',
+  HNYPRTCLE: '0xaaefc56e97624b57ce98374eb4a45b6fd5ffb982'
+}
+
 export const TOKEN_SYMBOLS = Object.keys(TOKEN_ADDRESSES).reduce((o, k) => {
   o[k] = k
   return o
 }, {})
 
+export const STAKING_SYMBOLS = Object.keys(STAKING_ADDRESSES).reduce((o, k) => {
+  o[k] = k
+  return o
+}, {})
 export const ERROR_CODES = [
   'INVALID_AMOUNT',
   'INVALID_TRADE',
@@ -111,6 +121,23 @@ export async function getTokenAllowance(address, tokenAddress, spenderAddress, l
     )
   }
   return getContract(tokenAddress, ERC20_ABI, library).allowance(address, spenderAddress)
+}
+
+export async function getStakedToken(address, tokenAddress, isLiquidity, library) {
+  if (!isAddress(address) || !isAddress(tokenAddress)) {
+    throw Error("Invalid 'address' or 'tokenAddress' parameter" + `'${address}' or '${tokenAddress}'.`)
+  }
+
+  console.log(
+    '  getContract(STAKING_ADDRESS, STAKING_ABI, library): ',
+    getContract(STAKING_ADDRESS, STAKING_ABI, library).accountLPStaked(address, tokenAddress)
+  )
+
+  if (isLiquidity) {
+    return getContract(STAKING_ADDRESS, STAKING_ABI, library).accountLPStaked(address, tokenAddress)
+  } else {
+    return getContract(STAKING_ADDRESS, STAKING_ABI, library).accountTokenStaked(address, tokenAddress)
+  }
 }
 
 export function amountFormatter(amount, baseDecimals = 18, displayDecimals = 3, useLessThan = true) {

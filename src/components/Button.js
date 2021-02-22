@@ -30,21 +30,21 @@ const ButtonFrame = styled.button`
       ? props.disabled
         ? // ? 'linear-gradient(97.28deg, rgba(254, 109, 222, 0.2) 2.08%, rgba(255, 157, 234, 0.2) 106.51%)'
           '#f1f2f6'
-        : 'linear-gradient(97.28deg, #fe6dde 2.08%, #ff9dea 106.51%)'
+        : 'white'
       : props.disabled // ? 'linear-gradient(97.28deg, rgba(254, 109, 222, 0.2) 2.08%, rgba(255, 157, 234, 0.2) 106.51%)'
       ? '#f1f2f6'
       : 'none'};
   box-shadow: ${props =>
-    props.type === 'cta' ? (props.disabled ? 'none' : '0px 4px 20px rgba(239, 162, 250, 0.7)') : 'none'};
+    props.type === 'cta' ? (props.disabled ? 'none' : '0px 4px 20px rgba(0, 0, 0, 0.4)') : 'none'};
 
   color: ${props =>
     props.type === 'cta'
       ? props.disabled
         ? props.theme.textDisabled
-        : props.theme.white
+        : props.theme.black
       : props.disabled
       ? '#aeaeae'
-      : props.theme.shenaniganPink};
+      : props.theme.black};
   transform: scale(1);
   transition: transform 0.3s ease;
 
