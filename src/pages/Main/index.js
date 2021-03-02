@@ -234,21 +234,24 @@ export default function Main({ stats, status, staking }) {
 
   const ready = !!(
     (account === null || allowanceSHWEATPANTS) &&
-    // (account === null || allowanceALVIN) &&
+    (account === null || allowanceALVIN) &&
     (selectedTokenSymbol === 'ETH' || account === null || allowanceSHWEATPANTSSelectedToken) &&
-    // (selectedTokenSymbol === 'ETH' || account === null || allowanceALVINSelectedToken) &&
-    // (account === null || balanceETH) &&
+    (selectedTokenSymbol === 'ETH' || account === null || allowanceALVINSelectedToken) &&
+    (account === null || balanceETH) &&
     (account === null || balanceSHWEATPANTS) &&
-    // (account === null || balanceALVIN) &&
+    (account === null || balanceALVIN) &&
     (account === null || balanceSelectedToken) &&
     reserveSHWEATPANTSETH &&
-    // reserveALVINETH &&
+    reserveALVINETH &&
     reserveSHWEATPANTSToken &&
-    // reserveALVINToken &&
+    reserveALVINToken &&
     (selectedTokenSymbol === 'ETH' || reserveSelectedTokenETH) &&
     (selectedTokenSymbol === 'ETH' || reserveSelectedTokenToken) &&
     selectedTokenSymbol &&
     (USDExchangeRateETH || USDExchangeRateSelectedToken)
+    (account === null || stakedPRTCLEToken) &&
+    (account === null || stakedHNYToken) &&
+    (account === null || stakedHNYPRTCLEToken)
   )
 
   useEffect(() => {
