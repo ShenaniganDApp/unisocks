@@ -188,7 +188,6 @@ export default function Main({ stats, status, staking }) {
 
   // get balances
   const balanceETH = useAddressBalance(account, TOKEN_ADDRESSES.ETH)
-  console.log('balanceETH: ', balanceETH);
   const balanceSHWEATPANTS = useAddressBalance(account, TOKEN_ADDRESSES.SHWEATPANTS)
   const balanceALVIN = useAddressBalance(account, TOKEN_ADDRESSES.ALVIN)
   const balanceSelectedToken = useAddressBalance(account, TOKEN_ADDRESSES[stakingTokenSymbol])

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { ethers } from 'ethers'
 import Button from '../components/Button'
 import { amountFormatter } from '../utils'
+import { BigNumber } from 'ethers/utils'
 
 const StakingForm = styled.form`
   display: flex;
@@ -60,13 +61,24 @@ const Input = ({
   unlock,
   claim,
   rewards,
-  rewardSymbol
+  rewardSymbol,
+  rate
 }) => {
   const [stakeAmount, setStakeAmount] = useState(0)
+  const one = new BigNumber('1000000000000000000')
   const formattedBalance = balance ? amountFormatter(balance) : 0
   const formattedStakedToken = stakedToken ? amountFormatter(stakedToken) : 0
   const formattedRewards = rewards ? amountFormatter(rewards) : 0
   const formattedTotalStaked = totalStaked ? amountFormatter(totalStaked) : 0
+  const formattedDrippRate =
+    rate && totalStaked
+      ? amountFormatter(
+          one
+            .div(totalStaked)
+            .mul(rate)
+            .div(2)
+        )
+      : 0
   const shouldRenderUnlock = tokenAllowance && tokenAllowance.eq(0)
 
   return (
@@ -79,11 +91,11 @@ const Input = ({
     >
       <div style={{ display: 'flex', justifyContent: 'space-around' }}>
         <Title>{title}</Title>
-        {!isLiquidity && (
+        <div>
           <StakingInfo>
-            {`${rewardSymbol} ${formattedRewards}`}
+            {formattedDrippRate} Dripp/{tokenSymbol}
           </StakingInfo>
-        )}
+        </div>
       </div>
 
       <StakingForm>
@@ -120,13 +132,19 @@ const Input = ({
       </StakingForm>
       <div style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
         <StakingInfo>
-          Available: 
-          {" " + formattedBalance}
+          Available:
+          {' ' + formattedBalance}
         </StakingInfo>
-        <StakingInfo>
-          Staked: 
-          {" " + formattedStakedToken}
-        </StakingInfo>
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+          <StakingInfo>
+            Staked:
+            {' ' + formattedStakedToken}
+          </StakingInfo>
+          <StakingInfo>
+            % of Pool:
+            {' ' + formattedStakedToken / formattedTotalStaked}
+          </StakingInfo>
+        </div>
       </div>
 
       <div
@@ -169,17 +187,6 @@ const Input = ({
                 onClick={() => withdraw(tokenSymbol, isLiquidity)}
               ></Button>
             </div>
-            {rewards && rewards.gt(0) && (
-              <Button
-                style={{
-                  flex: 1,
-                  'margin-top': '1rem'
-                }}
-                disabled={!rewardSymbol && rewards === '0'}
-                text={`Claim ${formattedRewards} ${rewardSymbol}`}
-                onClick={() => claim && claim(rewardSymbol)}
-              ></Button>
-            )}
           </>
         )}
       </div>

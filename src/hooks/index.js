@@ -13,6 +13,7 @@ import {
   getStakedToken,
   getStakedRewards,
   getTotalStaked,
+  getDrippRate,
   TOKEN_ADDRESSES,
   STAKING_ADDRESSES
 } from '../utils'
@@ -238,7 +239,6 @@ export function useStakingRewards(address, tokenAddress) {
         .then(reward => {
           if (!stale) {
             setStakedRewards(reward.reward_)
-            console.log('reward.reward_: ', reward.reward_.toString())
           }
         })
         .catch(() => {
@@ -330,4 +330,38 @@ export function useTotalStaked(tokenAddress) {
   useBlockEffect(updateTotalStaked)
 
   return totalStaked
+}
+export function useDrippRate(tokenAddress) {
+  const { library } = useWeb3Context()
+
+  const [drippRate, setDrippRate] = useState()
+
+  const updateDrippRate = useCallback(() => {
+    if (isAddress(tokenAddress)) {
+      let stale = false
+      getDrippRate(tokenAddress, library)
+        .then(rate => {
+          if (!stale) {
+            setDrippRate(rate)
+          }
+        })
+        .catch(() => {
+          if (!stale) {
+            setDrippRate(null)
+          }
+        })
+      return () => {
+        stale = true
+        setDrippRate()
+      }
+    }
+  }, [library, tokenAddress])
+
+  useEffect(() => {
+    return updateDrippRate()
+  }, [updateDrippRate])
+
+  useBlockEffect(updateDrippRate)
+
+  return drippRate
 }

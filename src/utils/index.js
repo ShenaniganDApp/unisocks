@@ -151,6 +151,14 @@ export async function getTotalStaked(tokenAddress, library) {
   return getContract(STAKING_ADDRESS, STAKING_ABI, library).totalStaked(tokenAddress)
 }
 
+export async function getDrippRate(tokenAddress, library) {
+  if (!isAddress(tokenAddress)) {
+    throw Error("Invalid 'tokenAddress' parameter" + `'${tokenAddress}'.`)
+  }
+
+  return getContract(STAKING_ADDRESS, STAKING_ABI, library).drippRate(tokenAddress)
+}
+
 export function amountFormatter(amount, baseDecimals = 18, displayDecimals = 3, useLessThan = true) {
   if (baseDecimals > 18 || displayDecimals > 18 || displayDecimals > baseDecimals) {
     throw Error(`Invalid combination of baseDecimals '${baseDecimals}' and displayDecimals '${displayDecimals}.`)

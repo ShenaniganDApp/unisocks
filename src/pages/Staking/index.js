@@ -15,13 +15,13 @@ import {
   useAddressBalance,
   useStakingAllowance,
   useStakingRewards,
-  useTotalStaked
+  useTotalStaked,
+  useDrippRate
 } from '../../hooks'
+import Button from '../../components/Button'
 
 export function Header({ stakedPRTCLEToken, stakedHNYToken, ready, balanceSHWEATPANTS, balanceALVIN, setShowConnect }) {
   const { account, setConnector } = useWeb3Context()
-  const alvinRewards = useStakingRewards(account, TOKEN_ADDRESSES.ALVIN)
-  const shweatpantsRewards = useStakingRewards(account, TOKEN_ADDRESSES.SHWEATPANTS)
 
   function handleAccount() {
     setConnector('Injected', { suppressAndThrowErrors: true }).catch(error => {
@@ -188,6 +188,8 @@ export default function Staking({
   const [state, setState] = useAppContext()
   const [showConnect, setShowConnect] = useState(false)
   const [showWorks, setShowWorks] = useState(false)
+  const shweatpantsRewards = useStakingRewards(account, TOKEN_ADDRESSES.SHWEATPANTS)
+  const alvinRewards = useStakingRewards(account, TOKEN_ADDRESSES.ALVIN)
 
   return (
     <AppWrapper overlay={state.visible}>
@@ -241,6 +243,15 @@ export default function Staking({
             </a>
           </SubInfo> */}
             </Info>
+            <Button
+              style={{
+                flex: 1,
+                'margin-top': '1rem'
+              }}
+              disabled={!alvinRewards || (alvinRewards && alvinRewards.eq(0))}
+              text={`Claim ${alvinRewards ? amountFormatter(alvinRewards) : 0} ALVIN`}
+              onClick={() => claim && claim('ALVIN')}
+            ></Button>
           </Content>
           <div style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'row' }}>
             <div style={{ flex: '1 1 45%' }}>
@@ -256,8 +267,9 @@ export default function Staking({
                 tokenSymbol={'HNY'}
                 rewardSymbol={'ALVIN'}
                 claim={claim}
-                rewards={useStakingRewards(account, TOKEN_ADDRESSES.ALVIN)}
+                rewards={alvinRewards}
                 totalStaked={useTotalStaked(TOKEN_ADDRESSES.HNY)}
+                rate={useDrippRate(TOKEN_ADDRESSES.ALVIN)}
               />
             </div>
             <div style={{ flex: '1 1 45%', marginLeft: '1rem' }}>
@@ -274,8 +286,9 @@ export default function Staking({
                 unlock={unlock}
                 claim={claim}
                 rewardSymbol={'SHWEATPANTS'}
-                rewards={useStakingRewards(account, TOKEN_ADDRESSES.SHWEATPANTS)}
+                rewards={shweatpantsRewards}
                 totalStaked={useTotalStaked(TOKEN_ADDRESSES.PRTCLE)}
+                rate={useDrippRate(TOKEN_ADDRESSES.SHWEATPANTS)}
               />
             </div>
 
@@ -292,6 +305,7 @@ export default function Staking({
                 unlock={unlock}
                 isLiquidity
                 totalStaked={useTotalStaked(TOKEN_ADDRESSES.HNYPRTCLE)}
+                rate={useDrippRate(TOKEN_ADDRESSES.SHWEATPANTS)}
               />
             </div>
           </div>
@@ -333,10 +347,19 @@ export default function Staking({
             </a>
           </SubInfo> */}
             </Info>
+            <Button
+              style={{
+                flex: 1,
+                'margin-top': '1rem'
+              }}
+              disabled={!shweatpantsRewards || (shweatpantsRewards && shweatpantsRewards.eq(0))}
+              text={`Claim ${shweatpantsRewards ? amountFormatter(shweatpantsRewards) : 0} SHWEATPANTS`}
+              onClick={() => claim && claim('SHWEATPANTS')}
+            ></Button>
           </Content>
         </Flex>
       </div>
-      <Link to="/" style={{ textDecoration: 'none', cursor: 'pointer', width: '75%' }}>
+      <Link to="/" style={{ textDecoration: 'none', cursor: 'pointer', width: '75%', marginTop: '24px' }}>
         <StakeButton text="Back to Buy" style={{ width: '75%', margin: '0 auto', 'pointer-events': 'none' }} />
       </Link>
     </AppWrapper>
