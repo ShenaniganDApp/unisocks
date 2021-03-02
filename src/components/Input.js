@@ -73,7 +73,7 @@ const Input = ({
   const formattedDrippRate =
     rate && totalStaked
       ? amountFormatter(
-          one
+          stakedToken
             .div(totalStaked)
             .mul(rate)
             .div(2)
@@ -93,7 +93,7 @@ const Input = ({
         <Title>{title}</Title>
         <div>
           <StakingInfo>
-            {formattedDrippRate} Dripp/{tokenSymbol}
+            {formattedDrippRate} per day
           </StakingInfo>
         </div>
       </div>

@@ -61,15 +61,7 @@ export function Header({
         )}
         <Flex style={{ flexDirection: 'column' }}>
           <Account onClick={() => handleAccount()} balanceSHWEATPANTS={balanceSHWEATPANTS} balanceALVIN={balanceALVIN}>
-            {account ? (
-              balanceSHWEATPANTS > 0 ? (
-                <SockCount>Connected</SockCount>
-              ) : (
-                <SockCount>{account.slice(0, 6)}...</SockCount>
-              )
-            ) : (
-              <SockCount>Connect Wallet</SockCount>
-            )}
+            {account ? <SockCount>{account.slice(0, 6)}...</SockCount> : <SockCount>Connect Wallet</SockCount>}
 
             <Status
               balanceSHWEATPANTS={balanceSHWEATPANTS}
