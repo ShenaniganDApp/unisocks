@@ -7,6 +7,8 @@ import Button from './Button'
 import close from './Gallery/close.svg'
 import sent from './Gallery/sent.png'
 import { useAppContext } from '../context'
+import agaave from './Gallery/agaave.png'
+import SHE from './Gallery/SHE.png'
 
 const ConfirmedFrame = styled.div`
   width: 100%;
@@ -23,7 +25,7 @@ function Controls({ closeCheckout }) {
     <FrameControls>
       <Unicorn>
         <span role="img" aria-label="unicorn">
-          🦄
+          💧
         </span>{' '}
         Pay
       </Unicorn>
@@ -86,10 +88,10 @@ export default function Confirmed({ hash, type, amount, clearLastTransaction, cl
       <ConfirmedFrame>
         <TopFrame>
           <Controls closeCheckout={closeCheckout} />
-          <ImgStyle src={sent} alt="Logo" />
+          <ImgStyle src={state.drippSelected === 'SHWEATPANTS' ? SHE : agaave} alt="Logo" />
           <InfoFrame>
             <Owned>
-              <p> {`You got ${amountFormatter(amount, 18, 0)} SOCKS!`}</p>
+              <p> {`You got ${amountFormatter(amount, 18, 0)} ${state.drippSelected}!`}</p>
             </Owned>
           </InfoFrame>
         </TopFrame>
@@ -99,7 +101,7 @@ export default function Confirmed({ hash, type, amount, clearLastTransaction, cl
           </EtherscanLink>
         </CheckoutPrompt>
         <ButtonFrame
-          text={`Redeem your SOCKS now`}
+          text={`Redeem your Dripp now`}
           type={'cta'}
           onClick={() => {
             clearLastTransaction()
@@ -115,10 +117,10 @@ export default function Confirmed({ hash, type, amount, clearLastTransaction, cl
       <ConfirmedFrame>
         <TopFrame>
           <Controls closeCheckout={closeCheckout} />
-          <ImgStyle src={sent} alt="Logo" />
+          <ImgStyle src={state.drippSelected === 'SHWEATPANTS' ? SHE : agaave} alt="Logo" />
           <InfoFrame>
             <Owned>
-              <p>You sold socks!</p>
+              <p>You sold {state.drippSelected}!</p>
             </Owned>
           </InfoFrame>
         </TopFrame>

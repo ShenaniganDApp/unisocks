@@ -37,7 +37,7 @@ export function Controls({ closeCheckout, theme, type }) {
     <FrameControls>
       <Unicorn theme={theme}>
         <span role="img" aria-label="unicorn">
-          🦄
+          💧
         </span>{' '}
         Pay{' '}
         <span style={{ color: '#737373' }}>
@@ -128,8 +128,8 @@ export default function Redeem({
           </TopFrame>
           <ButtonFrame
             className="button"
-            disabled={false}
-            text={'Next'}
+            disabled={true}
+            text={'Coming Soon'}
             type={'cta'}
             onClick={() => {
               setNumberBurned(state.count)

@@ -3,6 +3,7 @@ import styled, { css } from 'styled-components'
 import { Link } from 'react-router-dom'
 import { ethers } from 'ethers'
 import Button from '../components/Button'
+import { amountFormatter } from '../utils'
 
 const StakingForm = styled.form`
   display: flex;
@@ -52,25 +53,38 @@ const Input = ({
   background,
   balance,
   stakedToken,
+  totalStaked,
   stake,
   withdraw,
   tokenAllowance,
-  unlock
+  unlock,
+  claim,
+  rewards,
+  rewardSymbol
 }) => {
   const [stakeAmount, setStakeAmount] = useState(0)
-  const formattedBalance = balance ? ethers.utils.formatEther(balance) : 0
+  const formattedBalance = balance ? amountFormatter(balance) : 0
+  const formattedStakedToken = stakedToken ? amountFormatter(stakedToken) : 0
+  const formattedRewards = rewards ? amountFormatter(rewards) : 0
+  const formattedTotalStaked = totalStaked ? amountFormatter(totalStaked) : 0
   const shouldRenderUnlock = tokenAllowance && tokenAllowance.eq(0)
 
   return (
     <InputWrapper
       style={{
-        alignContent: 'space-between',
         borderRadius: '15px',
         background,
         backdropFilter: 'blur(5px)'
       }}
     >
-      <Title>{title}</Title>
+      <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+        <Title>{title}</Title>
+        {!isLiquidity && (
+          <StakingInfo>
+            {`${rewardSymbol} ${formattedRewards}`}
+          </StakingInfo>
+        )}
+      </div>
 
       <StakingForm>
         <input
@@ -106,10 +120,12 @@ const Input = ({
       </StakingForm>
       <div style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
         <StakingInfo>
-          Available:
-          {parseFloat(formattedBalance)
-            .toFixed(4)
-            .toString()}
+          Available: 
+          {" " + formattedBalance}
+        </StakingInfo>
+        <StakingInfo>
+          Staked: 
+          {" " + formattedStakedToken}
         </StakingInfo>
       </div>
 
@@ -128,27 +144,42 @@ const Input = ({
             text={`Unlock ${tokenSymbol}`}
             type={'cta'}
             onClick={() => {
-              unlock(false, tokenSymbol)
+              unlock(false, tokenSymbol, true)
             }}
           />
         ) : (
           <>
-            <Button
-              style={{
-                flex: 1
-              }}
-              text="Stake"
-              disabled={stakeAmount > balance}
-              onClick={() => (balance > stakeAmount ? stake(stakeAmount, tokenSymbol, isLiquidity) : null)}
-            ></Button>
-            <Button
-              style={{
-                flex: 1
-              }}
-              disabled={stakedToken < stakeAmount}
-              text="Withdraw"
-              onClick={() => (stakedToken > stakeAmount ? withdraw(stakeAmount, tokenSymbol, isLiquidity) : null)}
-            ></Button>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Button
+                style={{
+                  flex: 1,
+                  margin: '0 0.5rem'
+                }}
+                text="Stake"
+                disabled={!stakeAmount || stakeAmount > balance}
+                onClick={() => (balance > stakeAmount ? stake(stakeAmount, tokenSymbol, isLiquidity) : null)}
+              ></Button>
+              <Button
+                style={{
+                  flex: 1,
+                  margin: '0 0.5rem'
+                }}
+                disabled={stakedToken && stakedToken.eq(0)}
+                text="Withdraw"
+                onClick={() => withdraw(tokenSymbol, isLiquidity)}
+              ></Button>
+            </div>
+            {rewards && rewards.gt(0) && (
+              <Button
+                style={{
+                  flex: 1,
+                  'margin-top': '1rem'
+                }}
+                disabled={!rewardSymbol && rewards === '0'}
+                text={`Claim ${formattedRewards} ${rewardSymbol}`}
+                onClick={() => claim && claim(rewardSymbol)}
+              ></Button>
+            )}
           </>
         )}
       </div>

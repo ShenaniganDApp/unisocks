@@ -106,17 +106,15 @@ function calculateAmount(
 
   // token to eth - sell
   if (
-    (outputTokenSymbol === TOKEN_SYMBOLS.SHWEATPANTS || outputTokenSymbol === TOKEN_SYMBOLS.ALVIN) &&
+    (inputTokenSymbol === TOKEN_SYMBOLS.SHWEATPANTS || inputTokenSymbol === TOKEN_SYMBOLS.ALVIN) &&
     outputTokenSymbol === TOKEN_SYMBOLS.ETH
   ) {
     const amount = calculateEtherTokenOutputFromInput(drippAmount, reserveDrippToken, reserveDrippETH)
     if (amount.lte(ethers.constants.Zero) || amount.gte(ethers.constants.MaxUint256)) {
       throw Error()
     }
-
     return amount
   }
-
   // token to token - buy or sell
   const buyingDripp = outputTokenSymbol === TOKEN_SYMBOLS.SHWEATPANTS || outputTokenSymbol === TOKEN_SYMBOLS.ALVIN
 
@@ -160,7 +158,7 @@ export default function Main({ stats, status, staking }) {
   const { library, account } = useWeb3Context()
 
   // selected token
-  const [selectedTokenSymbol, setSelectedTokenSymbol] = useState(TOKEN_SYMBOLS.WXDAI)
+  const [selectedTokenSymbol, setSelectedTokenSymbol] = useState(TOKEN_SYMBOLS.ETH)
   const [stakingTokenSymbol, setStakingTokenSymbol] = useState(STAKING_SYMBOLS.PRTCLE)
 
   //get router contact
@@ -170,17 +168,27 @@ export default function Main({ stats, status, staking }) {
   const stakingContract = useStakingContract(account)
 
   // get exchange contracts
-  const pairContractSHWEATPANTS = usePairContract(TOKEN_ADDRESSES.SHWEATPANTS, TOKEN_ADDRESSES[selectedTokenSymbol])
-  const pairContractALVIN = usePairContract(TOKEN_ADDRESSES.ALVIN, TOKEN_ADDRESSES[selectedTokenSymbol])
+  const pairContractSHWEATPANTS = usePairContract(
+    TOKEN_ADDRESSES.SHWEATPANTS,
+    selectedTokenSymbol == 'ETH' ? TOKEN_ADDRESSES['WXDAI'] : TOKEN_ADDRESSES[selectedTokenSymbol]
+  )
+  const pairContractALVIN = usePairContract(
+    TOKEN_ADDRESSES.ALVIN,
+    selectedTokenSymbol == 'ETH' ? TOKEN_ADDRESSES['WXDAI'] : TOKEN_ADDRESSES[selectedTokenSymbol]
+  )
 
   // get token contracts
   const tokenContractSHWEATPANTS = useTokenContract(TOKEN_ADDRESSES.SHWEATPANTS)
   const tokenContractALVIN = useTokenContract(TOKEN_ADDRESSES.ALVIN)
   const tokenContractSelectedToken = useTokenContract(TOKEN_ADDRESSES[selectedTokenSymbol])
-  const tokenContractStakingToken = useTokenContract(STAKING_ADDRESSES[selectedTokenSymbol])
+  const tokenContractStakingTokens = {}
+  tokenContractStakingTokens['HNY'] = useTokenContract(STAKING_ADDRESSES['HNY'])
+  tokenContractStakingTokens['PRTCLE'] = useTokenContract(STAKING_ADDRESSES['PRTCLE'])
+  tokenContractStakingTokens['HNYPRTCLE'] = useTokenContract(STAKING_ADDRESSES['HNYPRTCLE'])
 
   // get balances
   const balanceETH = useAddressBalance(account, TOKEN_ADDRESSES.ETH)
+  console.log('balanceETH: ', balanceETH);
   const balanceSHWEATPANTS = useAddressBalance(account, TOKEN_ADDRESSES.SHWEATPANTS)
   const balanceALVIN = useAddressBalance(account, TOKEN_ADDRESSES.ALVIN)
   const balanceSelectedToken = useAddressBalance(account, TOKEN_ADDRESSES[stakingTokenSymbol])
@@ -193,25 +201,26 @@ export default function Main({ stats, status, staking }) {
   const [allowanceSHWEATPANTS, allowanceSHWEATPANTSSelectedToken] = usePairAllowance(
     account,
     TOKEN_ADDRESSES.SHWEATPANTS,
-    pairContractSHWEATPANTS && pairContractSHWEATPANTS.address
+    selectedTokenSymbol == 'ETH' ? TOKEN_ADDRESSES['WXDAI'] : TOKEN_ADDRESSES[selectedTokenSymbol]
   )
   const [allowanceALVIN, allowanceALVINSelectedToken] = usePairAllowance(
     account,
     TOKEN_ADDRESSES.ALVIN,
-    pairContractALVIN && pairContractALVIN.address
+    selectedTokenSymbol == 'ETH' ? TOKEN_ADDRESSES['WXDAI'] : TOKEN_ADDRESSES[selectedTokenSymbol]
   )
 
   // get reserves
   const reserveSHWEATPANTSETH = useAddressBalance(
     pairContractSHWEATPANTS && pairContractSHWEATPANTS.address,
-    TOKEN_ADDRESSES.ETH
+    TOKEN_ADDRESSES.WXDAI
   )
   const reserveSHWEATPANTSToken = useAddressBalance(
     pairContractSHWEATPANTS && pairContractSHWEATPANTS.address,
     TOKEN_ADDRESSES.SHWEATPANTS
   )
-  const reserveALVINETH = useAddressBalance(pairContractALVIN && pairContractALVIN.address, TOKEN_ADDRESSES.ETH)
+  const reserveALVINETH = useAddressBalance(pairContractALVIN && pairContractALVIN.address, TOKEN_ADDRESSES.WXDAI)
   const reserveALVINToken = useAddressBalance(pairContractALVIN && pairContractALVIN.address, TOKEN_ADDRESSES.ALVIN)
+
   const { reserveETH: reserveSelectedTokenETH, reserveToken: reserveSelectedTokenToken } = usePairReserves(
     TOKEN_ADDRESSES[selectedTokenSymbol]
   )
@@ -225,17 +234,17 @@ export default function Main({ stats, status, staking }) {
 
   const ready = !!(
     (account === null || allowanceSHWEATPANTS) &&
-    (account === null || allowanceALVIN) &&
+    // (account === null || allowanceALVIN) &&
     (selectedTokenSymbol === 'ETH' || account === null || allowanceSHWEATPANTSSelectedToken) &&
-    (selectedTokenSymbol === 'ETH' || account === null || allowanceALVINSelectedToken) &&
-    (account === null || balanceETH) &&
+    // (selectedTokenSymbol === 'ETH' || account === null || allowanceALVINSelectedToken) &&
+    // (account === null || balanceETH) &&
     (account === null || balanceSHWEATPANTS) &&
-    (account === null || balanceALVIN) &&
+    // (account === null || balanceALVIN) &&
     (account === null || balanceSelectedToken) &&
     reserveSHWEATPANTSETH &&
-    reserveALVINETH &&
+    // reserveALVINETH &&
     reserveSHWEATPANTSToken &&
-    reserveALVINToken &&
+    // reserveALVINToken &&
     (selectedTokenSymbol === 'ETH' || reserveSelectedTokenETH) &&
     (selectedTokenSymbol === 'ETH' || reserveSelectedTokenToken) &&
     selectedTokenSymbol &&
@@ -245,7 +254,7 @@ export default function Main({ stats, status, staking }) {
   useEffect(() => {
     //@TODO
     try {
-      const exchangeRateDAI = BigNumber.from('100000000000000000000')
+      const exchangeRateDAI = 1
 
       if (selectedTokenSymbol === TOKEN_SYMBOLS.ETH) {
         setUSDExchangeRateETH(exchangeRateDAI)
@@ -298,7 +307,7 @@ export default function Main({ stats, status, staking }) {
     }
   }, [USDExchangeRateETH, reserveSHWEATPANTSETH, reserveSHWEATPANTSToken, reserveALVINETH, reserveALVINToken])
 
-  async function unlock(buyingDripp = true, tokenSymbol) {
+  async function unlock(buyingDripp = true, tokenSymbol, staking = false) {
     //@TODO
     setStakingTokenSymbol(tokenSymbol)
     let contract
@@ -317,8 +326,11 @@ export default function Main({ stats, status, staking }) {
       } else if (tokenSymbol === 'ALVIN') {
         contract = tokenContractALVIN
         spenderAddress = pairContractALVIN.address
+      } else if (staking) {
+        contract = tokenContractStakingTokens[tokenSymbol]
+        spenderAddress = stakingContract.address
       } else {
-        contract = tokenContractStakingToken
+        contract = tokenContractStakingTokens[tokenSymbol]
         spenderAddress = account
       }
     }
@@ -481,6 +493,7 @@ export default function Main({ stats, status, staking }) {
   const validateSell = useCallback(
     (numberOfDripp, tokenSymbol) => {
       // validate passed amount
+
       let parsedValue
       try {
         parsedValue = ethers.utils.parseUnits(numberOfDripp, 18)
@@ -529,46 +542,48 @@ export default function Main({ stats, status, staking }) {
       // the following are 'non-breaking' errors that will still return the data
       let errorAccumulator
       // validate minimum ether balance
-      if (balanceETH.lt(ethers.utils.parseEther('.01'))) {
+      if (balanceETH.lt(ethers.utils.parseEther('.001'))) {
         const error = Error()
         error.code = ERROR_CODES.INSUFFICIENT_ETH_GAS
         if (!errorAccumulator) {
           errorAccumulator = error
         }
       }
-
-      // validate minimum SHWEATPANTS balance
-      if (balanceSHWEATPANTS.lt(parsedValue)) {
-        const error = Error()
-        error.code = ERROR_CODES.INSUFFICIENT_SELECTED_TOKEN_BALANCE
-        if (!errorAccumulator) {
-          errorAccumulator = error
+      if (tokenSymbol === 'ALVIN') {
+        // validate minimum ALVIN balance
+        if (balanceALVIN.lt(parsedValue)) {
+          const error = Error()
+          error.code = ERROR_CODES.INSUFFICIENT_SELECTED_TOKEN_BALANCE
+          if (!errorAccumulator) {
+            errorAccumulator = error
+          }
+        }
+        // validate allowance
+        if (allowanceSHWEATPANTS.lt(parsedValue)) {
+          const error = Error()
+          error.code = ERROR_CODES.INSUFFICIENT_ALLOWANCE
+          if (!errorAccumulator) {
+            errorAccumulator = error
+          }
         }
       }
-      // validate minimum ALVIN balance
-      if (balanceALVIN.lt(parsedValue)) {
-        const error = Error()
-        error.code = ERROR_CODES.INSUFFICIENT_SELECTED_TOKEN_BALANCE
-        if (!errorAccumulator) {
-          errorAccumulator = error
+      if (tokenSymbol === 'SHWEATPANTS') {
+        // validate allowance
+        if (allowanceSHWEATPANTS.lt(parsedValue)) {
+          const error = Error()
+          error.code = ERROR_CODES.INSUFFICIENT_ALLOWANCE
+          if (!errorAccumulator) {
+            errorAccumulator = error
+          }
         }
-      }
 
-      // validate allowance
-      if (allowanceSHWEATPANTS.lt(parsedValue)) {
-        const error = Error()
-        error.code = ERROR_CODES.INSUFFICIENT_ALLOWANCE
-        if (!errorAccumulator) {
-          errorAccumulator = error
-        }
-      }
-
-      // validate allowance
-      if (allowanceSHWEATPANTS.lt(parsedValue)) {
-        const error = Error()
-        error.code = ERROR_CODES.INSUFFICIENT_ALLOWANCE
-        if (!errorAccumulator) {
-          errorAccumulator = error
+        if (balanceSHWEATPANTS.lt(parsedValue)) {
+          // validate minimum SHWEATPANTS balance
+          const error = Error()
+          error.code = ERROR_CODES.INSUFFICIENT_SELECTED_TOKEN_BALANCE
+          if (!errorAccumulator) {
+            errorAccumulator = error
+          }
         }
       }
 
@@ -601,14 +616,14 @@ export default function Main({ stats, status, staking }) {
       .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
     if (selectedTokenSymbol === TOKEN_SYMBOLS.ETH) {
       const path = [TOKEN_ADDRESSES[buyTokenSymbol], TOKEN_ADDRESSES.WXDAI]
-      const estimatedGasLimit = await routerContract.estimate.swapTokensForExactETH(
-        minimumOutputValue,
+      const estimatedGasLimit = await routerContract.estimate.swapExactTokensForETH(
         inputValue,
+        minimumOutputValue,
         path,
         account,
         deadline
       )
-      return routerContract.swapTokensForExactETH(minimumOutputValue, inputValue, path, account, deadline, {
+      return routerContract.swapExactTokensForETH(inputValue,minimumOutputValue, path, account, deadline, {
         gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
         gasPrice: estimatedGasPrice
       })
@@ -650,14 +665,16 @@ export default function Main({ stats, status, staking }) {
     }
   }
 
-  async function stake(amount, tokenSymbol, isLiquidity) {
+  async function stake(amount, tokenSymbol, isLiquidity = false) {
+    const parsedAmount = ethers.utils.parseUnits(amount, 18)
+
     if (isLiquidity) {
       const estimatedGasPrice = await library
         .getGasPrice()
         .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
-      const estimatedGasLimit = await stakingContract.estimate.stakeLP(STAKING_ADDRESSES[tokenSymbol], amount)
+      const estimatedGasLimit = await stakingContract.estimate.stakeLP(STAKING_ADDRESSES[tokenSymbol], parsedAmount)
 
-      return stakingContract.stake(STAKING_ADDRESSES[tokenSymbol], amount, {
+      return stakingContract.stake(STAKING_ADDRESSES[tokenSymbol], parsedAmount, {
         gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
         gasPrice: estimatedGasPrice
       })
@@ -665,23 +682,23 @@ export default function Main({ stats, status, staking }) {
       const estimatedGasPrice = await library
         .getGasPrice()
         .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
-      const estimatedGasLimit = await stakingContract.estimate.stake(STAKING_ADDRESSES[tokenSymbol], amount)
+      const estimatedGasLimit = await stakingContract.estimate.stake(STAKING_ADDRESSES[tokenSymbol], parsedAmount)
 
-      return stakingContract.stake(STAKING_ADDRESSES[tokenSymbol], amount, {
+      return stakingContract.stake(STAKING_ADDRESSES[tokenSymbol], parsedAmount, {
         gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
         gasPrice: estimatedGasPrice
       })
     }
   }
 
-  async function withdrawTokenStake(amount, tokenSymbol, isLiquidity) {
+  async function withdrawTokenStake(tokenSymbol, isLiquidity) {
     if (isLiquidity) {
       const estimatedGasPrice = await library
         .getGasPrice()
         .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
-      const estimatedGasLimit = await stakingContract.estimate.withdrawLPStake(STAKING_ADDRESSES[tokenSymbol], amount)
+      const estimatedGasLimit = await stakingContract.estimate.withdrawAllLPStake(STAKING_ADDRESSES[tokenSymbol])
 
-      return stakingContract.withdrawLPStake(STAKING_ADDRESSES[tokenSymbol], amount, {
+      return stakingContract.withdrawAllLPStake(STAKING_ADDRESSES[tokenSymbol], {
         gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
         gasPrice: estimatedGasPrice
       })
@@ -689,12 +706,9 @@ export default function Main({ stats, status, staking }) {
       const estimatedGasPrice = await library
         .getGasPrice()
         .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
-      const estimatedGasLimit = await stakingContract.estimate.withdrawTokenStake(
-        STAKING_ADDRESSES[tokenSymbol],
-        amount
-      )
+      const estimatedGasLimit = await stakingContract.estimate.withdrawAllTokenStake(STAKING_ADDRESSES[tokenSymbol])
 
-      return stakingContract.withdrawTokenStake(STAKING_ADDRESSES[tokenSymbol], amount, {
+      return stakingContract.withdrawAllTokenStake(STAKING_ADDRESSES[tokenSymbol], {
         gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
         gasPrice: estimatedGasPrice
       })
@@ -705,9 +719,9 @@ export default function Main({ stats, status, staking }) {
     const estimatedGasPrice = await library
       .getGasPrice()
       .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
-    const estimatedGasLimit = await stakingContract.estimate.claim(STAKING_ADDRESSES[tokenSymbol])
+    const estimatedGasLimit = await stakingContract.estimate.claim(TOKEN_ADDRESSES[tokenSymbol])
 
-    return stakingContract.claim(STAKING_ADDRESSES[tokenSymbol], {
+    return stakingContract.claim(TOKEN_ADDRESSES[tokenSymbol], {
       gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
       gasPrice: estimatedGasPrice
     })

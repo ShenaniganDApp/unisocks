@@ -1,5 +1,36 @@
 [
   {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "token",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "primaryToken",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "lpToken",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "activeTime",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "supply",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
     "anonymous": false,
     "inputs": [
       {
@@ -57,31 +88,6 @@
         "type": "address"
       }
     ],
-    "name": "accountRewards",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "token",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_account",
-        "type": "address"
-      }
-    ],
     "name": "accountTokenStaked",
     "outputs": [
       {
@@ -107,6 +113,42 @@
     "type": "function"
   },
   {
+    "constant": true,
+
+    "inputs": [],
+    "name": "countDripps",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "drippRate",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "owner",
     "outputs": [
@@ -127,6 +169,8 @@
     "type": "function"
   },
   {
+    "constant": true,
+
     "inputs": [
       {
         "internalType": "address",
@@ -143,11 +187,16 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "reward_",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "rewardedTokens_",
         "type": "uint256"
       }
     ],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -221,6 +270,7 @@
   },
   {
     "constant": true,
+
     "inputs": [
       {
         "internalType": "address",
@@ -241,6 +291,7 @@
   },
   {
     "constant": true,
+
     "inputs": [
       {
         "internalType": "address",
@@ -298,7 +349,7 @@
         "type": "address"
       }
     ],
-    "name": "withdrawAllLiquidityStake",
+    "name": "withdrawLiquidityStake",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -329,7 +380,7 @@
         "type": "address"
       }
     ],
-    "name": "withdrawAllTokenStake",
+    "name": "withdrawTokenStake",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

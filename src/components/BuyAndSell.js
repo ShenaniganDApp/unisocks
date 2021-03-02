@@ -102,7 +102,6 @@ export default function BuyAndSell({
     if (account === null) {
       return 'Connect Wallet'
     } else if (ready && !errorMessage) {
-      
       if (!buying) {
         if (pending && hash) {
           return 'Waiting for confirmation'
@@ -125,8 +124,8 @@ export default function BuyAndSell({
   useEffect(() => {
     if (ready && buying) {
       try {
-        const { error: validationError, ...validationState } = validateBuy(String(state.count, state.drippSelected))
-        
+        const { error: validationError, ...validationState } = validateBuy(String(state.count), state.drippSelected)
+
         setBuyValidationState(validationState)
         setValidationError(validationError || null)
 
@@ -145,7 +144,7 @@ export default function BuyAndSell({
   useEffect(() => {
     if (ready && selling) {
       try {
-        const { error: validationError, ...validationState } = validateSell(String(state.count, state.drippSelected))
+        const { error: validationError, ...validationState } = validateSell(String(state.count), state.drippSelected)
         setSellValidationState(validationState)
         setValidationError(validationError || null)
 
@@ -250,7 +249,8 @@ export default function BuyAndSell({
           type={'cta'}
           pending={pending}
           onClick={() => {
-            unlock(buying).then(({ hash }) => {
+            const symbol = buying ? selectedTokenSymbol : state.drippSelected
+            unlock(buying, symbol).then(({ hash }) => {
               setCurrentTransaction(hash, TRADE_TYPES.UNLOCK, undefined)
             })
           }}

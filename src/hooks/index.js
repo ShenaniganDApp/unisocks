@@ -11,6 +11,8 @@ import {
   getTokenBalance,
   getTokenAllowance,
   getStakedToken,
+  getStakedRewards,
+  getTotalStaked,
   TOKEN_ADDRESSES,
   STAKING_ADDRESSES
 } from '../utils'
@@ -100,7 +102,6 @@ export function useAddressBalance(address, tokenAddress) {
   const { library } = useWeb3Context()
 
   const [balance, setBalance] = useState()
-
   const updateBalance = useCallback(() => {
     if (isAddress(address) && (tokenAddress === 'ETH' || isAddress(tokenAddress))) {
       let stale = false
@@ -128,7 +129,6 @@ export function useAddressBalance(address, tokenAddress) {
   }, [updateBalance])
 
   useBlockEffect(updateBalance)
-
   return balance
 }
 
@@ -168,9 +168,9 @@ export function useTotalSupply(contract) {
 }
 
 export function usePairReserves(tokenAddress) {
-  const pairContract = usePairContract(tokenAddress, TOKEN_ADDRESSES.ETH)
+  const pairContract = usePairContract(tokenAddress, TOKEN_ADDRESSES.WXDAI)
 
-  const reserveETH = useAddressBalance(pairContract && pairContract.address, TOKEN_ADDRESSES.ETH)
+  const reserveETH = useAddressBalance(pairContract && pairContract.address, TOKEN_ADDRESSES.WXDAI)
   const reserveToken = useAddressBalance(pairContract && pairContract.address, tokenAddress)
 
   return { reserveETH, reserveToken }
@@ -220,6 +220,48 @@ export function usePairAllowance(address, tokenAddressA, tokenAddressB) {
   return [allowanceTokenA, allowanceTokenB]
 }
 
+export function useStakingAllowance(address, tokenAddress) {
+  const stakingContract = useStakingContract()
+  const allowanceToken = useAddressAllowance(address, tokenAddress, stakingContract && stakingContract.address)
+  return allowanceToken
+}
+
+export function useStakingRewards(address, tokenAddress) {
+  const { library } = useWeb3Context()
+
+  const [stakedRewards, setStakedRewards] = useState()
+
+  const updateStakedRewards = useCallback(() => {
+    if (isAddress(address) && isAddress(tokenAddress)) {
+      let stale = false
+      getStakedRewards(address, tokenAddress, library)
+        .then(reward => {
+          if (!stale) {
+            setStakedRewards(reward.reward_)
+            console.log('reward.reward_: ', reward.reward_.toString())
+          }
+        })
+        .catch(() => {
+          if (!stale) {
+            setStakedRewards(null)
+          }
+        })
+      return () => {
+        stale = true
+        setStakedRewards()
+      }
+    }
+  }, [address, library, tokenAddress])
+
+  useEffect(() => {
+    return updateStakedRewards()
+  }, [updateStakedRewards])
+
+  useBlockEffect(updateStakedRewards)
+
+  return stakedRewards
+}
+
 export function useStakedToken(address, tokenAddress, isLiquidity) {
   const { library } = useWeb3Context()
 
@@ -231,7 +273,7 @@ export function useStakedToken(address, tokenAddress, isLiquidity) {
       getStakedToken(address, tokenAddress, isLiquidity, library)
         .then(staked => {
           if (!stale) {
-            setStakedToken(staked.toString())
+            setStakedToken(staked)
           }
         })
         .catch(() => {
@@ -253,4 +295,39 @@ export function useStakedToken(address, tokenAddress, isLiquidity) {
   useBlockEffect(updateStakedToken)
 
   return stakedToken
+}
+
+export function useTotalStaked(tokenAddress) {
+  const { library } = useWeb3Context()
+
+  const [totalStaked, setTotalStaked] = useState()
+
+  const updateTotalStaked = useCallback(() => {
+    if (isAddress(tokenAddress)) {
+      let stale = false
+      getTotalStaked(tokenAddress, library)
+        .then(staked => {
+          if (!stale) {
+            setTotalStaked(staked)
+          }
+        })
+        .catch(() => {
+          if (!stale) {
+            setTotalStaked(null)
+          }
+        })
+      return () => {
+        stale = true
+        setTotalStaked()
+      }
+    }
+  }, [library, tokenAddress])
+
+  useEffect(() => {
+    return updateTotalStaked()
+  }, [updateTotalStaked])
+
+  useBlockEffect(updateTotalStaked)
+
+  return totalStaked
 }

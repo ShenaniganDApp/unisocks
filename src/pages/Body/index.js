@@ -34,11 +34,8 @@ export function Header({
     <HeaderFrame balanceSHWEATPANTS={balanceSHWEATPANTS} balanceALVIN={balanceALVIN}>
       <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
         <Unicorn>
-          Shwag{' '}
-          <span role="img" aria-label="unicorn">
-            🤸‍♀️ | 🐝
-          </span>{' '}
-          Dripp
+          <span>💧</span>
+          Dripp by Shenanigan
         </Unicorn>
       </Link>
       <div style={{ display: 'flex', flexDirection: 'row' }}>
@@ -243,7 +240,7 @@ export default function Body({
             </a>
           </SubInfo> */}
             </Info>
-            <BuyButtons balanceDripp={balanceALVIN} drippSelected={'ALVIN'} />
+            <BuyButtons color={'#7ce0d6'} balanceDripp={balanceALVIN} drippSelected={'ALVIN'} />
             <RedeemButton balanceDripp={balanceALVIN} drippSelected={'ALVIN'} />
             {!!account && (
               <Link style={{ textDecoration: 'none' }} to="/status">
@@ -289,7 +286,7 @@ export default function Body({
             </a>
           </SubInfo> */}
             </Info>
-            <BuyButtons balanceDripp={balanceSHWEATPANTS} drippSelected={'SHWEATPANTS'} />
+            <BuyButtons color={'#ff006c'} balanceDripp={balanceSHWEATPANTS} drippSelected={'SHWEATPANTS'} />
             <RedeemButton balanceDripp={balanceSHWEATPANTS} drippSelected={'SHWEATPANTS'} />
             {!!account && (
               <Link style={{ textDecoration: 'none' }} to="/status">
@@ -298,7 +295,9 @@ export default function Body({
             )}
           </Content>
         </Flex>
-        <StakeButton text="Stake" />
+        <Link to="/staking" style={{ textDecoration: 'none', width: '100%' }}>
+          <StakeButton color={'linear-gradient(107deg,#cbf3ef,#fafae2 49.48%,#ff006c)'} text="Stake" />
+        </Link>
       </div>
       <Checkout
         selectedTokenSymbol={selectedTokenSymbol}

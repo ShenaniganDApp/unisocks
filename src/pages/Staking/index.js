@@ -10,18 +10,18 @@ import agaave from '../../components/Gallery/agaave.png'
 import SHE from '../../components/Gallery/SHE.png'
 import Input from '../../components/Input'
 import StakeButton from '../../components/Button'
-import { useAddressAllowance, useAddressBalance } from '../../hooks'
+import {
+  useAddressAllowance,
+  useAddressBalance,
+  useStakingAllowance,
+  useStakingRewards,
+  useTotalStaked
+} from '../../hooks'
 
-export function Header({
-  stakedPRTCLEToken,
-  stakedHNYToken,
-  stakedHNYPRTCLEToken,
-  ready,
-  balanceSHWEATPANTS,
-  balanceALVIN,
-  setShowConnect
-}) {
+export function Header({ stakedPRTCLEToken, stakedHNYToken, ready, balanceSHWEATPANTS, balanceALVIN, setShowConnect }) {
   const { account, setConnector } = useWeb3Context()
+  const alvinRewards = useStakingRewards(account, TOKEN_ADDRESSES.ALVIN)
+  const shweatpantsRewards = useStakingRewards(account, TOKEN_ADDRESSES.SHWEATPANTS)
 
   function handleAccount() {
     setConnector('Injected', { suppressAndThrowErrors: true }).catch(error => {
@@ -33,41 +33,28 @@ export function Header({
     <HeaderFrame balanceSHWEATPANTS={balanceSHWEATPANTS} balanceALVIN={balanceALVIN}>
       <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
         <Unicorn>
-          Shwag{' '}
-          <span role="img" aria-label="unicorn">
-            🤸‍♀️ | 🐝
-          </span>{' '}
+          <span>💧</span>
           Dripp
         </Unicorn>
       </Link>
       <div style={{ display: 'flex', flexDirection: 'row' }}>
-        {stakedPRTCLEToken && (
+        {balanceSHWEATPANTS && (
           <Link to="/stats" style={{ textDecoration: 'none' }}>
             <Staked>
               <span role="img" aria-label="fire">
-                🔒
+                👖
               </span>{' '}
-              {stakedPRTCLEToken} <HideMobile>PRTCLE</HideMobile>
+              {amountFormatter(balanceSHWEATPANTS)} <HideMobile>SHWEATPANTS</HideMobile>
             </Staked>
           </Link>
         )}
-        {stakedHNYToken && (
+        {balanceALVIN && (
           <Link to="/stats" style={{ textDecoration: 'none' }}>
             <Staked>
               <span role="img" aria-label="fire">
-                🔒
+                🧸
               </span>{' '}
-              {stakedHNYToken} <HideMobile>HNY</HideMobile>
-            </Staked>
-          </Link>
-        )}
-        {stakedHNYPRTCLEToken && (
-          <Link to="/stats" style={{ textDecoration: 'none' }}>
-            <Staked>
-              <span role="img" aria-label="fire">
-                🔒
-              </span>{' '}
-              {stakedHNYPRTCLEToken} <HideMobile>HNY-PRTCLE</HideMobile>
+              {amountFormatter(balanceALVIN)} <HideMobile>ALVIN</HideMobile>
             </Staked>
           </Link>
         )}
@@ -175,6 +162,7 @@ export default function Staking({
   ready,
   unlock,
   stake,
+  claim,
   withdrawTokenStake,
   withdrawLPStake,
   dollarize,
@@ -213,7 +201,7 @@ export default function Staking({
         balanceALVIN={balanceALVIN}
         setShowConnect={setShowConnect}
       />
-      <div>
+      <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
         <Flex>
           <Content>
             <Card
@@ -253,18 +241,60 @@ export default function Staking({
             </a>
           </SubInfo> */}
             </Info>
-            <Input
-              title={'HNY'}
-              background={'radial-gradient(circle at 50% 100%, #ffc3ab, #fafae2 49.48%, #cbf3ef )'}
-              balance={useAddressBalance(account, TOKEN_ADDRESSES.HNY)}
-              stakedToken={stakedHNYToken}
-              stake={stake}
-              withdraw={withdrawTokenStake}
-              tokenAllowance={useAddressAllowance(STAKING_ADDRESS, TOKEN_ADDRESSES.HNY, account)}
-              unlock={unlock}
-              tokenSymbol={'HNY'}
-            />
           </Content>
+          <div style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'row' }}>
+            <div style={{ flex: '1 1 45%' }}>
+              <Input
+                title={'HNY'}
+                background={'radial-gradient(circle at 50% 100%, #ffc3ab, #fafae2 49.48%, #cbf3ef )'}
+                balance={useAddressBalance(account, TOKEN_ADDRESSES.HNY)}
+                stakedToken={stakedHNYToken}
+                stake={stake}
+                withdraw={withdrawTokenStake}
+                tokenAllowance={useStakingAllowance(account, TOKEN_ADDRESSES.HNY)}
+                unlock={unlock}
+                tokenSymbol={'HNY'}
+                rewardSymbol={'ALVIN'}
+                claim={claim}
+                rewards={useStakingRewards(account, TOKEN_ADDRESSES.ALVIN)}
+                totalStaked={useTotalStaked(TOKEN_ADDRESSES.HNY)}
+              />
+            </div>
+            <div style={{ flex: '1 1 45%', marginLeft: '1rem' }}>
+              <Input
+                title={'PRTCLE'}
+                background={'radial-gradient(circle at 50% 150%, #ff4, #e6ffff 49.48%, #ff006c )'}
+                balance={useAddressBalance(account, TOKEN_ADDRESSES.PRTCLE)}
+                stakedToken={stakedPRTCLEToken}
+                stake={stake}
+                withdraw={withdrawTokenStake}
+                account={account}
+                tokenSymbol={'PRTCLE'}
+                tokenAllowance={useStakingAllowance(account, TOKEN_ADDRESSES.PRTCLE)}
+                unlock={unlock}
+                claim={claim}
+                rewardSymbol={'SHWEATPANTS'}
+                rewards={useStakingRewards(account, TOKEN_ADDRESSES.SHWEATPANTS)}
+                totalStaked={useTotalStaked(TOKEN_ADDRESSES.PRTCLE)}
+              />
+            </div>
+
+            <div style={{ flex: '1 1 100%' }}>
+              <Input
+                title={'HNY-PRTCLE'}
+                background={'linear-gradient(107deg,#cbf3ef,#fafae2 49.48%,#ff006c)'}
+                balance={useAddressBalance(account, STAKING_ADDRESSES.HNYPRTCLE)}
+                tokenSymbol={'HNYPRTCLE'}
+                stakedToken={stakedHNYPRTCLEToken}
+                stake={stake}
+                withdraw={withdrawLPStake}
+                tokenAllowance={useStakingAllowance(account, STAKING_ADDRESSES.HNYPRTCLE)}
+                unlock={unlock}
+                isLiquidity
+                totalStaked={useTotalStaked(TOKEN_ADDRESSES.HNYPRTCLE)}
+              />
+            </div>
+          </div>
           <Content>
             <Card
               totalDrippSupply={totalSHWEATPANTSSupply}
@@ -303,36 +333,12 @@ export default function Staking({
             </a>
           </SubInfo> */}
             </Info>
-            <Input
-              title={'PRTCLE'}
-              background={'radial-gradient(circle at 50% 150%, #ff4, #e6ffff 49.48%, #ff006c )'}
-              balance={useAddressBalance(account, TOKEN_ADDRESSES.PRTCLE)}
-              stakedToken={stakedPRTCLEToken}
-              stake={stake}
-              withdraw={withdrawTokenStake}
-              account={account}
-              tokenSymbol={'PRTCLE'}
-              tokenAllowance={useAddressAllowance(STAKING_ADDRESS, TOKEN_ADDRESSES.PRTCLE, account)}
-              unlock={unlock}
-            />
           </Content>
         </Flex>
-        <Input
-          title={'HNY-PRTCLE'}
-          background={'linear-gradient(107deg,#cbf3ef,#fafae2 49.48%,#ff006c)'}
-          balance={useAddressBalance(account, STAKING_ADDRESSES.HNYPRTCLE)}
-          tokenSymbol={'HNYPRTCLE'}
-          stakedToken={stakedHNYPRTCLEToken}
-          stake={stake}
-          withdraw={withdrawLPStake}
-          tokenAllowance={useAddressAllowance(STAKING_ADDRESS, STAKING_ADDRESSES.HNYPRTCLE, account)}
-          unlock={unlock}
-          isLiquidity
-        />
-        <Link to="/" style={{ textDecoration: 'none', cursor: 'pointer' }}>
-          <StakeButton text="Back to Buy" style={{ width: '75%', margin: '0 auto' }} />
-        </Link>
       </div>
+      <Link to="/" style={{ textDecoration: 'none', cursor: 'pointer', width: '75%' }}>
+        <StakeButton text="Back to Buy" style={{ width: '75%', margin: '0 auto', 'pointer-events': 'none' }} />
+      </Link>
     </AppWrapper>
   )
 }
@@ -354,7 +360,7 @@ const AppWrapper = styled.div`
 const Content = styled.div`
   width: calc(100vw - 32px);
   max-width: 375px;
-  margin-top: 8px;
+  margin-top: 32px;
 `
 
 const Info = styled.div`
@@ -401,4 +407,5 @@ const Flex = styled.div`
   @media (max-width: 768px) {
     flex-direction: column;
   }
+  align-items: center;
 `

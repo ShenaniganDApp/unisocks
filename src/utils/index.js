@@ -10,12 +10,12 @@ import UncheckedJsonRpcSigner from './signer'
 
 const FACTORY_ADDRESS = '0xA818b4F111Ccac7AA31D0BCc0806d64F2E0737D7'
 const ROUTER_ADDRESS = '0x1C232F01118CB8B424793ae03F870aa7D0ac7f77'
-export const STAKING_ADDRESS = '0x1F23Aa79962c510F0f2A3E7b2F315fa5D73Dc3d7'
+export const STAKING_ADDRESS = '0x2ed39a28300D5D37039388eE836EF5e600d8C72F'
 
 export const TOKEN_ADDRESSES = {
   ETH: 'ETH',
   WXDAI: '0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d',
-  SHWEATPANTS: '0x898e8897437d7245a2d09a29B2Cd06a2C1ca388b',
+  SHWEATPANTS: '0x898e8897437d7245a2d09a29b2cd06a2c1ca388b',
   ALVIN: '0x3008Ff3e688346350b0C07B8265d256dddD97215',
   HNY: '0x71850b7e9ee3f13ab46d67167341e4bdc905eef9',
   PRTCLE: '0xb5d592f85ab2d955c25720ebe6ff8d4d1e1be300'
@@ -128,16 +128,27 @@ export async function getStakedToken(address, tokenAddress, isLiquidity, library
     throw Error("Invalid 'address' or 'tokenAddress' parameter" + `'${address}' or '${tokenAddress}'.`)
   }
 
-  console.log(
-    '  getContract(STAKING_ADDRESS, STAKING_ABI, library): ',
-    getContract(STAKING_ADDRESS, STAKING_ABI, library).accountLPStaked(address, tokenAddress)
-  )
-
   if (isLiquidity) {
-    return getContract(STAKING_ADDRESS, STAKING_ABI, library).accountLPStaked(address, tokenAddress)
+    return getContract(STAKING_ADDRESS, STAKING_ABI, library).accountLPStaked(tokenAddress, address)
   } else {
-    return getContract(STAKING_ADDRESS, STAKING_ABI, library).accountTokenStaked(address, tokenAddress)
+    return getContract(STAKING_ADDRESS, STAKING_ABI, library).accountTokenStaked(tokenAddress, address)
   }
+}
+
+export async function getStakedRewards(address, tokenAddress, library) {
+  if (!isAddress(address) || !isAddress(tokenAddress)) {
+    throw Error("Invalid 'address' or 'tokenAddress' parameter" + `'${address}' or '${tokenAddress}'.`)
+  }
+
+  return getContract(STAKING_ADDRESS, STAKING_ABI, library).reward(address, tokenAddress)
+}
+
+export async function getTotalStaked(tokenAddress, library) {
+  if (!isAddress(tokenAddress)) {
+    throw Error("Invalid 'tokenAddress' parameter" + `'${tokenAddress}'.`)
+  }
+
+  return getContract(STAKING_ADDRESS, STAKING_ABI, library).totalStaked(tokenAddress)
 }
 
 export function amountFormatter(amount, baseDecimals = 18, displayDecimals = 3, useLessThan = true) {

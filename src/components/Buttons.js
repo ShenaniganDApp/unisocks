@@ -12,7 +12,6 @@ const BuyButtonFrame = styled.div`
   flex-direction: center;
   flex-direction: row;
   color: ${props => props.theme.black};
-  pointer-events: none;
   div {
     width: 100%;
   }
@@ -41,6 +40,7 @@ export default function BuyButtons(props) {
   return (
     <BuyButtonFrame>
       <ButtonFrame
+        color={props.color}
         disabled={false}
         text={'Buy'}
         type={'cta'}

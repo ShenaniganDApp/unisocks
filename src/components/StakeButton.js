@@ -6,15 +6,16 @@ import { useAppContext } from '../context'
 import { TRADE_TYPES } from '../utils'
 
 const StakeButtonFrame = styled.div`
-  margin: 0.5rem 0rem 0.5rem 0rem;
+  margin: 0.5rem 0rem 2rem 0rem;
   display: flex;
   align-items: center;
   flex-direction: center;
   flex-direction: row;
   color: ${props => props.theme.black};
-
+  pointer-events: none;
   div {
-    width: 100%;
+    width: 75%;
+    margin: 0 auto;
   }
 
   @media only screen and (max-width: 480px) {
@@ -25,6 +26,7 @@ const StakeButtonFrame = styled.div`
 const ButtonFrame = styled(Button)`
   width: 75%;
   margin: 0 auto;
+  pointer-events: none;
 `
 
 // const Shim = styled.div`
@@ -36,7 +38,7 @@ export default function StakeButton(props) {
   const [, setState] = useAppContext()
   return (
     <StakeButtonFrame>
-      <ButtonFrame disabled={false} text={props.text} type={'cta'} />
+      <ButtonFrame color={props.color} disabled={false} text={props.text} type={'cta'} />
     </StakeButtonFrame>
   )
 }
