@@ -187,7 +187,6 @@ export default function Main({ stats, status, staking }) {
     TOKEN_ADDRESSES.ALVIN,
     selectedTokenSymbol == 'ETH' ? TOKEN_ADDRESSES['WXDAI'] : TOKEN_ADDRESSES[selectedTokenSymbol]
   )
-
   // get token contracts
   const tokenContractSHWEATPANTS = useTokenContract(TOKEN_ADDRESSES.SHWEATPANTS)
   const tokenContractALVIN = useTokenContract(TOKEN_ADDRESSES.ALVIN)
@@ -371,10 +370,12 @@ export default function Main({ stats, status, staking }) {
   // buy functionality
   const validateBuy = useCallback(
     (numberOfDripp, tokenSymbol) => {
+      console.log('tokenSymbol: ', tokenSymbol);
       // validate passed amount
       let parsedValue
       try {
         parsedValue = ethers.utils.parseUnits(numberOfDripp, 18)
+        
       } catch (error) {
         error.code = ERROR_CODES.INVALID_AMOUNT
         throw error

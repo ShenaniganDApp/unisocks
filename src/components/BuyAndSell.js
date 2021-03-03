@@ -199,7 +199,6 @@ export default function BuyAndSell({
       return '0'
     }
   }
-
   return (
     <>
       <TopFrame>

@@ -51,7 +51,7 @@ const MigrateInfo = styled.p`
 const Input = ({ tokenSymbol, title, background, balance, tokenAllowance, unlock, migrate }) => {
   const [migrateAmount, setMigrateAmount] = useState(0)
   const one = new BigNumber('1000000000000000000')
-  const formattedBalance = balance ? amountFormatter(balance) : 0
+  const formattedBalance = balance ? amountFormatter(balance, 18, 18) : 0
   const shouldRenderUnlock = tokenAllowance && tokenAllowance.eq(0)
 
   return (
