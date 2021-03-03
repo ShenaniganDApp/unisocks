@@ -36,15 +36,15 @@ export default function Body({
           </p>
           <p>100</p>
         </Description>
-        <Description>
+        {/* <Description>
           <p>
             <span role="img" aria-label="alvin">
               🔥
             </span>
             Redeemed ALVIN
           </p>
-          <p>{100 - totalALVINSupply}</p>
-        </Description>
+          <p>{50 - totalALVINSupply}</p>
+        </Description> */}
         <Description>
           <p>
             <span role="img" aria-label="alvin">
@@ -64,7 +64,7 @@ export default function Body({
           </p>
           <p>100</p>
         </Description>
-        <Description>
+        {/* <Description>
           <p>
             <span role="img" aria-label="shweatpants">
               🔥
@@ -72,7 +72,7 @@ export default function Body({
             Redeemed SHWEATPANTS
           </p>
           <p>{100 - totalSHWEATPANTSSupply}</p>
-        </Description>
+        </Description> */}
         <Description>
           <p>
             <span role="img" aria-label="shweatpants">

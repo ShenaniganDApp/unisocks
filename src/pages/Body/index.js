@@ -41,7 +41,7 @@ export function Header({
         </Unicorn>
       </Link>
       <div style={{ display: 'flex', flexDirection: 'row' }}>
-        {totalSHWEATPANTSSupply && (
+        {/* {totalSHWEATPANTSSupply && (
           <Link to="/stats" style={{ textDecoration: 'none' }}>
             <Burned>
               <span role="img" aria-label="fire">
@@ -60,7 +60,7 @@ export function Header({
               {100 - totalALVINSupply} <HideMobile>redeemed</HideMobile>
             </Burned>
           </Link>
-        )}
+        )} */}
         <Flex style={{ flexDirection: 'column' }}>
           <Account onClick={() => handleAccount()} balanceSHWEATPANTS={balanceSHWEATPANTS} balanceALVIN={balanceALVIN}>
             {account ? <SockCount>{account.slice(0, 6)}...</SockCount> : <SockCount>Connect Wallet</SockCount>}
