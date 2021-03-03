@@ -2,12 +2,21 @@ import React, { useState, useCallback, useEffect } from 'react'
 import { useWeb3Context } from 'web3-react'
 import { ethers, BigNumber } from 'ethers'
 
-import { TOKEN_SYMBOLS, TOKEN_ADDRESSES, ERROR_CODES, STAKING_ADDRESSES, STAKING_SYMBOLS } from '../../utils'
+import {
+  TOKEN_SYMBOLS,
+  TOKEN_ADDRESSES,
+  ERROR_CODES,
+  STAKING_ADDRESSES,
+  STAKING_SYMBOLS,
+  SHWEATPANTS_MIGRATION_ADDRESS,
+  ALVIN_MIGRATION_ADDRESS
+} from '../../utils'
 import {
   useTokenContract,
   usePairContract,
   useRouterContract,
   useStakingContract,
+  useMigrationContract,
   useAddressBalance,
   useAddressAllowance,
   usePairReserves,
@@ -166,6 +175,8 @@ export default function Main({ stats, status, staking }) {
 
   //get Staking contracts
   const stakingContract = useStakingContract(account)
+  const shweatpantsMigrationContract = useMigrationContract('SHWEATPANTS', account)
+  const alvinMigrationContract = useMigrationContract('ALVIN', account)
 
   // get exchange contracts
   const pairContractSHWEATPANTS = usePairContract(
@@ -180,6 +191,8 @@ export default function Main({ stats, status, staking }) {
   // get token contracts
   const tokenContractSHWEATPANTS = useTokenContract(TOKEN_ADDRESSES.SHWEATPANTS)
   const tokenContractALVIN = useTokenContract(TOKEN_ADDRESSES.ALVIN)
+  const tokenContractSHWEATPANTSV1 = useTokenContract(TOKEN_ADDRESSES.SHWEATPANTSV1)
+  const tokenContractALVINV1 = useTokenContract(TOKEN_ADDRESSES.ALVINV1)
   const tokenContractSelectedToken = useTokenContract(TOKEN_ADDRESSES[selectedTokenSymbol])
   const tokenContractStakingTokens = {}
   tokenContractStakingTokens['HNY'] = useTokenContract(STAKING_ADDRESSES['HNY'])
@@ -247,7 +260,7 @@ export default function Main({ stats, status, staking }) {
     (selectedTokenSymbol === 'ETH' || reserveSelectedTokenETH) &&
     (selectedTokenSymbol === 'ETH' || reserveSelectedTokenToken) &&
     selectedTokenSymbol &&
-    (USDExchangeRateETH || USDExchangeRateSelectedToken)
+    (USDExchangeRateETH || USDExchangeRateSelectedToken) &&
     (account === null || stakedPRTCLEToken) &&
     (account === null || stakedHNYToken) &&
     (account === null || stakedHNYPRTCLEToken)
@@ -309,7 +322,7 @@ export default function Main({ stats, status, staking }) {
     }
   }, [USDExchangeRateETH, reserveSHWEATPANTSETH, reserveSHWEATPANTSToken, reserveALVINETH, reserveALVINToken])
 
-  async function unlock(buyingDripp = true, tokenSymbol, staking = false) {
+  async function unlock(buyingDripp = true, tokenSymbol, staking = false, migrate = false) {
     //@TODO
     setStakingTokenSymbol(tokenSymbol)
     let contract
@@ -320,6 +333,14 @@ export default function Main({ stats, status, staking }) {
         spenderAddress = pairContractSHWEATPANTS.address
       } else if (tokenSymbol === 'ALVIN') {
         spenderAddress = pairContractALVIN.address
+      }
+    } else if (migrate) {
+      if (tokenSymbol === 'SHWEATPANTS') {
+        contract = tokenContractSHWEATPANTSV1
+        spenderAddress = SHWEATPANTS_MIGRATION_ADDRESS
+      } else if (tokenSymbol === 'ALVIN') {
+        contract = tokenContractALVINV1
+        spenderAddress = ALVIN_MIGRATION_ADDRESS
       }
     } else {
       if (tokenSymbol === 'SHWEATPANTS') {
@@ -625,7 +646,7 @@ export default function Main({ stats, status, staking }) {
         account,
         deadline
       )
-      return routerContract.swapExactTokensForETH(inputValue,minimumOutputValue, path, account, deadline, {
+      return routerContract.swapExactTokensForETH(inputValue, minimumOutputValue, path, account, deadline, {
         gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
         gasPrice: estimatedGasPrice
       })
@@ -729,6 +750,30 @@ export default function Main({ stats, status, staking }) {
     })
   }
 
+  async function migrate(amount, tokenSymbol) {
+    const parsedAmount = ethers.utils.parseUnits(amount, 18)
+
+    const estimatedGasPrice = await library
+      .getGasPrice()
+      .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
+
+    if (tokenSymbol == 'SHWEATPANTS') {
+      const estimatedGasLimit = await shweatpantsMigrationContract.estimate.migrate(account, parsedAmount)
+
+      return shweatpantsMigrationContract.migrate(account, parsedAmount, {
+        gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
+        gasPrice: estimatedGasPrice
+      })
+    } else if (tokenSymbol == 'ALVIN') {
+      const estimatedGasLimit = await alvinMigrationContract.estimate.migrate(account, parsedAmount)
+
+      return alvinMigrationContract.migrate(account, parsedAmount, {
+        gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
+        gasPrice: estimatedGasPrice
+      })
+    }
+  }
+
   return stats ? (
     <Stats
       reserveSHWEATPANTSToken={reserveSHWEATPANTSToken}
@@ -795,6 +840,7 @@ export default function Main({ stats, status, staking }) {
       stakedPRTCLEToken={stakedPRTCLEToken}
       stakedHNYToken={stakedHNYToken}
       stakedHNYPRTCLEToken={stakedHNYPRTCLEToken}
+      migrate={migrate}
     />
   )
 }

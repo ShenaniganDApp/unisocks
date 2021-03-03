@@ -5,18 +5,23 @@ import PAIR_ABI from './pair.json'
 import FACTORY_ABI from './factory.json'
 import ROUTER_ABI from './router.json'
 import STAKING_ABI from './staking.json'
+import MIGRATE_ABI from './migrate.json'
 
 import UncheckedJsonRpcSigner from './signer'
 
 const FACTORY_ADDRESS = '0xA818b4F111Ccac7AA31D0BCc0806d64F2E0737D7'
 const ROUTER_ADDRESS = '0x1C232F01118CB8B424793ae03F870aa7D0ac7f77'
-export const STAKING_ADDRESS = '0x2ed39a28300D5D37039388eE836EF5e600d8C72F'
+export const STAKING_ADDRESS = '0x3D6a8C45Fe5A841e5e107038E3b51b644c4C2387'
+export const SHWEATPANTS_MIGRATION_ADDRESS = '0x4af7c1DFF088Ce058508178054Cef16757Cb4610'
+export const ALVIN_MIGRATION_ADDRESS = '0xC41E160CD4FBA75950aD1c827Dea42A993c564A0'
 
 export const TOKEN_ADDRESSES = {
   ETH: 'ETH',
   WXDAI: '0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d',
-  SHWEATPANTS: '0x898e8897437d7245a2d09a29b2cd06a2c1ca388b',
-  ALVIN: '0x3008Ff3e688346350b0C07B8265d256dddD97215',
+  SHWEATPANTS: '0x73C6927063338170D794DC929253edb09f533B8d',
+  ALVIN: '0xf9bb1049378A3462E61Bba502530e5Ed62469925',
+  SHWEATPANTSV1: '0x898e8897437d7245a2d09a29b2cd06a2c1ca388b',
+  ALVINV1: '0x3008Ff3e688346350b0C07B8265d256dddD97215',
   HNY: '0x71850b7e9ee3f13ab46d67167341e4bdc905eef9',
   PRTCLE: '0xb5d592f85ab2d955c25720ebe6ff8d4d1e1be300'
 }
@@ -91,6 +96,14 @@ export function getStakingContract(library, account) {
   return getContract(STAKING_ADDRESS, STAKING_ABI, library, account)
 }
 
+export function getMigrationContract(tokenSymbol, library, account) {
+  if (tokenSymbol === 'SHWEATPANTS') {
+    return getContract(SHWEATPANTS_MIGRATION_ADDRESS, MIGRATE_ABI, library, account)
+  } else {
+    return getContract(ALVIN_MIGRATION_ADDRESS, MIGRATE_ABI, library, account)
+  }
+}
+
 export async function getTokenPairAddressFromFactory(tokenAddressA, tokenAddressB, library, account) {
   return getContract(FACTORY_ADDRESS, FACTORY_ABI, library, account).getPair(tokenAddressA, tokenAddressB)
 }
@@ -151,12 +164,12 @@ export async function getTotalStaked(tokenAddress, library) {
   return getContract(STAKING_ADDRESS, STAKING_ABI, library).totalStaked(tokenAddress)
 }
 
-export async function getDrippRate(tokenAddress, library) {
+export async function getDripp(tokenAddress, library) {
   if (!isAddress(tokenAddress)) {
     throw Error("Invalid 'tokenAddress' parameter" + `'${tokenAddress}'.`)
   }
 
-  return getContract(STAKING_ADDRESS, STAKING_ABI, library).drippRate(tokenAddress)
+  return getContract(STAKING_ADDRESS, STAKING_ABI, library).getDripp(tokenAddress)
 }
 
 export function amountFormatter(amount, baseDecimals = 18, displayDecimals = 3, useLessThan = true) {

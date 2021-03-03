@@ -51,7 +51,6 @@
   },
   {
     "constant": true,
-
     "inputs": [
       {
         "internalType": "address",
@@ -77,7 +76,6 @@
   },
   {
     "constant": true,
-
     "inputs": [
       {
         "internalType": "address",
@@ -115,6 +113,7 @@
     "type": "function"
   },
   {
+    "constant": true,
     "inputs": [],
     "name": "countDripps",
     "outputs": [
@@ -128,6 +127,7 @@
     "type": "function"
   },
   {
+    "constant": true,
     "inputs": [
       {
         "internalType": "address",
@@ -135,11 +135,26 @@
         "type": "address"
       }
     ],
-    "name": "drippRate",
+    "name": "getDripp",
     "outputs": [
       {
+        "internalType": "address",
+        "name": "primaryToken_",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "lpToken_",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
-        "name": "",
+        "name": "activeTime_",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "supply_",
         "type": "uint256"
       }
     ],
@@ -168,7 +183,6 @@
   },
   {
     "constant": true,
-
     "inputs": [
       {
         "internalType": "address",
@@ -186,11 +200,6 @@
       {
         "internalType": "uint256",
         "name": "reward_",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "rewardedTokens_",
         "type": "uint256"
       }
     ],
@@ -267,27 +276,6 @@
     "type": "function"
   },
   {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "token",
-        "type": "address"
-      }
-    ],
-    "name": "totalRewarded",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
     "inputs": [
       {
         "internalType": "address",

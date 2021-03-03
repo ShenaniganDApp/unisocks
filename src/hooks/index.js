@@ -13,11 +13,13 @@ import {
   getStakedToken,
   getStakedRewards,
   getTotalStaked,
-  getDrippRate,
+  getMigrationContract,
+  getDripp,
   TOKEN_ADDRESSES,
   STAKING_ADDRESSES
 } from '../utils'
 import { utils } from 'ethers'
+import { BigNumber } from 'ethers/utils'
 
 export function useBlockEffect(functionToRun) {
   const { library } = useWeb3Context()
@@ -93,6 +95,18 @@ export function useStakingContract(withSignerIfPossible = true) {
   return useMemo(() => {
     try {
       return getStakingContract(library, withSignerIfPossible ? account : undefined)
+    } catch {
+      return null
+    }
+  }, [library, withSignerIfPossible, account])
+}
+
+export function useMigrationContract(tokenSymbol, withSignerIfPossible = true) {
+  const { library, account } = useWeb3Context()
+
+  return useMemo(() => {
+    try {
+      return getMigrationContract(tokenSymbol, library, withSignerIfPossible ? account : undefined)
     } catch {
       return null
     }
@@ -339,9 +353,10 @@ export function useDrippRate(tokenAddress) {
   const updateDrippRate = useCallback(() => {
     if (isAddress(tokenAddress)) {
       let stale = false
-      getDrippRate(tokenAddress, library)
-        .then(rate => {
+      getDripp(tokenAddress, library)
+        .then(dripp => {
           if (!stale) {
+            const rate = dripp.supply.div(dripp.activeTime)
             setDrippRate(rate)
           }
         })

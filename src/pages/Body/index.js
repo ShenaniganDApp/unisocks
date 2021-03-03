@@ -9,10 +9,12 @@ import BuyButtons from '../../components/Buttons'
 import RedeemButton from '../../components/RedeemButton'
 import StakeButton from '../../components/StakeButton'
 import Checkout from '../../components/Checkout'
-import { amountFormatter } from '../../utils'
+import { ALVIN_MIGRATION_ADDRESS, amountFormatter, SHWEATPANTS_MIGRATION_ADDRESS, TOKEN_ADDRESSES } from '../../utils'
 import agaave from '../../components/Gallery/agaave.png'
 import SHE from '../../components/Gallery/SHE.png'
 import Button from '../../components/Button'
+import Migrate from '../../components/Migrate'
+import { useAddressAllowance, useAddressBalance } from '../../hooks'
 
 export function Header({
   totalSHWEATPANTSSupply,
@@ -167,7 +169,8 @@ export default function Body({
   reserveSHWEATPANTSToken,
   reserveALVINToken,
   totalSHWEATPANTSSupply,
-  totalALVINSupply
+  totalALVINSupply,
+  migrate
 }) {
   const { account } = useWeb3Context()
   const [currentTransaction, _setCurrentTransaction] = useState({})
@@ -291,6 +294,26 @@ export default function Body({
           <StakeButton color={'linear-gradient(107deg,#cbf3ef,#fafae2 49.48%,#ff006c)'} text="Stake" />
         </Link>
       </div>
+      <Flex style={{ width: '75%', justifyContent: 'center', alignItems: 'center' }}>
+        <Migrate
+          title={'Migrate Alvin V1'}
+          background={'white'}
+          unlock={unlock}
+          tokenSymbol={'ALVIN'}
+          balance={useAddressBalance(account, TOKEN_ADDRESSES.ALVINV1)}
+          tokenAllowance={useAddressAllowance(account, TOKEN_ADDRESSES.ALVINV1, ALVIN_MIGRATION_ADDRESS)}
+          migrate={migrate}
+        ></Migrate>
+        <Migrate
+          title={'Migrate SHWEATPANTS V1'}
+          background={'white'}
+          tokenSymbol={'SHWEATPANTS'}
+          tokenAllowance={useAddressAllowance(account, TOKEN_ADDRESSES.SHWEATPANTSV1, SHWEATPANTS_MIGRATION_ADDRESS)}
+          balance={useAddressBalance(account, TOKEN_ADDRESSES.SHWEATPANTSV1)}
+          unlock={unlock}
+          migrate={migrate}
+        ></Migrate>
+      </Flex>
       <Checkout
         selectedTokenSymbol={selectedTokenSymbol}
         setSelectedTokenSymbol={setSelectedTokenSymbol}
