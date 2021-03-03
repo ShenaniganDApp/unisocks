@@ -20,11 +20,11 @@ export default function Card({ totalDrippSupply, dollarPrice, reserveDrippToken,
         <MarketData>
           <span>
             <CurrentPrice>{dollarPrice ? `$${amountFormatter(dollarPrice, 18, 2)} USD` : '$0.00'}</CurrentPrice>
-            <SockCount>
+            {/* <SockCount>
               {reserveDrippToken && totalDrippSupply
                 ? `${amountFormatter(reserveDrippToken, 18, 0)}/${totalDrippSupply} available`
                 : ''}
-            </SockCount>
+            </SockCount> */}
           </span>
           <Link to="/stats">
             <Info>
