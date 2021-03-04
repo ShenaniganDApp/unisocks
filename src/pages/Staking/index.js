@@ -173,7 +173,6 @@ export default function Staking({
   stakedHNYTokenOld,
   stakedHNYPRTCLETokenOld
 }) {
-  
   const { account } = useWeb3Context()
   const [currentTransaction, _setCurrentTransaction] = useState({})
   const setCurrentTransaction = useCallback((hash, type, amount) => {
@@ -187,6 +186,8 @@ export default function Staking({
   const [showWorks, setShowWorks] = useState(false)
   const shweatpantsRewards = useStakingRewards(account, TOKEN_ADDRESSES.SHWEATPANTS)
   const alvinRewards = useStakingRewards(account, TOKEN_ADDRESSES.ALVIN)
+  console.log('stakedHNYPRTCLEToken: ', stakedHNYPRTCLEToken && stakedHNYPRTCLEToken.toString())
+  console.log('stakedHNYPRTCLETokenOld: ',  stakedHNYPRTCLETokenOld && stakedHNYPRTCLETokenOld.toString())
 
   return (
     <AppWrapper overlay={state.visible}>
