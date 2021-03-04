@@ -48,7 +48,7 @@ const MigrateInfo = styled.p`
   font-feature-settings: 'tnum' on, 'onum' on;
 `
 
-const Input = ({ tokenSymbol, title, background, balance, tokenAllowance, unlock, migrate }) => {
+const Input = ({ tokenSymbol, title, background, balance, tokenAllowance, unlock, migrate, version }) => {
   const [migrateAmount, setMigrateAmount] = useState(0)
   const one = new BigNumber('1000000000000000000')
   const formattedBalance = balance ? amountFormatter(balance, 18, 18) : 0
@@ -117,7 +117,7 @@ const Input = ({ tokenSymbol, title, background, balance, tokenAllowance, unlock
               text={`Unlock ${tokenSymbol}`}
               type={'cta'}
               onClick={() => {
-                unlock(false, tokenSymbol, false, true)
+                unlock(false, tokenSymbol, false, true, version)
               }}
             />
           ) : (
@@ -129,7 +129,7 @@ const Input = ({ tokenSymbol, title, background, balance, tokenAllowance, unlock
                 }}
                 text="Migrate"
                 disabled={!migrateAmount || migrateAmount > balance}
-                onClick={() => (balance > migrateAmount ? migrate(migrateAmount, tokenSymbol) : null)}
+                onClick={() => (balance > migrateAmount ? migrate(migrateAmount, tokenSymbol, version) : null)}
               ></Button>
             </div>
           )}

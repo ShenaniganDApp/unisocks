@@ -66,7 +66,7 @@ const Input = ({
 }) => {
   const [stakeAmount, setStakeAmount] = useState(0)
   const one = new BigNumber('1000000000000000000')
-  const formattedBalance = balance ? amountFormatter(balance) : 0
+  const formattedBalance = balance ? amountFormatter(balance, 18, 18) : 0
   const formattedStakedToken = stakedToken ? amountFormatter(stakedToken) : 0
   const formattedRewards = rewards ? amountFormatter(rewards) : 0
   const formattedTotalStaked = totalStaked ? amountFormatter(totalStaked) : 0
@@ -92,9 +92,7 @@ const Input = ({
       <div style={{ display: 'flex', justifyContent: 'space-around' }}>
         <Title>{title}</Title>
         <div>
-          <StakingInfo>
-            {formattedDrippRate} per day
-          </StakingInfo>
+          <StakingInfo>{formattedDrippRate} per day</StakingInfo>
         </div>
       </div>
 

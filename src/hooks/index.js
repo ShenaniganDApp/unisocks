@@ -101,12 +101,12 @@ export function useStakingContract(withSignerIfPossible = true) {
   }, [library, withSignerIfPossible, account])
 }
 
-export function useMigrationContract(tokenSymbol, withSignerIfPossible = true) {
+export function useMigrationContract(tokenSymbol, version, withSignerIfPossible = true) {
   const { library, account } = useWeb3Context()
 
   return useMemo(() => {
     try {
-      return getMigrationContract(tokenSymbol, library, withSignerIfPossible ? account : undefined)
+      return getMigrationContract(tokenSymbol, version, library, withSignerIfPossible ? account : undefined)
     } catch {
       return null
     }

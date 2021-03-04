@@ -8,8 +8,11 @@ import {
   ERROR_CODES,
   STAKING_ADDRESSES,
   STAKING_SYMBOLS,
-  SHWEATPANTS_MIGRATION_ADDRESS,
-  ALVIN_MIGRATION_ADDRESS
+  STAKING_ADDRESS,
+  SHWEATPANTS_MIGRATION_ADDRESSV2,
+  ALVIN_MIGRATION_ADDRESSV2,
+  SHWEATPANTS_MIGRATION_ADDRESSV3,
+  ALVIN_MIGRATION_ADDRESSV3
 } from '../../utils'
 import {
   useTokenContract,
@@ -175,8 +178,10 @@ export default function Main({ stats, status, staking }) {
 
   //get Staking contracts
   const stakingContract = useStakingContract(account)
-  const shweatpantsMigrationContract = useMigrationContract('SHWEATPANTS', account)
-  const alvinMigrationContract = useMigrationContract('ALVIN', account)
+  const shweatpantsMigrationContractV2 = useMigrationContract('SHWEATPANTS', 2, account)
+  const alvinMigrationContractV2 = useMigrationContract('ALVIN', 2, account)
+  const shweatpantsMigrationContractV3 = useMigrationContract('SHWEATPANTS', 3, account)
+  const alvinMigrationContractV3 = useMigrationContract('ALVIN', 3, account)
 
   // get exchange contracts
   const pairContractSHWEATPANTS = usePairContract(
@@ -192,6 +197,8 @@ export default function Main({ stats, status, staking }) {
   const tokenContractALVIN = useTokenContract(TOKEN_ADDRESSES.ALVIN)
   const tokenContractSHWEATPANTSV1 = useTokenContract(TOKEN_ADDRESSES.SHWEATPANTSV1)
   const tokenContractALVINV1 = useTokenContract(TOKEN_ADDRESSES.ALVINV1)
+  const tokenContractSHWEATPANTSV2 = useTokenContract(TOKEN_ADDRESSES.SHWEATPANTSV2)
+  const tokenContractALVINV2 = useTokenContract(TOKEN_ADDRESSES.ALVINV2)
   const tokenContractSelectedToken = useTokenContract(TOKEN_ADDRESSES[selectedTokenSymbol])
   const tokenContractStakingTokens = {}
   tokenContractStakingTokens['HNY'] = useTokenContract(STAKING_ADDRESSES['HNY'])
@@ -239,6 +246,8 @@ export default function Main({ stats, status, staking }) {
   const stakedPRTCLEToken = useStakedToken(account, STAKING_ADDRESSES.PRTCLE, false)
   const stakedHNYToken = useStakedToken(account, STAKING_ADDRESSES.HNY, false)
   const stakedHNYPRTCLEToken = useStakedToken(account, STAKING_ADDRESSES.HNYPRTCLE, true)
+
+  const check = useAddressAllowance(account, '0xaaefc56e97624b57ce98374eb4a45b6fd5ffb982', STAKING_ADDRESS)
 
   const [USDExchangeRateETH, setUSDExchangeRateETH] = useState()
   const [USDExchangeRateSelectedToken, setUSDExchangeRateSelectedToken] = useState()
@@ -321,7 +330,7 @@ export default function Main({ stats, status, staking }) {
     }
   }, [USDExchangeRateETH, reserveSHWEATPANTSETH, reserveSHWEATPANTSToken, reserveALVINETH, reserveALVINToken])
 
-  async function unlock(buyingDripp = true, tokenSymbol, staking = false, migrate = false) {
+  async function unlock(buyingDripp = true, tokenSymbol, staking = false, migrate = false, version) {
     //@TODO
     setStakingTokenSymbol(tokenSymbol)
     let contract
@@ -335,11 +344,21 @@ export default function Main({ stats, status, staking }) {
       }
     } else if (migrate) {
       if (tokenSymbol === 'SHWEATPANTS') {
-        contract = tokenContractSHWEATPANTSV1
-        spenderAddress = SHWEATPANTS_MIGRATION_ADDRESS
+        if (version === 2) {
+          contract = tokenContractSHWEATPANTSV1
+          spenderAddress = SHWEATPANTS_MIGRATION_ADDRESSV2
+        } else if (version === 3) {
+          contract = tokenContractSHWEATPANTSV2
+          spenderAddress = SHWEATPANTS_MIGRATION_ADDRESSV3
+        }
       } else if (tokenSymbol === 'ALVIN') {
-        contract = tokenContractALVINV1
-        spenderAddress = ALVIN_MIGRATION_ADDRESS
+        if (version === 2) {
+          contract = tokenContractALVINV1
+          spenderAddress = ALVIN_MIGRATION_ADDRESSV2
+        } else if (version === 3) {
+          contract = tokenContractALVINV2
+          spenderAddress = ALVIN_MIGRATION_ADDRESSV3
+        }
       }
     } else {
       if (tokenSymbol === 'SHWEATPANTS') {
@@ -370,12 +389,10 @@ export default function Main({ stats, status, staking }) {
   // buy functionality
   const validateBuy = useCallback(
     (numberOfDripp, tokenSymbol) => {
-      console.log('tokenSymbol: ', tokenSymbol);
       // validate passed amount
       let parsedValue
       try {
         parsedValue = ethers.utils.parseUnits(numberOfDripp, 18)
-        
       } catch (error) {
         error.code = ERROR_CODES.INVALID_AMOUNT
         throw error
@@ -751,27 +768,45 @@ export default function Main({ stats, status, staking }) {
     })
   }
 
-  async function migrate(amount, tokenSymbol) {
+  async function migrate(amount, tokenSymbol, version) {
     const parsedAmount = ethers.utils.parseUnits(amount, 18)
 
     const estimatedGasPrice = await library
       .getGasPrice()
       .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
 
-    if (tokenSymbol == 'SHWEATPANTS') {
-      const estimatedGasLimit = await shweatpantsMigrationContract.estimate.migrate(account, parsedAmount)
+    if (tokenSymbol === 'SHWEATPANTS') {
+      if (version === 2) {
+        const estimatedGasLimit = await shweatpantsMigrationContractV2.estimate.migrate(account, parsedAmount)
 
-      return shweatpantsMigrationContract.migrate(account, parsedAmount, {
-        gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
-        gasPrice: estimatedGasPrice
-      })
-    } else if (tokenSymbol == 'ALVIN') {
-      const estimatedGasLimit = await alvinMigrationContract.estimate.migrate(account, parsedAmount)
+        return shweatpantsMigrationContractV2.migrate(account, parsedAmount, {
+          gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
+          gasPrice: estimatedGasPrice
+        })
+      } else if (version === 3) {
+        const estimatedGasLimit = await shweatpantsMigrationContractV3.estimate.migrate(account, parsedAmount)
 
-      return alvinMigrationContract.migrate(account, parsedAmount, {
-        gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
-        gasPrice: estimatedGasPrice
-      })
+        return shweatpantsMigrationContractV3.migrate(account, parsedAmount, {
+          gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
+          gasPrice: estimatedGasPrice
+        })
+      }
+    } else if (tokenSymbol === 'ALVIN') {
+      if (version === 2) {
+        const estimatedGasLimit = await alvinMigrationContractV2.estimate.migrate(account, parsedAmount)
+
+        return alvinMigrationContractV2.migrate(account, parsedAmount, {
+          gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
+          gasPrice: estimatedGasPrice
+        })
+      } else if (version === 3) {
+        const estimatedGasLimit = await alvinMigrationContractV3.estimate.migrate(account, parsedAmount)
+
+        return alvinMigrationContractV3.migrate(account, parsedAmount, {
+          gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
+          gasPrice: estimatedGasPrice
+        })
+      }
     }
   }
 

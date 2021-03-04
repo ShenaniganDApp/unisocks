@@ -9,7 +9,14 @@ import BuyButtons from '../../components/Buttons'
 import RedeemButton from '../../components/RedeemButton'
 import StakeButton from '../../components/StakeButton'
 import Checkout from '../../components/Checkout'
-import { ALVIN_MIGRATION_ADDRESS, amountFormatter, SHWEATPANTS_MIGRATION_ADDRESS, TOKEN_ADDRESSES } from '../../utils'
+import {
+  ALVIN_MIGRATION_ADDRESSV2,
+  ALVIN_MIGRATION_ADDRESSV3,
+  amountFormatter,
+  SHWEATPANTS_MIGRATION_ADDRESSV2,
+  SHWEATPANTS_MIGRATION_ADDRESSV3,
+  TOKEN_ADDRESSES
+} from '../../utils'
 import agaave from '../../components/Gallery/agaave.png'
 import SHE from '../../components/Gallery/SHE.png'
 import Button from '../../components/Button'
@@ -300,16 +307,40 @@ export default function Body({
           background={'white'}
           unlock={unlock}
           tokenSymbol={'ALVIN'}
+          version={2}
           balance={useAddressBalance(account, TOKEN_ADDRESSES.ALVINV1)}
-          tokenAllowance={useAddressAllowance(account, TOKEN_ADDRESSES.ALVINV1, ALVIN_MIGRATION_ADDRESS)}
+          tokenAllowance={useAddressAllowance(account, TOKEN_ADDRESSES.ALVINV1, ALVIN_MIGRATION_ADDRESSV2)}
           migrate={migrate}
         ></Migrate>
         <Migrate
           title={'Migrate SHWEATPANTS V1'}
           background={'white'}
           tokenSymbol={'SHWEATPANTS'}
-          tokenAllowance={useAddressAllowance(account, TOKEN_ADDRESSES.SHWEATPANTSV1, SHWEATPANTS_MIGRATION_ADDRESS)}
+          version={2}
+          tokenAllowance={useAddressAllowance(account, TOKEN_ADDRESSES.SHWEATPANTSV1, SHWEATPANTS_MIGRATION_ADDRESSV2)}
           balance={useAddressBalance(account, TOKEN_ADDRESSES.SHWEATPANTSV1)}
+          unlock={unlock}
+          migrate={migrate}
+        ></Migrate>
+      </Flex>
+      <Flex style={{ width: '75%', justifyContent: 'center', alignItems: 'center' }}>
+        <Migrate
+          title={'Migrate Alvin V2'}
+          background={'white'}
+          unlock={unlock}
+          tokenSymbol={'ALVIN'}
+          version={3}
+          balance={useAddressBalance(account, TOKEN_ADDRESSES.ALVINV2)}
+          tokenAllowance={useAddressAllowance(account, TOKEN_ADDRESSES.ALVINV2, ALVIN_MIGRATION_ADDRESSV3)}
+          migrate={migrate}
+        ></Migrate>
+        <Migrate
+          title={'Migrate SHWEATPANTS V2'}
+          background={'white'}
+          tokenSymbol={'SHWEATPANTS'}
+          version={3}
+          tokenAllowance={useAddressAllowance(account, TOKEN_ADDRESSES.SHWEATPANTSV2, SHWEATPANTS_MIGRATION_ADDRESSV3)}
+          balance={useAddressBalance(account, TOKEN_ADDRESSES.SHWEATPANTSV2)}
           unlock={unlock}
           migrate={migrate}
         ></Migrate>
