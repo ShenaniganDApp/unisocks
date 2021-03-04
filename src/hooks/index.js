@@ -252,7 +252,7 @@ export function useStakingRewards(address, tokenAddress) {
       getStakedRewards(address, tokenAddress, library)
         .then(reward => {
           if (!stale) {
-            setStakedRewards(reward.reward_)
+            setStakedRewards(reward)
           }
         })
         .catch(() => {
