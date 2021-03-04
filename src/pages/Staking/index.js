@@ -182,6 +182,7 @@ export default function Staking({
   const [showWorks, setShowWorks] = useState(false)
   const shweatpantsRewards = useStakingRewards(account, TOKEN_ADDRESSES.SHWEATPANTS)
   const alvinRewards = useStakingRewards(account, TOKEN_ADDRESSES.ALVIN)
+  const rate = useTotalStaked(TOKEN_ADDRESSES.HNYPRTCLE)
 
   return (
     <AppWrapper overlay={state.visible}>
@@ -283,7 +284,6 @@ export default function Staking({
                 rate={useDrippRate(TOKEN_ADDRESSES.SHWEATPANTS)}
               />
             </div>
-
             <div style={{ flex: '1 1 100%' }}>
               <Input
                 title={'HNY-PRTCLE'}
@@ -296,7 +296,7 @@ export default function Staking({
                 tokenAllowance={useStakingAllowance(account, STAKING_ADDRESSES.HNYPRTCLE)}
                 unlock={unlock}
                 isLiquidity={true}
-                totalStaked={useTotalStaked(TOKEN_ADDRESSES.HNYPRTCLE)}
+                totalStaked={useTotalStaked(STAKING_ADDRESSES.HNYPRTCLE)}
                 rate={useDrippRate(TOKEN_ADDRESSES.SHWEATPANTS)}
               />
             </div>

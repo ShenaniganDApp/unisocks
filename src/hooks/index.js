@@ -16,7 +16,8 @@ import {
   getMigrationContract,
   getDripp,
   TOKEN_ADDRESSES,
-  STAKING_ADDRESSES
+  STAKING_ADDRESSES,
+  amountFormatter
 } from '../utils'
 import { utils } from 'ethers'
 import { BigNumber } from 'ethers/utils'
@@ -356,7 +357,7 @@ export function useDrippRate(tokenAddress) {
       getDripp(tokenAddress, library)
         .then(dripp => {
           if (!stale) {
-            const rate = dripp.supply.div(dripp.activeTime)
+            const rate = dripp.supply_.div(dripp.activeTime_)
             setDrippRate(rate)
           }
         })

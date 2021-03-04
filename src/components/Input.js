@@ -68,18 +68,16 @@ const Input = ({
   const one = new BigNumber('1000000000000000000')
   const formattedBalance = balance ? amountFormatter(balance, 18, 18) : 0
   const formattedStakedToken = stakedToken ? amountFormatter(stakedToken) : 0
-  console.log('formattedStakedToken: ', formattedStakedToken)
-  const formattedRewards = rewards ? amountFormatter(rewards) : 0
+
   const formattedTotalStaked = totalStaked ? amountFormatter(totalStaked) : 0
-  const formattedDrippRate =
-    rate && totalStaked
-      ? amountFormatter(
-          stakedToken
-            .div(totalStaked)
-            .mul(rate)
-            .div(2)
-        )
+  const formattedPercentPool = ((formattedStakedToken / formattedTotalStaked) * 100).toFixed(3)
+  const formattedDrippRate = rate && amountFormatter(rate, 18, 18, false)
+
+  const formattedDailyRate =
+    rate && totalStaked && stakedToken
+      ? ((((formattedStakedToken / formattedTotalStaked) * formattedDrippRate) / 2) * 86400).toFixed(8)
       : 0
+
   const shouldRenderUnlock = tokenAllowance && tokenAllowance.eq(0)
 
   return (
@@ -93,7 +91,7 @@ const Input = ({
       <div style={{ display: 'flex', justifyContent: 'space-around' }}>
         <Title>{title}</Title>
         <div>
-          <StakingInfo>{formattedDrippRate} per day</StakingInfo>
+          <StakingInfo>{formattedDailyRate} per second</StakingInfo>
         </div>
       </div>
 
@@ -141,7 +139,7 @@ const Input = ({
           </StakingInfo>
           <StakingInfo>
             % of Pool:
-            {' ' + formattedStakedToken / formattedTotalStaked + '%'}
+            {' ' + formattedPercentPool + '%'}
           </StakingInfo>
         </div>
       </div>

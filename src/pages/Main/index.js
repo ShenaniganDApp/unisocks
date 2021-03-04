@@ -247,7 +247,6 @@ export default function Main({ stats, status, staking }) {
   const stakedHNYToken = useStakedToken(account, STAKING_ADDRESSES.HNY, false)
   const stakedHNYPRTCLEToken = useStakedToken(account, STAKING_ADDRESSES.HNYPRTCLE, true)
 
-
   const [USDExchangeRateETH, setUSDExchangeRateETH] = useState()
   const [USDExchangeRateSelectedToken, setUSDExchangeRateSelectedToken] = useState()
 
