@@ -186,9 +186,7 @@ export default function Staking({
   const [showConnect, setShowConnect] = useState(false)
   const [showWorks, setShowWorks] = useState(false)
   const shweatpantsRewards = useStakingRewards(account, TOKEN_ADDRESSES.SHWEATPANTS)
-  console.log('shweatpantsRewards: ', shweatpantsRewards && shweatpantsRewards.toString())
   const alvinRewards = useStakingRewards(account, TOKEN_ADDRESSES.ALVIN)
-  console.log('alvinRewards: ', alvinRewards && alvinRewards.toString())
 
   return (
     <AppWrapper overlay={state.visible}>

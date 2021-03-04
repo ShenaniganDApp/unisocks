@@ -249,37 +249,38 @@ export default function Main({ stats, status, staking }) {
   const stakedHNYPRTCLEToken = useStakedToken(account, STAKING_ADDRESSES.HNYPRTCLE, true)
 
   const stakedPRTCLETokenOld = useStakedToken(account, STAKING_ADDRESSES.PRTCLE, false, true)
-  console.log('stakedPRTCLETokenOld: ', stakedPRTCLETokenOld&&stakedPRTCLETokenOld.toString());
   const stakedHNYTokenOld = useStakedToken(account, STAKING_ADDRESSES.HNY, false, true)
   const stakedHNYPRTCLETokenOld = useStakedToken(account, STAKING_ADDRESSES.HNYPRTCLE, true, true)
 
   const [USDExchangeRateETH, setUSDExchangeRateETH] = useState()
   const [USDExchangeRateSelectedToken, setUSDExchangeRateSelectedToken] = useState()
 
-  const ready = !!(
-    (account === null || allowanceSHWEATPANTS) &&
-    (account === null || allowanceALVIN) &&
-    (selectedTokenSymbol === 'ETH' || account === null || allowanceSHWEATPANTSSelectedToken) &&
-    (selectedTokenSymbol === 'ETH' || account === null || allowanceALVINSelectedToken) &&
-    (account === null || balanceETH) &&
-    (account === null || balanceSHWEATPANTS) &&
-    (account === null || balanceALVIN) &&
-    (account === null || balanceSelectedToken) &&
-    reserveSHWEATPANTSETH &&
-    reserveALVINETH &&
-    reserveSHWEATPANTSToken &&
-    reserveALVINToken &&
-    (selectedTokenSymbol === 'ETH' || reserveSelectedTokenETH) &&
-    (selectedTokenSymbol === 'ETH' || reserveSelectedTokenToken) &&
-    selectedTokenSymbol &&
-    (USDExchangeRateETH || USDExchangeRateSelectedToken) &&
-    (account === null || stakedPRTCLEToken) &&
-    (account === null || stakedHNYToken) &&
-    (account === null || stakedHNYPRTCLEToken) &&
-    (account === null || stakedPRTCLETokenOld) &&
-    (account === null || stakedHNYTokenOld) &&
-    (account === null || stakedHNYPRTCLETokenOld)
-  )
+  // const ready = !!(
+  //   (account === null || allowanceSHWEATPANTS) &&
+  //   (account === null || allowanceALVIN) &&
+  //   (selectedTokenSymbol === 'ETH' || account === null || allowanceSHWEATPANTSSelectedToken) &&
+  //   (selectedTokenSymbol === 'ETH' || account === null || allowanceALVINSelectedToken) &&
+  //   (account === null || balanceETH) &&
+  //   (account === null || balanceSHWEATPANTS) &&
+  //   (account === null || balanceALVIN) &&
+  //   (account === null || balanceSelectedToken) &&
+  //   reserveSHWEATPANTSETH &&
+  //   reserveALVINETH &&
+  //   reserveSHWEATPANTSToken &&
+  //   reserveALVINToken &&
+  //   (selectedTokenSymbol === 'ETH' || reserveSelectedTokenETH) &&
+  //   (selectedTokenSymbol === 'ETH' || reserveSelectedTokenToken) &&
+  //   selectedTokenSymbol &&
+  //   (USDExchangeRateETH || USDExchangeRateSelectedToken) &&
+  //   (account === null || stakedPRTCLEToken) &&
+  //   (account === null || stakedHNYToken) &&
+  //   (account === null || stakedHNYPRTCLEToken) &&
+  //   (account === null || stakedPRTCLETokenOld) &&
+  //   (account === null || stakedHNYTokenOld) &&
+  //   (account === null || stakedHNYPRTCLETokenOld)
+  // )
+
+  const ready = false
   console.log('stakedHNYPRTCLETokenOld: ', stakedHNYPRTCLETokenOld && stakedHNYPRTCLETokenOld.toString())
 
   useEffect(() => {
