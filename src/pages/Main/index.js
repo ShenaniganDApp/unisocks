@@ -249,6 +249,7 @@ export default function Main({ stats, status, staking }) {
   const stakedHNYPRTCLEToken = useStakedToken(account, STAKING_ADDRESSES.HNYPRTCLE, true)
 
   const stakedPRTCLETokenOld = useStakedToken(account, STAKING_ADDRESSES.PRTCLE, false, true)
+  console.log('stakedPRTCLETokenOld: ', stakedPRTCLETokenOld&&stakedPRTCLETokenOld.toString());
   const stakedHNYTokenOld = useStakedToken(account, STAKING_ADDRESSES.HNY, false, true)
   const stakedHNYPRTCLETokenOld = useStakedToken(account, STAKING_ADDRESSES.HNYPRTCLE, true, true)
 
