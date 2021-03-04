@@ -241,7 +241,7 @@ export default function Staking({
                 flex: 1,
                 'margin-top': '1rem'
               }}
-              disabled={!alvinRewards || (alvinRewards && alvinRewards.eq(new BigNumber(0)))}
+              disabled={!alvinRewards || (alvinRewards && alvinRewards.isZero())}
               text={`Claim ${alvinRewards ? amountFormatter(alvinRewards, 18, 8) : 0} ALVIN`}
               onClick={() => claim && claim('ALVIN')}
             ></Button>
@@ -344,7 +344,7 @@ export default function Staking({
                 flex: 1,
                 'margin-top': '1rem'
               }}
-              disabled={!shweatpantsRewards || (shweatpantsRewards && shweatpantsRewards.eq(new BigNumber(0)))}
+              disabled={!shweatpantsRewards || (shweatpantsRewards && shweatpantsRewards.isZero())}
               text={`Claim ${shweatpantsRewards ? amountFormatter(shweatpantsRewards, 18, 8) : 0} SHWEATPANTS`}
               onClick={() => claim && claim('SHWEATPANTS')}
             ></Button>
