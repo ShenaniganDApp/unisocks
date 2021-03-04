@@ -344,7 +344,7 @@ export default function Staking({
                 flex: 1,
                 'margin-top': '1rem'
               }}
-              disabled={!shweatpantsRewards || (shweatpantsRewards && shweatpantsRewards.eq(0))}
+              disabled={!shweatpantsRewards || (shweatpantsRewards && shweatpantsRewards.eq(new BigNumber(0)))}
               text={`Claim ${shweatpantsRewards ? amountFormatter(shweatpantsRewards, 18, 8) : 0} SHWEATPANTS`}
               onClick={() => claim && claim('SHWEATPANTS')}
             ></Button>
