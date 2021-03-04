@@ -37,7 +37,16 @@ const SelectItem = styled.option`
 `
 
 const options = Object.keys(TOKEN_SYMBOLS)
-  .filter(s => s !== 'SHWEATPANTS' && s !== 'ALVIN' && s !== 'WXDAI' && s !== 'SHWEATPANTSV1' && s !== 'ALVINV1')
+  .filter(
+    s =>
+      s !== 'SHWEATPANTS' &&
+      s !== 'ALVIN' &&
+      s !== 'WXDAI' &&
+      s !== 'SHWEATPANTSV1' &&
+      s !== 'ALVINV1' &&
+      s !== 'SHWEATPANTSV2' &&
+      s !== 'ALVINV2'
+  )
   .map(s => ({ value: s, label: s }))
 
 function renderOptions(token, i, selectedTokenSymbol, prefix) {
