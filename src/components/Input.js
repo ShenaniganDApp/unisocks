@@ -91,7 +91,7 @@ const Input = ({
       <div style={{ display: 'flex', justifyContent: 'space-around' }}>
         <Title>{title}</Title>
         <div>
-          <StakingInfo>{formattedDailyRate} per second</StakingInfo>
+          <StakingInfo>{formattedDailyRate} per day</StakingInfo>
         </div>
       </div>
 

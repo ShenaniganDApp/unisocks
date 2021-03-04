@@ -19,6 +19,7 @@ import {
   useDrippRate
 } from '../../hooks'
 import Button from '../../components/Button'
+import { BigNumber } from 'ethers/utils'
 
 export function Header({ stakedPRTCLEToken, stakedHNYToken, ready, balanceSHWEATPANTS, balanceALVIN, setShowConnect }) {
   const { account, setConnector } = useWeb3Context()
@@ -240,7 +241,7 @@ export default function Staking({
                 flex: 1,
                 'margin-top': '1rem'
               }}
-              disabled={!alvinRewards || (alvinRewards && alvinRewards.eq(0))}
+              disabled={!alvinRewards || (alvinRewards && alvinRewards.eq(new BigNumber(0)))}
               text={`Claim ${alvinRewards ? amountFormatter(alvinRewards, 18, 8) : 0} ALVIN`}
               onClick={() => claim && claim('ALVIN')}
             ></Button>
