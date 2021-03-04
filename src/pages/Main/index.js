@@ -8,7 +8,6 @@ import {
   ERROR_CODES,
   STAKING_ADDRESSES,
   STAKING_SYMBOLS,
-  STAKING_ADDRESS,
   SHWEATPANTS_MIGRATION_ADDRESSV2,
   ALVIN_MIGRATION_ADDRESSV2,
   SHWEATPANTS_MIGRATION_ADDRESSV3,
@@ -25,6 +24,7 @@ import {
   usePairReserves,
   usePairAllowance,
   useTotalSupply,
+  useOldStakingContract,
   useStakedToken
 } from '../../hooks'
 import Body from '../Body'
@@ -178,6 +178,7 @@ export default function Main({ stats, status, staking }) {
 
   //get Staking contracts
   const stakingContract = useStakingContract(account)
+  const stakingContractOld = useOldStakingContract(account)
   const shweatpantsMigrationContractV2 = useMigrationContract('SHWEATPANTS', 2, account)
   const alvinMigrationContractV2 = useMigrationContract('ALVIN', 2, account)
   const shweatpantsMigrationContractV3 = useMigrationContract('SHWEATPANTS', 3, account)
@@ -247,6 +248,10 @@ export default function Main({ stats, status, staking }) {
   const stakedHNYToken = useStakedToken(account, STAKING_ADDRESSES.HNY, false)
   const stakedHNYPRTCLEToken = useStakedToken(account, STAKING_ADDRESSES.HNYPRTCLE, true)
 
+  const stakedPRTCLETokenOld = useStakedToken(account, STAKING_ADDRESSES.PRTCLE, false, true)
+  const stakedHNYTokenOld = useStakedToken(account, STAKING_ADDRESSES.HNY, false, true)
+  const stakedHNYPRTCLETokenOld = useStakedToken(account, STAKING_ADDRESSES.HNYPRTCLE, true, true)
+
   const [USDExchangeRateETH, setUSDExchangeRateETH] = useState()
   const [USDExchangeRateSelectedToken, setUSDExchangeRateSelectedToken] = useState()
 
@@ -269,8 +274,12 @@ export default function Main({ stats, status, staking }) {
     (USDExchangeRateETH || USDExchangeRateSelectedToken) &&
     (account === null || stakedPRTCLEToken) &&
     (account === null || stakedHNYToken) &&
-    (account === null || stakedHNYPRTCLEToken)
+    (account === null || stakedHNYPRTCLEToken) &&
+    (account === null || stakedPRTCLETokenOld) &&
+    (account === null || stakedHNYTokenOld) &&
+    (account === null || stakedHNYPRTCLETokenOld)
   )
+  console.log('stakedHNYPRTCLETokenOld: ', stakedHNYPRTCLETokenOld && stakedHNYPRTCLETokenOld.toString())
 
   useEffect(() => {
     //@TODO
@@ -730,27 +739,57 @@ export default function Main({ stats, status, staking }) {
     }
   }
 
-  async function withdrawTokenStake(tokenSymbol, isLiquidity) {
-    if (isLiquidity) {
-      const estimatedGasPrice = await library
-        .getGasPrice()
-        .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
-      const estimatedGasLimit = await stakingContract.estimate.withdrawAllLiquidityStake(STAKING_ADDRESSES[tokenSymbol])
+  async function withdrawTokenStake(tokenSymbol, isLiquidity, oldStaking = false) {
+    if (oldStaking) {
+      if (isLiquidity) {
+        const estimatedGasPrice = await library
+          .getGasPrice()
+          .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
+        const estimatedGasLimit = await stakingContractOld.estimate.withdrawAllLiquidityStake(
+          STAKING_ADDRESSES[tokenSymbol]
+        )
 
-      return stakingContract.withdrawAllLiquidityStake(STAKING_ADDRESSES[tokenSymbol], {
-        gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
-        gasPrice: estimatedGasPrice
-      })
+        return stakingContractOld.withdrawAllLiquidityStake(STAKING_ADDRESSES[tokenSymbol], {
+          gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
+          gasPrice: estimatedGasPrice
+        })
+      } else {
+        const estimatedGasPrice = await library
+          .getGasPrice()
+          .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
+        const estimatedGasLimit = await stakingContractOld.estimate.withdrawAllTokenStake(
+          STAKING_ADDRESSES[tokenSymbol]
+        )
+
+        return stakingContractOld.withdrawAllTokenStake(STAKING_ADDRESSES[tokenSymbol], {
+          gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
+          gasPrice: estimatedGasPrice
+        })
+      }
     } else {
-      const estimatedGasPrice = await library
-        .getGasPrice()
-        .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
-      const estimatedGasLimit = await stakingContract.estimate.withdrawAllTokenStake(STAKING_ADDRESSES[tokenSymbol])
+      if (isLiquidity) {
+        const estimatedGasPrice = await library
+          .getGasPrice()
+          .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
+        const estimatedGasLimit = await stakingContract.estimate.withdrawAllLiquidityStake(
+          STAKING_ADDRESSES[tokenSymbol]
+        )
 
-      return stakingContract.withdrawAllTokenStake(STAKING_ADDRESSES[tokenSymbol], {
-        gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
-        gasPrice: estimatedGasPrice
-      })
+        return stakingContract.withdrawAllLiquidityStake(STAKING_ADDRESSES[tokenSymbol], {
+          gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
+          gasPrice: estimatedGasPrice
+        })
+      } else {
+        const estimatedGasPrice = await library
+          .getGasPrice()
+          .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
+        const estimatedGasLimit = await stakingContract.estimate.withdrawAllTokenStake(STAKING_ADDRESSES[tokenSymbol])
+
+        return stakingContract.withdrawAllTokenStake(STAKING_ADDRESSES[tokenSymbol], {
+          gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
+          gasPrice: estimatedGasPrice
+        })
+      }
     }
   }
 
@@ -849,6 +888,9 @@ export default function Main({ stats, status, staking }) {
       stakedPRTCLEToken={stakedPRTCLEToken}
       stakedHNYToken={stakedHNYToken}
       stakedHNYPRTCLEToken={stakedHNYPRTCLEToken}
+      stakedPRTCLETokenOld={stakedPRTCLETokenOld}
+      stakedHNYTokenOld={stakedHNYTokenOld}
+      stakedHNYPRTCLETokenOld={stakedHNYPRTCLETokenOld}
     />
   ) : (
     <Body

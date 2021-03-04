@@ -15,12 +15,13 @@ import {
   getTotalStaked,
   getMigrationContract,
   getDripp,
+  getOldStakingContract,
+  getOldStakedToken,
   TOKEN_ADDRESSES,
   STAKING_ADDRESSES,
   amountFormatter
 } from '../utils'
 import { utils } from 'ethers'
-import { BigNumber } from 'ethers/utils'
 
 export function useBlockEffect(functionToRun) {
   const { library } = useWeb3Context()
@@ -96,6 +97,18 @@ export function useStakingContract(withSignerIfPossible = true) {
   return useMemo(() => {
     try {
       return getStakingContract(library, withSignerIfPossible ? account : undefined)
+    } catch {
+      return null
+    }
+  }, [library, withSignerIfPossible, account])
+}
+
+export function useOldStakingContract(withSignerIfPossible = true) {
+  const { library, account } = useWeb3Context()
+
+  return useMemo(() => {
+    try {
+      return getOldStakingContract(library, withSignerIfPossible ? account : undefined)
     } catch {
       return null
     }
@@ -277,7 +290,7 @@ export function useStakingRewards(address, tokenAddress) {
   return stakedRewards
 }
 
-export function useStakedToken(address, tokenAddress, isLiquidity) {
+export function useStakedToken(address, tokenAddress, isLiquidity, oldStaking) {
   const { library } = useWeb3Context()
 
   const [stakedToken, setStakedToken] = useState()
@@ -285,7 +298,10 @@ export function useStakedToken(address, tokenAddress, isLiquidity) {
   const updateStakedToken = useCallback(() => {
     if (isAddress(address) && isAddress(tokenAddress)) {
       let stale = false
-      getStakedToken(address, tokenAddress, isLiquidity, library)
+      ;(oldStaking
+        ? getOldStakedToken(address, tokenAddress, isLiquidity, library)
+        : getStakedToken(address, tokenAddress, isLiquidity, library)
+      )
         .then(staked => {
           if (!stale) {
             setStakedToken(staked)

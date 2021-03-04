@@ -168,8 +168,12 @@ export default function Staking({
   totalALVINSupply,
   stakedPRTCLEToken,
   stakedHNYToken,
-  stakedHNYPRTCLEToken
+  stakedHNYPRTCLEToken,
+  stakedPRTCLETokenOld,
+  stakedHNYTokenOld,
+  stakedHNYPRTCLETokenOld
 }) {
+  
   const { account } = useWeb3Context()
   const [currentTransaction, _setCurrentTransaction] = useState({})
   const setCurrentTransaction = useCallback((hash, type, amount) => {
@@ -182,7 +186,9 @@ export default function Staking({
   const [showConnect, setShowConnect] = useState(false)
   const [showWorks, setShowWorks] = useState(false)
   const shweatpantsRewards = useStakingRewards(account, TOKEN_ADDRESSES.SHWEATPANTS)
+  console.log('shweatpantsRewards: ', shweatpantsRewards && shweatpantsRewards.toString())
   const alvinRewards = useStakingRewards(account, TOKEN_ADDRESSES.ALVIN)
+  console.log('alvinRewards: ', alvinRewards && alvinRewards.toString())
 
   return (
     <AppWrapper overlay={state.visible}>
@@ -242,7 +248,7 @@ export default function Staking({
                 'margin-top': '1rem'
               }}
               disabled={!alvinRewards || (alvinRewards && alvinRewards.isZero())}
-              text={`Claim ${alvinRewards ? amountFormatter(alvinRewards, 18, 8) : 0} ALVIN`}
+              text={`Claim ${alvinRewards ? amountFormatter(alvinRewards, 18, 10) : 0} ALVIN`}
               onClick={() => claim && claim('ALVIN')}
             ></Button>
           </Content>
@@ -263,6 +269,7 @@ export default function Staking({
                 rewards={alvinRewards}
                 totalStaked={useTotalStaked(TOKEN_ADDRESSES.HNY)}
                 rate={useDrippRate(TOKEN_ADDRESSES.ALVIN)}
+                oldStaked={stakedHNYTokenOld}
               />
             </div>
             <div style={{ flex: '1 1 45%', marginLeft: '1rem' }}>
@@ -281,6 +288,7 @@ export default function Staking({
                 rewardSymbol={'SHWEATPANTS'}
                 rewards={shweatpantsRewards}
                 totalStaked={useTotalStaked(TOKEN_ADDRESSES.PRTCLE)}
+                oldStaked={stakedPRTCLETokenOld}
                 rate={useDrippRate(TOKEN_ADDRESSES.SHWEATPANTS)}
               />
             </div>
@@ -296,6 +304,7 @@ export default function Staking({
                 tokenAllowance={useStakingAllowance(account, STAKING_ADDRESSES.HNYPRTCLE)}
                 unlock={unlock}
                 isLiquidity={true}
+                oldStaked={stakedHNYPRTCLETokenOld}
                 totalStaked={useTotalStaked(STAKING_ADDRESSES.HNYPRTCLE)}
                 rate={useDrippRate(TOKEN_ADDRESSES.SHWEATPANTS)}
               />
@@ -345,7 +354,7 @@ export default function Staking({
                 'margin-top': '1rem'
               }}
               disabled={!shweatpantsRewards || (shweatpantsRewards && shweatpantsRewards.isZero())}
-              text={`Claim ${shweatpantsRewards ? amountFormatter(shweatpantsRewards, 18, 8) : 0} SHWEATPANTS`}
+              text={`Claim ${shweatpantsRewards ? amountFormatter(shweatpantsRewards, 18, 10) : 0} SHWEATPANTS`}
               onClick={() => claim && claim('SHWEATPANTS')}
             ></Button>
           </Content>

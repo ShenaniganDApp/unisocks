@@ -59,9 +59,7 @@ const Input = ({
   withdraw,
   tokenAllowance,
   unlock,
-  claim,
-  rewards,
-  rewardSymbol,
+  oldStaked,
   rate
 }) => {
   const [stakeAmount, setStakeAmount] = useState(0)
@@ -79,7 +77,6 @@ const Input = ({
       : 0
 
   const shouldRenderUnlock = tokenAllowance && tokenAllowance.eq(0)
-
   return (
     <InputWrapper
       style={{
@@ -174,15 +171,27 @@ const Input = ({
                 disabled={!stakeAmount || stakeAmount > balance}
                 onClick={() => (balance > stakeAmount ? stake(stakeAmount, tokenSymbol, isLiquidity) : null)}
               ></Button>
-              <Button
-                style={{
-                  flex: 1,
-                  margin: '0 0.5rem'
-                }}
-                disabled={stakedToken && stakedToken.eq(0)}
-                text="Withdraw"
-                onClick={() => withdraw && withdraw(tokenSymbol, isLiquidity)}
-              ></Button>
+              {oldStaked && stakedToken && oldStaked.eq(stakedToken) && !oldStaked.isZero() ? (
+                <Button
+                  style={{
+                    flex: 1,
+                    margin: '0 0.5rem'
+                  }}
+                  disabled={oldStaked && oldStaked.eq(0)}
+                  text="Withdraw Old Stake"
+                  onClick={() => withdraw && withdraw(tokenSymbol, isLiquidity, true)}
+                ></Button>
+              ) : (
+                <Button
+                  style={{
+                    flex: 1,
+                    margin: '0 0.5rem'
+                  }}
+                  disabled={stakedToken && stakedToken.eq(0)}
+                  text="Withdraw"
+                  onClick={() => withdraw && withdraw(tokenSymbol, isLiquidity)}
+                ></Button>
+              )}
             </div>
           </>
         )}

@@ -11,7 +11,8 @@ import UncheckedJsonRpcSigner from './signer'
 
 const FACTORY_ADDRESS = '0xA818b4F111Ccac7AA31D0BCc0806d64F2E0737D7'
 const ROUTER_ADDRESS = '0x1C232F01118CB8B424793ae03F870aa7D0ac7f77'
-export const STAKING_ADDRESS = '0xb8432d4c985c1a17A50cE0676B97DBd157737c37'
+export const STAKING_ADDRESS = '0xC2D4603b07Ddb725b97cbcaC8Bcf98e051ea80aA'
+export const OLD_STAKING_ADDRESS = '0xb8432d4c985c1a17A50cE0676B97DBd157737c37'
 export const SHWEATPANTS_MIGRATION_ADDRESSV2 = '0x4af7c1DFF088Ce058508178054Cef16757Cb4610'
 export const ALVIN_MIGRATION_ADDRESSV2 = '0xC41E160CD4FBA75950aD1c827Dea42A993c564A0'
 export const SHWEATPANTS_MIGRATION_ADDRESSV3 = '0x29f1C823Ca7ABb894D452796140eC80011cc5612'
@@ -100,6 +101,10 @@ export function getStakingContract(library, account) {
   return getContract(STAKING_ADDRESS, STAKING_ABI, library, account)
 }
 
+export function getOldStakingContract(library, account) {
+  return getContract(OLD_STAKING_ADDRESS, STAKING_ABI, library, account)
+}
+
 export function getMigrationContract(tokenSymbol, version, library, account) {
   if (tokenSymbol === 'SHWEATPANTS') {
     if (version === 2) {
@@ -152,11 +157,21 @@ export async function getStakedToken(address, tokenAddress, isLiquidity, library
   if (!isAddress(address) || !isAddress(tokenAddress)) {
     throw Error("Invalid 'address' or 'tokenAddress' parameter" + `'${address}' or '${tokenAddress}'.`)
   }
-
   if (isLiquidity) {
     return getContract(STAKING_ADDRESS, STAKING_ABI, library).accountLPStaked(tokenAddress, address)
   } else {
     return getContract(STAKING_ADDRESS, STAKING_ABI, library).accountTokenStaked(tokenAddress, address)
+  }
+}
+
+export async function getOldStakedToken(address, tokenAddress, isLiquidity, library) {
+  if (!isAddress(address) || !isAddress(tokenAddress)) {
+    throw Error("Invalid 'address' or 'tokenAddress' parameter" + `'${address}' or '${tokenAddress}'.`)
+  }
+  if (isLiquidity) {
+    return getContract(OLD_STAKING_ADDRESS, STAKING_ABI, library).accountLPStaked(tokenAddress, address)
+  } else {
+    return getContract(OLD_STAKING_ADDRESS, STAKING_ABI, library).accountTokenStaked(tokenAddress, address)
   }
 }
 
