@@ -182,7 +182,6 @@ export default function Staking({
   const [showWorks, setShowWorks] = useState(false)
   const shweatpantsRewards = useStakingRewards(account, TOKEN_ADDRESSES.SHWEATPANTS)
   const alvinRewards = useStakingRewards(account, TOKEN_ADDRESSES.ALVIN)
-  const rate = useTotalStaked(TOKEN_ADDRESSES.HNYPRTCLE)
 
   return (
     <AppWrapper overlay={state.visible}>
@@ -242,7 +241,7 @@ export default function Staking({
                 'margin-top': '1rem'
               }}
               disabled={!alvinRewards || (alvinRewards && alvinRewards.eq(0))}
-              text={`Claim ${alvinRewards ? amountFormatter(alvinRewards) : 0} ALVIN`}
+              text={`Claim ${alvinRewards ? amountFormatter(alvinRewards, 18, 8) : 0} ALVIN`}
               onClick={() => claim && claim('ALVIN')}
             ></Button>
           </Content>
@@ -345,7 +344,7 @@ export default function Staking({
                 'margin-top': '1rem'
               }}
               disabled={!shweatpantsRewards || (shweatpantsRewards && shweatpantsRewards.eq(0))}
-              text={`Claim ${shweatpantsRewards ? amountFormatter(shweatpantsRewards) : 0} SHWEATPANTS`}
+              text={`Claim ${shweatpantsRewards ? amountFormatter(shweatpantsRewards, 18, 8) : 0} SHWEATPANTS`}
               onClick={() => claim && claim('SHWEATPANTS')}
             ></Button>
           </Content>
