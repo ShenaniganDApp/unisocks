@@ -736,9 +736,9 @@ export default function Main({ stats, status, staking }) {
       const estimatedGasPrice = await library
         .getGasPrice()
         .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
-      const estimatedGasLimit = await stakingContract.estimate.withdrawAllLPStake(STAKING_ADDRESSES[tokenSymbol])
+      const estimatedGasLimit = await stakingContract.estimate.withdrawAllLiquidityStake(STAKING_ADDRESSES[tokenSymbol])
 
-      return stakingContract.withdrawAllLPStake(STAKING_ADDRESSES[tokenSymbol], {
+      return stakingContract.withdrawAllLiquidityStake(STAKING_ADDRESSES[tokenSymbol], {
         gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
         gasPrice: estimatedGasPrice
       })

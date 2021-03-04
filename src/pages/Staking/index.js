@@ -292,10 +292,10 @@ export default function Staking({
                 tokenSymbol={'HNYPRTCLE'}
                 stakedToken={stakedHNYPRTCLEToken}
                 stake={stake}
-                withdraw={withdrawLPStake}
+                withdraw={withdrawTokenStake}
                 tokenAllowance={useStakingAllowance(account, STAKING_ADDRESSES.HNYPRTCLE)}
                 unlock={unlock}
-                isLiquidity
+                isLiquidity={true}
                 totalStaked={useTotalStaked(TOKEN_ADDRESSES.HNYPRTCLE)}
                 rate={useDrippRate(TOKEN_ADDRESSES.SHWEATPANTS)}
               />
