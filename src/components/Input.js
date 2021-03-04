@@ -68,6 +68,7 @@ const Input = ({
   const one = new BigNumber('1000000000000000000')
   const formattedBalance = balance ? amountFormatter(balance, 18, 18) : 0
   const formattedStakedToken = stakedToken ? amountFormatter(stakedToken) : 0
+  console.log('formattedStakedToken: ', formattedStakedToken);
   const formattedRewards = rewards ? amountFormatter(rewards) : 0
   const formattedTotalStaked = totalStaked ? amountFormatter(totalStaked) : 0
   const formattedDrippRate =

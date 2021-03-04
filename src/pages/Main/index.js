@@ -247,7 +247,6 @@ export default function Main({ stats, status, staking }) {
   const stakedHNYToken = useStakedToken(account, STAKING_ADDRESSES.HNY, false)
   const stakedHNYPRTCLEToken = useStakedToken(account, STAKING_ADDRESSES.HNYPRTCLE, true)
 
-  const check = useAddressAllowance(account, '0xaaefc56e97624b57ce98374eb4a45b6fd5ffb982', STAKING_ADDRESS)
 
   const [USDExchangeRateETH, setUSDExchangeRateETH] = useState()
   const [USDExchangeRateSelectedToken, setUSDExchangeRateSelectedToken] = useState()
@@ -715,7 +714,7 @@ export default function Main({ stats, status, staking }) {
         .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
       const estimatedGasLimit = await stakingContract.estimate.stakeLP(STAKING_ADDRESSES[tokenSymbol], parsedAmount)
 
-      return stakingContract.stake(STAKING_ADDRESSES[tokenSymbol], parsedAmount, {
+      return stakingContract.stakeLP(STAKING_ADDRESSES[tokenSymbol], parsedAmount, {
         gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
         gasPrice: estimatedGasPrice
       })
