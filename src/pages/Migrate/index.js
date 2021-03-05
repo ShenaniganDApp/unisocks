@@ -22,6 +22,7 @@ import SHE from '../../components/Gallery/SHE.png'
 import Button from '../../components/Button'
 import Migrate from '../../components/Migrate'
 import { useAddressAllowance, useAddressBalance } from '../../hooks'
+import arrow from '../../components/Gallery/chevron-down-arrow-svgrepo-com.svg'
 
 export function Header({
   totalSHWEATPANTSSupply,
@@ -202,135 +203,66 @@ export default function Body({
         balanceALVIN={balanceALVIN}
         setShowConnect={setShowConnect}
       />
-      <div>
-        <Flex>
-          <Content>
-            <Card
-              totalDrippSupply={totalALVINSupply}
-              dollarPrice={dollarPrice}
-              reserveDrippToken={reserveALVINToken}
-              imageSrc={agaave}
-              name={'Alvin'}
-              symbol={'$ALVIN'}
-            />{' '}
-            <Info>
-              <div style={{ marginBottom: '4px' }}>Buy and sell real swag with digital currency.</div>
-              <div style={{ marginBottom: '4px' }}>
-                Delivered on demand.{' '}
-                <a
-                  href="/"
-                  onClick={e => {
-                    e.preventDefault()
-                    setState(state => ({ ...state, visible: !state.visible }))
-                    setShowWorks(true)
-                  }}
-                >
-                  Learn more
-                </a>
-              </div>
-              {/* <SubInfo>
-            An experiment in pricing and user experience by the team at Uniswap.{' '}
-            <a
-              href="/"
-              onClick={e => {
-                e.preventDefault()
-                setState(state => ({ ...state, visible: !state.visible }))
-                setShowWorks(true)
-              }}
-            >
-              How it works.
-            </a>
-          </SubInfo> */}
-            </Info>
-            <BuyButtons color={'#7ce0d6'} balanceDripp={balanceALVIN} drippSelected={'ALVIN'} />
-            <RedeemButton balanceDripp={balanceALVIN} drippSelected={'ALVIN'} />
-            {!!account && (
-              <Link style={{ textDecoration: 'none' }} to="/status">
-                <OrderStatusLink>Check order status?</OrderStatusLink>
-              </Link>
-            )}
-          </Content>
-          <Content>
-            <Card
-              totalDrippSupply={totalSHWEATPANTSSupply}
-              dollarPrice={dollarPrice}
-              reserveDrippToken={reserveSHWEATPANTSToken}
-              imageSrc={SHE}
-              name={'Shweatpants'}
-              symbol={'$SHWEATPANTS'}
-            />{' '}
-            <Info>
-              <div style={{ marginBottom: '4px' }}>Buy and sell real swag with digital currency.</div>
-              <div style={{ marginBottom: '4px' }}>
-                Delivered on demand.{' '}
-                <a
-                  href="/"
-                  onClick={e => {
-                    e.preventDefault()
-                    setState(state => ({ ...state, visible: !state.visible }))
-                    setShowWorks(true)
-                  }}
-                >
-                  Learn more
-                </a>
-              </div>
-              {/* <SubInfo>
-            An experiment in pricing and user experience by the team at Uniswap.{' '}
-            <a
-              href="/"
-              onClick={e => {
-                e.preventDefault()
-                setState(state => ({ ...state, visible: !state.visible }))
-                setShowWorks(true)
-              }}
-            >
-              How it works.
-            </a>
-          </SubInfo> */}
-            </Info>
-            <BuyButtons color={'#ff006c'} balanceDripp={balanceSHWEATPANTS} drippSelected={'SHWEATPANTS'} />
-            <RedeemButton balanceDripp={balanceSHWEATPANTS} drippSelected={'SHWEATPANTS'} />
-            {!!account && (
-              <Link style={{ textDecoration: 'none' }} to="/status">
-                <OrderStatusLink>Check order status?</OrderStatusLink>
-              </Link>
-            )}
-          </Content>
-        </Flex>
-        <Link to="/staking" style={{ textDecoration: 'none', width: '100%' }}>
-          <StakeButton color={'linear-gradient(107deg,#cbf3ef,#fafae2 49.48%,#ff006c)'} text="Stake" />
-        </Link>
+      <div style={{ textAlign: 'center' }}>
+        <h1>Migrate</h1>
       </div>
-
-      <Link to="/migrate" style={{ textDecoration: 'none', width: '100%', textAlign: 'center' }}>
-        <h3>Were you here at launch? Make sure to migrate to V3</h3>
+      <Flex style={{ justifyContent: 'center', alignItems: 'center', width: '85%' }}>
+        <Migrate
+          title={'Migrate ALVIN V1 to V2'}
+          background={'white'}
+          unlock={unlock}
+          tokenSymbol={'ALVIN'}
+          version={2}
+          balance={useAddressBalance(account, TOKEN_ADDRESSES.ALVINV1)}
+          tokenAllowance={useAddressAllowance(account, TOKEN_ADDRESSES.ALVINV1, ALVIN_MIGRATION_ADDRESSV2)}
+          migrate={migrate}
+          style={{ flex: '1 1 0px' }}
+        ></Migrate>
+        <Migrate
+          title={'Migrate SHWEATPANTS V1 to V2'}
+          background={'white'}
+          tokenSymbol={'SHWEATPANTS'}
+          version={2}
+          tokenAllowance={useAddressAllowance(account, TOKEN_ADDRESSES.SHWEATPANTSV1, SHWEATPANTS_MIGRATION_ADDRESSV2)}
+          balance={useAddressBalance(account, TOKEN_ADDRESSES.SHWEATPANTSV1)}
+          unlock={unlock}
+          migrate={migrate}
+          style={{ flex: '1 1 0px' }}
+        ></Migrate>
+      </Flex>
+      <Arrow src={arrow}></Arrow>
+      <Flex style={{ justifyContent: 'center', alignItems: 'center', marginTop: '24px', width: '85%' }}>
+        <Migrate
+          title={'Migrate ALVIN V2 to V3'}
+          background={'white'}
+          unlock={unlock}
+          tokenSymbol={'ALVIN'}
+          version={3}
+          balance={useAddressBalance(account, TOKEN_ADDRESSES.ALVINV2)}
+          tokenAllowance={useAddressAllowance(account, TOKEN_ADDRESSES.ALVINV2, ALVIN_MIGRATION_ADDRESSV3)}
+          migrate={migrate}
+          style={{ flex: '1 1 0px' }}
+        ></Migrate>
+        <Migrate
+          title={'Migrate SHWEATPANTS V2 to V3'}
+          background={'white'}
+          tokenSymbol={'SHWEATPANTS'}
+          version={3}
+          tokenAllowance={useAddressAllowance(account, TOKEN_ADDRESSES.SHWEATPANTSV2, SHWEATPANTS_MIGRATION_ADDRESSV3)}
+          balance={useAddressBalance(account, TOKEN_ADDRESSES.SHWEATPANTSV2)}
+          unlock={unlock}
+          migrate={migrate}
+          style={{ flex: '1 1 0px' }}
+        ></Migrate>
+      </Flex>
+      <Link to="/" style={{ textDecoration: 'none', width: '50%', marginTop: '50px' }}>
+        <Button
+          style={{ pointerEvents: 'none' }}
+          color={'linear-gradient(107deg,#cbf3ef,#fafae2 49.48%,#ff006c)'}
+          preventDefault={false}
+          text="Go Back"
+        />
       </Link>
-
-      <Checkout
-        selectedTokenSymbol={selectedTokenSymbol}
-        setSelectedTokenSymbol={setSelectedTokenSymbol}
-        ready={ready}
-        unlock={unlock}
-        validateBuy={validateBuy}
-        buy={buy}
-        validateSell={validateSell}
-        sell={sell}
-        burn={burn}
-        balanceDripp={state.drippSelected === 'SHWEATPANTS' ? balanceSHWEATPANTS : balanceALVIN}
-        dollarPrice={dollarPrice}
-        reserveDrippToken={state.drippSelected === 'SHWEATPANTS' ? reserveSHWEATPANTSToken : reserveALVINToken}
-        dollarize={dollarize}
-        showConnect={showConnect}
-        setShowConnect={setShowConnect}
-        currentTransactionHash={currentTransaction.hash}
-        currentTransactionType={currentTransaction.type}
-        currentTransactionAmount={currentTransaction.amount}
-        setCurrentTransaction={setCurrentTransaction}
-        clearCurrentTransaction={clearCurrentTransaction}
-        showWorks={showWorks}
-        setShowWorks={setShowWorks}
-        tokenSymbol={state.drippSelected}
-      />
     </AppWrapper>
   )
 }
@@ -399,4 +331,7 @@ const Flex = styled.div`
   @media (max-width: 768px) {
     flex-direction: column;
   }
+`
+const Arrow = styled.img`
+  width: 7%;
 `

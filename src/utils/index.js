@@ -11,12 +11,13 @@ import UncheckedJsonRpcSigner from './signer'
 
 const FACTORY_ADDRESS = '0xA818b4F111Ccac7AA31D0BCc0806d64F2E0737D7'
 const ROUTER_ADDRESS = '0x1C232F01118CB8B424793ae03F870aa7D0ac7f77'
-export const STAKING_ADDRESS = '0xb8432d4c985c1a17A50cE0676B97DBd157737c37'
-export const OLD_STAKING_ADDRESS = '0xD0795b538b069DE2b9478057e9c00B81FAB59f8b'
+export const STAKING_ADDRESS = '0xee4685d9f2e2ea05fe61dCB9C31B1b07b4fd7121'
+export const OLD_STAKING_ADDRESS = '0xb8432d4c985c1a17A50cE0676B97DBd157737c37'
 export const SHWEATPANTS_MIGRATION_ADDRESSV2 = '0x4af7c1DFF088Ce058508178054Cef16757Cb4610'
 export const ALVIN_MIGRATION_ADDRESSV2 = '0xC41E160CD4FBA75950aD1c827Dea42A993c564A0'
 export const SHWEATPANTS_MIGRATION_ADDRESSV3 = '0x29f1C823Ca7ABb894D452796140eC80011cc5612'
 export const ALVIN_MIGRATION_ADDRESSV3 = '0x70520F7f6a4978952bA9AA33c5Ce09B9De30Ea5f'
+
 
 export const TOKEN_ADDRESSES = {
   ETH: 'ETH',
@@ -183,12 +184,28 @@ export async function getStakedRewards(address, tokenAddress, library) {
   return getContract(STAKING_ADDRESS, STAKING_ABI, library).reward(address, tokenAddress)
 }
 
+export async function getOldStakedRewards(address, tokenAddress, library) {
+  if (!isAddress(address) || !isAddress(tokenAddress)) {
+    throw Error("Invalid 'address' or 'tokenAddress' parameter" + `'${address}' or '${tokenAddress}'.`)
+  }
+
+  return getContract(OLD_STAKING_ADDRESS, STAKING_ABI, library).reward(address, tokenAddress)
+}
+
 export async function getTotalStaked(tokenAddress, library) {
   if (!isAddress(tokenAddress)) {
     throw Error("Invalid 'tokenAddress' parameter" + `'${tokenAddress}'.`)
   }
 
   return getContract(STAKING_ADDRESS, STAKING_ABI, library).totalStaked(tokenAddress)
+}
+
+export async function getOldTotalStaked(tokenAddress, library) {
+  if (!isAddress(tokenAddress)) {
+    throw Error("Invalid 'tokenAddress' parameter" + `'${tokenAddress}'.`)
+  }
+
+  return getContract(OLD_STAKING_ADDRESS, STAKING_ABI, library).totalStaked(tokenAddress)
 }
 
 export async function getDripp(tokenAddress, library) {

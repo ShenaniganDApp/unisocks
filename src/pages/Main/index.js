@@ -31,6 +31,7 @@ import Body from '../Body'
 import Stats from '../Stats'
 import Status from '../Status'
 import Staking from '../Staking'
+import Migrate from '../Migrate'
 
 // denominated in bips
 const GAS_MARGIN = ethers.utils.bigNumberify(1000)
@@ -166,7 +167,7 @@ function calculateAmount(
   }
 }
 
-export default function Main({ stats, status, staking }) {
+export default function Main({ stats, status, staking, migration }) {
   const { library, account } = useWeb3Context()
 
   // selected token
@@ -792,13 +793,14 @@ export default function Main({ stats, status, staking }) {
     }
   }
 
-  async function claim(tokenSymbol) {
+  async function claim(tokenSymbol, oldStaking = false) {
+    const contract = oldStaking ? stakingContractOld : stakingContract
     const estimatedGasPrice = await library
       .getGasPrice()
       .then(gasPrice => gasPrice.mul(ethers.utils.bigNumberify(150)).div(ethers.utils.bigNumberify(100)))
-    const estimatedGasLimit = await stakingContract.estimate.claim(TOKEN_ADDRESSES[tokenSymbol])
+    const estimatedGasLimit = await contract.estimate.claim(TOKEN_ADDRESSES[tokenSymbol])
 
-    return stakingContract.claim(TOKEN_ADDRESSES[tokenSymbol], {
+    return contract.claim(TOKEN_ADDRESSES[tokenSymbol], {
       gasLimit: calculateGasMargin(estimatedGasLimit, GAS_MARGIN),
       gasPrice: estimatedGasPrice
     })
@@ -890,6 +892,32 @@ export default function Main({ stats, status, staking }) {
       stakedPRTCLETokenOld={stakedPRTCLETokenOld}
       stakedHNYTokenOld={stakedHNYTokenOld}
       stakedHNYPRTCLETokenOld={stakedHNYPRTCLETokenOld}
+    />
+  ) : migration ? (
+    <Migrate
+      selectedTokenSymbol={selectedTokenSymbol}
+      setSelectedTokenSymbol={setSelectedTokenSymbol}
+      ready={ready}
+      unlock={unlock}
+      validateBuy={validateBuy}
+      buy={buy}
+      validateSell={validateSell}
+      sell={sell}
+      burn={burn}
+      dollarize={dollarize}
+      stake={stake}
+      withdrawTokenStake={withdrawTokenStake}
+      claim={claim}
+      balanceSHWEATPANTS={balanceSHWEATPANTS}
+      balanceALVIN={balanceALVIN}
+      reserveSHWEATPANTSToken={reserveSHWEATPANTSToken}
+      totalSHWEATPANTSSupply={totalSHWEATPANTSSupply}
+      reserveALVINToken={reserveALVINToken}
+      totalALVINSupply={totalALVINSupply}
+      stakedPRTCLEToken={stakedPRTCLEToken}
+      stakedHNYToken={stakedHNYToken}
+      stakedHNYPRTCLEToken={stakedHNYPRTCLEToken}
+      migrate={migrate}
     />
   ) : (
     <Body

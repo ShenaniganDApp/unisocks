@@ -19,7 +19,9 @@ import {
   getOldStakedToken,
   TOKEN_ADDRESSES,
   STAKING_ADDRESSES,
-  amountFormatter
+  amountFormatter,
+  getOldTotalStaked,
+  getOldStakedRewards
 } from '../utils'
 import { utils } from 'ethers'
 
@@ -290,6 +292,41 @@ export function useStakingRewards(address, tokenAddress) {
   return stakedRewards
 }
 
+export function useOldStakingRewards(address, tokenAddress) {
+  const { library } = useWeb3Context()
+
+  const [stakedRewards, setStakedRewards] = useState()
+
+  const updateStakedRewards = useCallback(() => {
+    if (isAddress(address) && isAddress(tokenAddress)) {
+      let stale = false
+      getOldStakedRewards(address, tokenAddress, library)
+        .then(reward => {
+          if (!stale) {
+            setStakedRewards(reward)
+          }
+        })
+        .catch(() => {
+          if (!stale) {
+            setStakedRewards(null)
+          }
+        })
+      return () => {
+        stale = true
+        setStakedRewards()
+      }
+    }
+  }, [address, library, tokenAddress])
+
+  useEffect(() => {
+    return updateStakedRewards()
+  }, [updateStakedRewards])
+
+  useBlockEffect(updateStakedRewards)
+
+  return stakedRewards
+}
+
 export function useStakedToken(address, tokenAddress, isLiquidity, oldStaking) {
   const { library } = useWeb3Context()
 
@@ -337,6 +374,42 @@ export function useTotalStaked(tokenAddress) {
     if (isAddress(tokenAddress)) {
       let stale = false
       getTotalStaked(tokenAddress, library)
+        .then(staked => {
+          if (!stale) {
+            setTotalStaked(staked)
+          }
+        })
+        .catch(() => {
+          if (!stale) {
+            setTotalStaked(null)
+          }
+        })
+      return () => {
+        stale = true
+        setTotalStaked()
+      }
+    }
+  }, [library, tokenAddress])
+
+  useEffect(() => {
+    return updateTotalStaked()
+  }, [updateTotalStaked])
+
+  useBlockEffect(updateTotalStaked)
+
+  return totalStaked
+}
+
+
+export function useOldTotalStaked(tokenAddress) {
+  const { library } = useWeb3Context()
+
+  const [totalStaked, setTotalStaked] = useState()
+
+  const updateTotalStaked = useCallback(() => {
+    if (isAddress(tokenAddress)) {
+      let stale = false
+      getOldTotalStaked(tokenAddress, library)
         .then(staked => {
           if (!stale) {
             setTotalStaked(staked)
