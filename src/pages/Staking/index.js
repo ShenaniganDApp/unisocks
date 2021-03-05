@@ -252,7 +252,7 @@ export default function Staking({
               text={`Claim ${alvinRewards ? amountFormatter(alvinRewards, 18, 10) : 0} ALVIN`}
               onClick={() => claim && claim('ALVIN')}
             ></Button>
-            {alvinRewardsOld && !alvinRewardsOld.isZero() && (
+            {/* {alvinRewardsOld && !alvinRewardsOld.isZero() && (
               <Button
                 style={{
                   flex: 1,
@@ -261,7 +261,7 @@ export default function Staking({
                 text={`Claim Previous ALVIN`}
                 onClick={() => claim && claim('ALVIN', true)}
               ></Button>
-            )}
+            )} */}
           </Content>
           <div style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'row' }}>
             <div style={{ flex: '1 1 45%' }}>
@@ -371,7 +371,7 @@ export default function Staking({
               text={`Claim ${shweatpantsRewards ? amountFormatter(shweatpantsRewards, 18, 10) : 0} SHWEATPANTS`}
               onClick={() => claim && claim('SHWEATPANTS')}
             ></Button>
-            {shweatpantsRewardsOld && !shweatpantsRewardsOld.isZero() && (
+            {/* {shweatpantsRewardsOld && !shweatpantsRewardsOld.isZero() && (
               <Button
                 style={{
                   flex: 1,
@@ -380,12 +380,12 @@ export default function Staking({
                 text={`Claim Previous SHWEATPANTS`}
                 onClick={() => claim && claim('SHWEATPANTS', true)}
               ></Button>
-            )}
+            )} */}
           </Content>
         </Flex>
       </div>
       <Link to="/" style={{ textDecoration: 'none', cursor: 'pointer', width: '75%', marginTop: '24px' }}>
-        <StakeButton text="Back to Buy" style={{ width: '50%', margin: '0 auto', 'pointer-events': 'none' }} />
+      <StakeButton text="Back to Buy" style={{ width: '50s%', margin: '0 auto', 'pointer-events': 'none' }} />
       </Link>
     </AppWrapper>
   )
