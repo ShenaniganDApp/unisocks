@@ -170,7 +170,8 @@ export default function Body({
   sell,
   burn,
   dollarize,
-  dollarPrice,
+  dollarPriceALVIN,
+  dollarPriceSHWEATPANTS,
   balanceSHWEATPANTS,
   balanceALVIN,
   reserveSHWEATPANTSToken,
@@ -197,7 +198,6 @@ export default function Body({
         totalSHWEATPANTSSupply={totalSHWEATPANTSSupply}
         totalALVINSupply={totalALVINSupply}
         ready={ready}
-        dollarPrice={dollarPrice}
         balanceSHWEATPANTS={balanceSHWEATPANTS}
         balanceALVIN={balanceALVIN}
         setShowConnect={setShowConnect}
@@ -207,7 +207,7 @@ export default function Body({
           <Content>
             <Card
               totalDrippSupply={totalALVINSupply}
-              dollarPrice={dollarPrice}
+              dollarPrice={dollarPriceALVIN}
               reserveDrippToken={reserveALVINToken}
               imageSrc={agaave}
               name={'Alvin'}
@@ -253,7 +253,7 @@ export default function Body({
           <Content>
             <Card
               totalDrippSupply={totalSHWEATPANTSSupply}
-              dollarPrice={dollarPrice}
+              dollarPrice={dollarPriceSHWEATPANTS}
               reserveDrippToken={reserveSHWEATPANTSToken}
               imageSrc={SHE}
               name={'Shweatpants'}
@@ -317,7 +317,7 @@ export default function Body({
         sell={sell}
         burn={burn}
         balanceDripp={state.drippSelected === 'SHWEATPANTS' ? balanceSHWEATPANTS : balanceALVIN}
-        dollarPrice={dollarPrice}
+        dollarPrice={state.drippSelected === 'SHWEATPANTS' ? dollarPriceSHWEATPANTS : dollarPriceALVIN}
         reserveDrippToken={state.drippSelected === 'SHWEATPANTS' ? reserveSHWEATPANTSToken : reserveALVINToken}
         dollarize={dollarize}
         showConnect={showConnect}

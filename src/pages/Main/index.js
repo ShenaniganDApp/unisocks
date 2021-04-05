@@ -7,6 +7,7 @@ import {
   TOKEN_ADDRESSES,
   ERROR_CODES,
   STAKING_ADDRESSES,
+  STAKING_ADDRESS,
   STAKING_SYMBOLS,
   SHWEATPANTS_MIGRATION_ADDRESSV2,
   ALVIN_MIGRATION_ADDRESSV2,
@@ -212,6 +213,8 @@ export default function Main({ stats, status, staking, migration }) {
   const balanceSHWEATPANTS = useAddressBalance(account, TOKEN_ADDRESSES.SHWEATPANTS)
   const balanceALVIN = useAddressBalance(account, TOKEN_ADDRESSES.ALVIN)
   const balanceSelectedToken = useAddressBalance(account, TOKEN_ADDRESSES[stakingTokenSymbol])
+  const balanceContractShweatpants = useAddressBalance(STAKING_ADDRESS, TOKEN_ADDRESSES.SHWEATPANTS)
+  const balanceContractAlvin = useAddressBalance(STAKING_ADDRESS, TOKEN_ADDRESSES.ALVIN)
 
   // totalsupply
   const totalSHWEATPANTSSupply = useTotalSupply(tokenContractSHWEATPANTS)
@@ -265,6 +268,8 @@ export default function Main({ stats, status, staking, migration }) {
     (account === null || balanceSHWEATPANTS) &&
     (account === null || balanceALVIN) &&
     (account === null || balanceSelectedToken) &&
+    (account === null || balanceContractShweatpants) &&
+    (account === null || balanceContractAlvin) &&
     reserveSHWEATPANTSETH &&
     reserveALVINETH &&
     reserveSHWEATPANTSToken &&
@@ -315,22 +320,14 @@ export default function Main({ stats, status, staking, migration }) {
     )
   }
 
-  const [, setSHWEATPANTSDollarPrice] = useState()
-  const [, setALVINDollarPrice] = useState()
+  const [SHWEATPANTSDollarPrice, setSHWEATPANTSDollarPrice] = useState()
+  const [ALVINDollarPrice, setALVINDollarPrice] = useState()
   useEffect(() => {
     try {
-      const SHWEATPANTSExchangeRateETH = getExchangeRate(reserveSHWEATPANTSToken, reserveSHWEATPANTSETH)
-      setSHWEATPANTSDollarPrice(
-        SHWEATPANTSExchangeRateETH.mul(USDExchangeRateETH).div(
-          ethers.utils.bigNumberify(10).pow(ethers.utils.bigNumberify(18))
-        )
-      )
-      const ALVINExchangeRateETH = getExchangeRate(reserveALVINToken, reserveALVINETH)
-      setALVINDollarPrice(
-        ALVINExchangeRateETH.mul(USDExchangeRateETH).div(
-          ethers.utils.bigNumberify(10).pow(ethers.utils.bigNumberify(18))
-        )
-      )
+      setSHWEATPANTSDollarPrice(getExchangeRate(reserveSHWEATPANTSToken, reserveSHWEATPANTSETH))
+
+      setALVINDollarPrice(getExchangeRate(reserveALVINToken, reserveALVINETH))
+    
     } catch {
       setSHWEATPANTSDollarPrice()
       setALVINDollarPrice()
@@ -877,6 +874,8 @@ export default function Main({ stats, status, staking, migration }) {
       ready={ready}
       unlock={unlock}
       dollarize={dollarize}
+      dollarPriceSHWEATPANTS={SHWEATPANTSDollarPrice}
+      dollarPriceALVIN={ALVINDollarPrice}
       stake={stake}
       withdrawTokenStake={withdrawTokenStake}
       claim={claim}
@@ -892,6 +891,8 @@ export default function Main({ stats, status, staking, migration }) {
       stakedPRTCLETokenOld={stakedPRTCLETokenOld}
       stakedHNYTokenOld={stakedHNYTokenOld}
       stakedHNYPRTCLETokenOld={stakedHNYPRTCLETokenOld}
+      balanceContractAlvin={balanceContractAlvin}
+      balanceContractShweatpants={balanceContractShweatpants}
     />
   ) : migration ? (
     <Migrate
@@ -931,6 +932,8 @@ export default function Main({ stats, status, staking, migration }) {
       sell={sell}
       burn={burn}
       dollarize={dollarize}
+      dollarPriceSHWEATPANTS={SHWEATPANTSDollarPrice}
+      dollarPriceALVIN={ALVINDollarPrice}
       stake={stake}
       withdrawTokenStake={withdrawTokenStake}
       claim={claim}

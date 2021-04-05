@@ -161,7 +161,8 @@ export default function Staking({
   withdrawTokenStake,
   withdrawLPStake,
   dollarize,
-  dollarPrice,
+  dollarPriceSHWEATPANTS,
+  dollarPriceALVIN,
   balanceSHWEATPANTS,
   balanceALVIN,
   reserveSHWEATPANTSToken,
@@ -173,7 +174,9 @@ export default function Staking({
   stakedHNYPRTCLEToken,
   stakedPRTCLETokenOld,
   stakedHNYTokenOld,
-  stakedHNYPRTCLETokenOld
+  stakedHNYPRTCLETokenOld,
+  balanceContractAlvin,
+  balanceContractShweatpants
 }) {
   const { account } = useWeb3Context()
   const [currentTransaction, _setCurrentTransaction] = useState({})
@@ -198,7 +201,6 @@ export default function Staking({
         stakedHNYToken={stakedHNYToken}
         stakedHNYPRTCLEToken={stakedHNYPRTCLEToken}
         ready={ready}
-        dollarPrice={dollarPrice}
         balanceSHWEATPANTS={balanceSHWEATPANTS}
         balanceALVIN={balanceALVIN}
         setShowConnect={setShowConnect}
@@ -208,7 +210,7 @@ export default function Staking({
           <Content>
             <Card
               totalDrippSupply={totalALVINSupply}
-              dollarPrice={dollarPrice}
+              dollarPrice={dollarPriceALVIN}
               reserveDrippToken={reserveALVINToken}
               imageSrc={agaave}
               name={'Alvin'}
@@ -248,8 +250,16 @@ export default function Staking({
                 flex: 1,
                 'margin-top': '1rem'
               }}
-              disabled={!alvinRewards || (alvinRewards && alvinRewards.isZero())}
-              text={`Claim ${alvinRewards ? amountFormatter(alvinRewards, 18, 10) : 0} ALVIN`}
+              disabled={
+                !alvinRewards ||
+                (alvinRewards && alvinRewards.isZero()) ||
+                (balanceContractAlvin && balanceContractAlvin.lt(alvinRewards))
+              }
+              text={
+                balanceContractAlvin && alvinRewards && balanceContractAlvin.lt(alvinRewards)
+                  ? 'No more ALVINs in staking contract'
+                  : `Claim ${alvinRewards ? amountFormatter(alvinRewards, 18, 10) : 0} ALVIN`
+              }
               onClick={() => claim && claim('ALVIN')}
             ></Button>
             {/* {alvinRewardsOld && !alvinRewardsOld.isZero() && (
@@ -280,6 +290,7 @@ export default function Staking({
                 rewards={alvinRewards}
                 totalStaked={useTotalStaked(TOKEN_ADDRESSES.HNY)}
                 rate={useDrippRate(TOKEN_ADDRESSES.ALVIN)}
+                oldRewards={alvinRewardsOld}
                 oldTotalStaked={useOldTotalStaked(STAKING_ADDRESSES.HNY)}
                 oldStaked={stakedHNYTokenOld}
               />
@@ -301,6 +312,7 @@ export default function Staking({
                 rewards={shweatpantsRewards}
                 totalStaked={useTotalStaked(TOKEN_ADDRESSES.PRTCLE)}
                 oldStaked={stakedPRTCLETokenOld}
+                oldRewards={shweatpantsRewardsOld}
                 oldTotalStaked={useOldTotalStaked(STAKING_ADDRESSES.PRTCLE)}
                 rate={useDrippRate(TOKEN_ADDRESSES.SHWEATPANTS)}
               />
@@ -327,7 +339,7 @@ export default function Staking({
           <Content>
             <Card
               totalDrippSupply={totalSHWEATPANTSSupply}
-              dollarPrice={dollarPrice}
+              dollarPrice={dollarPriceSHWEATPANTS}
               reserveDrippToken={reserveSHWEATPANTSToken}
               imageSrc={SHE}
               name={'Shweatpants'}
@@ -367,8 +379,16 @@ export default function Staking({
                 flex: 1,
                 'margin-top': '1rem'
               }}
-              disabled={!shweatpantsRewards || (shweatpantsRewards && shweatpantsRewards.isZero())}
-              text={`Claim ${shweatpantsRewards ? amountFormatter(shweatpantsRewards, 18, 10) : 0} SHWEATPANTS`}
+              disabled={
+                !shweatpantsRewards ||
+                ((shweatpantsRewards && shweatpantsRewards.isZero()) ||
+                  (balanceContractShweatpants && balanceContractShweatpants.lt(shweatpantsRewards)))
+              }
+              text={
+                balanceContractShweatpants && shweatpantsRewards && balanceContractShweatpants.lt(shweatpantsRewards)
+                  ? 'No more SHWEATPANTS in staking contract'
+                  : `Claim ${shweatpantsRewards ? amountFormatter(shweatpantsRewards, 18, 10) : 0} SHWEATPANTS`
+              }
               onClick={() => claim && claim('SHWEATPANTS')}
             ></Button>
             {/* {shweatpantsRewardsOld && !shweatpantsRewardsOld.isZero() && (
@@ -385,7 +405,7 @@ export default function Staking({
         </Flex>
       </div>
       <Link to="/" style={{ textDecoration: 'none', cursor: 'pointer', width: '75%', marginTop: '24px' }}>
-      <StakeButton text="Back to Buy" style={{ width: '50s%', margin: '0 auto', 'pointer-events': 'none' }} />
+        <StakeButton text="Back to Buy" style={{ width: '50s%', margin: '0 auto', 'pointer-events': 'none' }} />
       </Link>
     </AppWrapper>
   )

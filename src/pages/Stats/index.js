@@ -34,7 +34,7 @@ export default function Body({
             </span>
             Initial ALVIN
           </p>
-          <p>100</p>
+          <p>122</p>
         </Description>
         {/* <Description>
           <p>
@@ -62,7 +62,7 @@ export default function Body({
             </span>
             Initial SHWEATPANTS
           </p>
-          <p>100</p>
+          <p>108</p>
         </Description>
         {/* <Description>
           <p>
