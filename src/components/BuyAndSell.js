@@ -69,6 +69,7 @@ export default function BuyAndSell({
   pending,
   reserveDrippToken,
   sell,
+  dollarPrice,
   dollarize,
   setCurrentTransaction,
   currentTransactionHash,
@@ -212,8 +213,8 @@ export default function BuyAndSell({
         <ImgStyle src={state.drippSelected === 'ALVIN' ? agaave : shweatpants} alt="Logo" />
         <InfoFrame pending={pending}>
           <CurrentPrice>
-            {/* {dollarPrice && `$${amountFormatter(dollarPrice, 18, 2)} USD`} */}
-            <USDPrice>{renderFormData()}</USDPrice>
+            
+            <USDPrice>{dollarPrice && `$${amountFormatter(dollarPrice, 18, 2)} USD`}</USDPrice>
             <SockCount>{reserveDrippToken && `${amountFormatter(reserveDrippToken, 18, 0)}/100 available`}</SockCount>
           </CurrentPrice>
           <IncrementToken />
