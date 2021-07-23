@@ -204,7 +204,7 @@ export default function Body({
       />
       <div>
         {/* <Flex> */}
-          {/* <Content>
+        {/* <Content>
             <Card
               totalDrippSupply={totalALVINSupply}
               dollarPrice={dollarPriceALVIN}
@@ -241,40 +241,40 @@ export default function Body({
               How it works.
             </a>
           </SubInfo> */}
-            {/* </Info> */}
-            {/* <BuyButtons color={'#7ce0d6'} balanceDripp={balanceALVIN} drippSelected={'ALVIN'} />
+        {/* </Info> */}
+        {/* <BuyButtons color={'#7ce0d6'} balanceDripp={balanceALVIN} drippSelected={'ALVIN'} />
             <RedeemButton balanceDripp={balanceALVIN} drippSelected={'ALVIN'} />
             {!!account && (
               <Link style={{ textDecoration: 'none' }} to="/status">
                 <OrderStatusLink>Check order status?</OrderStatusLink>
               </Link>
             )}
-          </Content> */} 
-          <Content>
-            <Card
-              totalDrippSupply={totalSHWEATPANTSSupply}
-              dollarPrice={dollarPriceSHWEATPANTS}
-              reserveDrippToken={reserveSHWEATPANTSToken}
-              imageSrc={SHE}
-              name={'Pants'}
-              symbol={'$PANTS'}
-            />{' '}
-            <Info>
-              <div style={{ marginBottom: '4px' }}>Buy and sell real swag with digital currency.</div>
-              <div style={{ marginBottom: '4px' }}>
-                Delivered on demand.{' '}
-                <a
-                  href="/"
-                  onClick={e => {
-                    e.preventDefault()
-                    setState(state => ({ ...state, visible: !state.visible }))
-                    setShowWorks(true)
-                  }}
-                >
-                  Learn more
-                </a>
-              </div>
-              {/* <SubInfo>
+          </Content> */}
+        <Content>
+          <Card
+            totalDrippSupply={totalSHWEATPANTSSupply}
+            dollarPrice={dollarPriceSHWEATPANTS}
+            reserveDrippToken={reserveSHWEATPANTSToken}
+            imageSrc={SHE}
+            name={'Pants'}
+            symbol={'$PANTS'}
+          />{' '}
+          <Info>
+            <div style={{ marginBottom: '4px' }}>Buy and sell real swag with digital currency.</div>
+            <div style={{ marginBottom: '4px' }}>
+              Delivered on demand.{' '}
+              <a
+                href="/"
+                onClick={e => {
+                  e.preventDefault()
+                  setState(state => ({ ...state, visible: !state.visible }))
+                  setShowWorks(true)
+                }}
+              >
+                Learn more
+              </a>
+            </div>
+            {/* <SubInfo>
             An experiment in pricing and user experience by the team at Uniswap.{' '}
             <a
               href="/"
@@ -287,24 +287,24 @@ export default function Body({
               How it works.
             </a>
           </SubInfo> */}
-            </Info>
-            <BuyButtons color={'#ff006c'} balanceDripp={balanceSHWEATPANTS} drippSelected={'SHWEATPANTS'} />
-            <RedeemButton balanceDripp={balanceSHWEATPANTS} drippSelected={'SHWEATPANTS'} />
-            {!!account && (
-              <Link style={{ textDecoration: 'none' }} to="/status">
-                <OrderStatusLink>Check order status?</OrderStatusLink>
-              </Link>
-            )}
-          </Content>
+          </Info>
+          <BuyButtons color={'#ff006c'} balanceDripp={balanceSHWEATPANTS} drippSelected={'SHWEATPANTS'} />
+          <RedeemButton balanceDripp={balanceSHWEATPANTS} drippSelected={'SHWEATPANTS'} />
+          {!!account && (
+            <Link style={{ textDecoration: 'none' }} to="/status">
+              <OrderStatusLink>Check order status?</OrderStatusLink>
+            </Link>
+          )}
+        </Content>
         {/* // </Flex> */}
         {/* <Link to="/staking" style={{ textDecoration: 'none', width: '100%' }}>
           <StakeButton color={'linear-gradient(107deg,#cbf3ef,#fafae2 49.48%,#ff006c)'} text="Stake" />
         </Link> */}
       </div>
 
-      <Link to="/migrate" style={{ textDecoration: 'none', width: '100%', textAlign: 'center' }}>
+      <a href="https://discord.gg/5MaXATcaPN" style={{ textDecoration: 'none', width: '100%', textAlign: 'center' }}>
         <h3>Curious about Alvin?</h3>
-      </Link>
+      </a>
 
       <Checkout
         selectedTokenSymbol={selectedTokenSymbol}
