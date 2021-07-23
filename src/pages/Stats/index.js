@@ -19,15 +19,15 @@ export default function Body({
     <AppWrapper overlay={state.visible}>
       <Header
         totalSHWEATPANTSSupply={totalSHWEATPANTSSupply}
-        totalALVINSupply={totalALVINSupply}
+        // totalALVINSupply={totalALVINSupply}
         ready={ready}
         balanceSHWEATPANTS={balanceSHWEATPANTS}
-        balanceALVIN={balanceALVIN}
+        // balanceALVIN={balanceALVIN}
         setShowConnect={() => {}}
       />
       <Content>
         <Title>Dripp Stats</Title>
-        <Description>
+        {/* <Description>
           <p>
             <span role="img" aria-label="alvin">
               🧸
@@ -35,7 +35,7 @@ export default function Body({
             Initial ALVIN
           </p>
           <p>122</p>
-        </Description>
+        </Description> */}
         {/* <Description>
           <p>
             <span role="img" aria-label="alvin">
@@ -45,7 +45,7 @@ export default function Body({
           </p>
           <p>{50 - totalALVINSupply}</p>
         </Description> */}
-        <Description>
+        {/* <Description>
           <p>
             <span role="img" aria-label="alvin">
               💦
@@ -53,16 +53,16 @@ export default function Body({
             ALVIN Pool
           </p>
           <p>{amountFormatter(reserveALVINToken, 18, 0)}</p>
-        </Description>
-        <Divider />
+        </Description> */}
+        {/* <Divider /> */}
         <Description>
           <p>
-            <span role="img" aria-label="shweatpants">
+            <span role="img" aria-label="pants">
               👖
             </span>
-            Initial SHWEATPANTS
+            Initial PANTS
           </p>
-          <p>108</p>
+          <p>100</p>
         </Description>
         {/* <Description>
           <p>
@@ -75,16 +75,16 @@ export default function Body({
         </Description> */}
         <Description>
           <p>
-            <span role="img" aria-label="shweatpants">
+            <span role="img" aria-label="pants">
               💦
             </span>
-            SHWEATPANTS Pool
+            PANTS Pool
           </p>
           <p>{amountFormatter(reserveSHWEATPANTSToken, 18, 0)}</p>
         </Description>
         <Shim />
         <Footer>
-          The price of DRIPP Items changes when tokens are bought and sold.
+          The price of Pants changes when tokens are bought and sold.
           <br />
           <br />
           <a

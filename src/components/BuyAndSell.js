@@ -46,7 +46,7 @@ function getValidationErrorMessage(validationError) {
         return 'Set Allowance to Continue'
       }
       case ERROR_CODES.INSUFFICIENT_ETH_GAS: {
-        return 'Not Enough ETH to Pay Gas'
+        return 'Not Enough XDAI to Pay Gas'
       }
       case ERROR_CODES.INSUFFICIENT_SELECTED_TOKEN_BALANCE: {
         return 'Not Enough of Selected Token'
@@ -205,7 +205,7 @@ export default function BuyAndSell({
         {/* <button onClick={() => fake()}>test</button> */}
         <Unicorn>
           <span role="img" aria-label="unicorn">
-            {state.drippSelected === 'ALVIN' ? '🐝' : '🤸‍♀️'}
+            {state.drippSelected === 'ALVIN' ? '🐝' : '🙏'}
           </span>{' '}
           Pay
         </Unicorn>

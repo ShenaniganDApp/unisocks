@@ -14,8 +14,13 @@ export default function Card({ totalDrippSupply, dollarPrice, reserveDrippToken,
       options={{ scale: 1.01, max: 10, glare: true, 'max-glare': 1, speed: 1000 }}
     >
       <CardWrapper>
-        <Title>{name}</Title>
-        <SubTitle>{symbol}</SubTitle>
+        <Header>
+          <span>
+            <Title>{name}</Title>
+            <SubTitle>{symbol}</SubTitle>
+          </span>
+        </Header>
+
         <Gallery src={imageSrc} />
         <MarketData>
           <span>
@@ -51,9 +56,18 @@ const CardWrapper = styled.div`
   justify-content: center;
   align-items: center;
   cursor: default;
-  padding: 24px;
   z-index: 1;
   transform: perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1);
+`
+const Header = styled.div`
+  display: flex;
+  flex-direction: column;
+  /* justify-content: space-between; */
+  align-items: flex-start;
+  width: 100%;
+  margin:0;
+  /* margin-top: 1rem; */
+  z-index: 1;
 `
 
 const Title = styled.p`
@@ -62,6 +76,9 @@ const Title = styled.p`
   line-height: 126.7%;
   width: 100%;
   margin: 0;
+  margin-left: 0.5rem;
+  margin-top: 1rem;
+  z-index: 1;
 `
 
 const SubTitle = styled.p`
@@ -73,7 +90,9 @@ const SubTitle = styled.p`
   line-height: 156.7%;
   width: 100%;
   margin: 0;
+  margin-left: 0.5rem;
   font-feature-settings: 'tnum' on, 'onum' on;
+  z-index: 1;
 `
 
 const SockCount = styled.p`
@@ -82,6 +101,7 @@ const SockCount = styled.p`
   margin: 0px;
   font-size: 12px;
   font-feature-settings: 'tnum' on, 'onum' on;
+  z-index: 1;
 `
 
 const CurrentPrice = styled.p`
@@ -89,21 +109,29 @@ const CurrentPrice = styled.p`
   font-size: 18px;
   margin: 0px;
   margin-bottom: 0.5rem;
+  margin-left: 0.5rem;
   font-feature-settings: 'tnum' on, 'onum' on;
+  z-index: 1;
 `
 
 const Info = styled.div`
+  z-index: 1;
+  margin-right: 10px;
+  margin-bottom: 0.5rem;
   /* margin-bottom: -2px; */
 `
 
 const Dynamic = styled.p`
-  color: #aeaeae;
+  color: #ffff;
   font-style: italic;
   font-weight: 400;
   margin: 0px;
   margin-top: 1px;
+  margin-right: 10px;
   font-size: 12px;
   float: left;
+  z-index: 1;
+  margin-bottom: 0.5rem;
 `
 
 const InfoButton = styled.span`
@@ -117,6 +145,7 @@ const InfoButton = styled.span`
   margin-left: 8px;
   float: right;
   background-color: #5ca2ff;
+  z-index: 1;
 `
 
 const MarketData = styled.div`
@@ -125,5 +154,6 @@ const MarketData = styled.div`
   justify-content: space-between;
   align-items: flex-end;
   width: 100%;
-  margin-top: 1rem;
+  /* margin-top: 1 rem; */
+  z-index: 1;
 `

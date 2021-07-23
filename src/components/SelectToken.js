@@ -45,7 +45,9 @@ const options = Object.keys(TOKEN_SYMBOLS)
       s !== 'SHWEATPANTSV1' &&
       s !== 'ALVINV1' &&
       s !== 'SHWEATPANTSV2' &&
-      s !== 'ALVINV2'
+      s !== 'ALVINV2' &&
+      s !== 'PRTCLE' &&
+      s !== 'HNY'
   )
   .map(s => ({ value: s, label: s }))
 

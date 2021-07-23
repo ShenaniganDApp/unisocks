@@ -18,7 +18,7 @@ import {
   TOKEN_ADDRESSES
 } from '../../utils'
 import agaave from '../../components/Gallery/agaave.png'
-import SHE from '../../components/Gallery/SHE.png'
+import SHE from '../../components/Gallery/sweatpantsnftmedium.mp4'
 import Button from '../../components/Button'
 import Migrate from '../../components/Migrate'
 import { useAddressAllowance, useAddressBalance } from '../../hooks'
@@ -40,11 +40,11 @@ export function Header({
   }
 
   return (
-    <HeaderFrame balanceSHWEATPANTS={balanceSHWEATPANTS} balanceALVIN={balanceALVIN}>
+    <HeaderFrame balanceSHWEATPANTS={balanceSHWEATPANTS}>
       <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
         <Unicorn>
-          <span>💧</span>
-          Dripp by Shenanigan
+          <span>👖</span>
+          Pants
         </Unicorn>
       </Link>
       <div style={{ display: 'flex', flexDirection: 'row' }}>
@@ -69,12 +69,12 @@ export function Header({
           </Link>
         )} */}
         <Flex style={{ flexDirection: 'column' }}>
-          <Account onClick={() => handleAccount()} balanceSHWEATPANTS={balanceSHWEATPANTS} balanceALVIN={balanceALVIN}>
+          <Account onClick={() => handleAccount()} balanceSHWEATPANTS={balanceSHWEATPANTS}>
             {account ? <SockCount>{account.slice(0, 6)}...</SockCount> : <SockCount>Connect Wallet</SockCount>}
 
             <Status
               balanceSHWEATPANTS={balanceSHWEATPANTS}
-              balanceALVIN={balanceALVIN}
+              // balanceALVIN={balanceALVIN}
               ready={ready}
               account={account}
             />
@@ -196,15 +196,15 @@ export default function Body({
     <AppWrapper overlay={state.visible}>
       <Header
         totalSHWEATPANTSSupply={totalSHWEATPANTSSupply}
-        totalALVINSupply={totalALVINSupply}
+        // totalALVINSupply={totalALVINSupply}
         ready={ready}
         balanceSHWEATPANTS={balanceSHWEATPANTS}
-        balanceALVIN={balanceALVIN}
+        // balanceALVIN={balanceALVIN}
         setShowConnect={setShowConnect}
       />
       <div>
-        <Flex>
-          <Content>
+        {/* <Flex> */}
+          {/* <Content>
             <Card
               totalDrippSupply={totalALVINSupply}
               dollarPrice={dollarPriceALVIN}
@@ -241,23 +241,23 @@ export default function Body({
               How it works.
             </a>
           </SubInfo> */}
-            </Info>
-            <BuyButtons color={'#7ce0d6'} balanceDripp={balanceALVIN} drippSelected={'ALVIN'} />
+            {/* </Info> */}
+            {/* <BuyButtons color={'#7ce0d6'} balanceDripp={balanceALVIN} drippSelected={'ALVIN'} />
             <RedeemButton balanceDripp={balanceALVIN} drippSelected={'ALVIN'} />
             {!!account && (
               <Link style={{ textDecoration: 'none' }} to="/status">
                 <OrderStatusLink>Check order status?</OrderStatusLink>
               </Link>
             )}
-          </Content>
+          </Content> */} 
           <Content>
             <Card
               totalDrippSupply={totalSHWEATPANTSSupply}
               dollarPrice={dollarPriceSHWEATPANTS}
               reserveDrippToken={reserveSHWEATPANTSToken}
               imageSrc={SHE}
-              name={'Shweatpants'}
-              symbol={'$SHWEATPANTS'}
+              name={'Pants'}
+              symbol={'$PANTS'}
             />{' '}
             <Info>
               <div style={{ marginBottom: '4px' }}>Buy and sell real swag with digital currency.</div>
@@ -296,14 +296,14 @@ export default function Body({
               </Link>
             )}
           </Content>
-        </Flex>
-        <Link to="/staking" style={{ textDecoration: 'none', width: '100%' }}>
+        {/* // </Flex> */}
+        {/* <Link to="/staking" style={{ textDecoration: 'none', width: '100%' }}>
           <StakeButton color={'linear-gradient(107deg,#cbf3ef,#fafae2 49.48%,#ff006c)'} text="Stake" />
-        </Link>
+        </Link> */}
       </div>
 
       <Link to="/migrate" style={{ textDecoration: 'none', width: '100%', textAlign: 'center' }}>
-        <h3>Were you here at launch? Make sure to migrate to V3</h3>
+        <h3>Curious about Alvin?</h3>
       </Link>
 
       <Checkout
@@ -347,11 +347,12 @@ const AppWrapper = styled.div`
   overflow: ${props => (props.overlay ? 'hidden' : 'scroll')};
   scroll-behavior: smooth;
   position: ${props => (props.overlay ? 'fixed' : 'initial')};
+  background-color: #fff;
 `
 
 const Content = styled.div`
   width: calc(100vw - 32px);
-  max-width: 375px;
+  max-width: 400px;
   margin-top: 8px;
 `
 
