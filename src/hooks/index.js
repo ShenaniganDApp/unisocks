@@ -24,6 +24,7 @@ import {
   getOldStakedRewards
 } from '../utils'
 import { utils } from 'ethers'
+import { Web3Provider } from 'ethers/providers'
 
 export function useBlockEffect(functionToRun) {
   const { library } = useWeb3Context()
@@ -400,7 +401,6 @@ export function useTotalStaked(tokenAddress) {
   return totalStaked
 }
 
-
 export function useOldTotalStaked(tokenAddress) {
   const { library } = useWeb3Context()
 
@@ -469,4 +469,72 @@ export function useDrippRate(tokenAddress) {
   useBlockEffect(updateDrippRate)
 
   return drippRate
+}
+
+export function useAddPantsToMetamask() {
+  const [success, setSuccess] = useState()
+
+  const addToken = useCallback(() => {
+    if (window.ethereum && window.ethereum.isMetaMask) {
+      window.ethereum
+        .request({
+          method: 'wallet_watchAsset',
+          params: {
+            //@ts-ignore // need this for incorrect ethers provider type
+            type: 'ERC20',
+            options: {
+              address: '0x0dae13fae64180d3cadcad22329a4abcaef15ca6',
+              symbol: 'PANTS',
+              decimals: 18,
+              image: ''
+            }
+          }
+        })
+        .then(success => {
+          setSuccess(success)
+        })
+        .catch(() => setSuccess(false))
+    } else {
+      setSuccess(false)
+    }
+  }, [window.ethereum])
+
+  return { addToken, success }
+}
+
+export function useAddXDaiToMetamask() {
+  const [success, setSuccess] = useState()
+
+  const chainId = parseInt(100, 10)
+
+  const addChain = useCallback(() => {
+    if (window.ethereum && window.ethereum.isMetaMask) {
+      window.ethereum
+        .request({
+          method: 'wallet_addEthereumChain',
+          params: [
+            {
+              chainId: `0x${chainId.toString(16)}`,
+              chainName: 'xDai',
+              nativeCurrency: {
+                name: 'xDai',
+                symbol: 'xDai',
+                decimals: 18
+              },
+              rpcUrls: ["https://rpc.xdaichain.com/"],
+              blockExplorerUrls: [`https://blockscout.com/xdai/mainnet`]
+            }
+          ]
+        })
+        .then(success => {
+          setSuccess(success)
+          window.location.reload()
+        })
+        .catch(() => setSuccess(false))
+    } else {
+      setSuccess(false)
+    }
+  }, [window.ethereum])
+
+  return { addChain, success }
 }

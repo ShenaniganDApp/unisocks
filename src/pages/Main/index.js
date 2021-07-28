@@ -212,7 +212,7 @@ export default function Main({ stats, status, staking, migration }) {
   const balanceETH = useAddressBalance(account, TOKEN_ADDRESSES.ETH)
   const balanceSHWEATPANTS = useAddressBalance(account, TOKEN_ADDRESSES.SHWEATPANTS)
   const balanceALVIN = useAddressBalance(account, TOKEN_ADDRESSES.ALVIN)
-  const balanceSelectedToken = useAddressBalance(account, TOKEN_ADDRESSES[stakingTokenSymbol])
+  const balanceSelectedToken = useAddressBalance(account, TOKEN_ADDRESSES["ETH"])
   const balanceContractShweatpants = useAddressBalance(STAKING_ADDRESS, TOKEN_ADDRESSES.SHWEATPANTS)
   const balanceContractAlvin = useAddressBalance(STAKING_ADDRESS, TOKEN_ADDRESSES.ALVIN)
 
@@ -437,6 +437,7 @@ export default function Main({ stats, status, staking, migration }) {
 
       // get max slippage amount
       const { maximum } = calculateSlippageBounds(requiredValueInSelectedToken)
+      console.log('maximum: ', maximum.toString());
 
       // the following are 'non-breaking' errors that will still return the data
       let errorAccumulator
@@ -448,9 +449,10 @@ export default function Main({ stats, status, staking, migration }) {
           errorAccumulator = error
         }
       }
-
+      console.log('balanceSelectedToken: ', balanceSelectedToken.toString());
       // validate minimum selected token balance
       if (balanceSelectedToken && maximum && balanceSelectedToken.lt(maximum)) {
+        
         const error = Error()
         error.code = ERROR_CODES.INSUFFICIENT_SELECTED_TOKEN_BALANCE
         if (!errorAccumulator) {

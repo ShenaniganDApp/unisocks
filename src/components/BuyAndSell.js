@@ -7,7 +7,7 @@ import SelectToken from './SelectToken'
 import IncrementToken from './IncrementToken'
 import { useAppContext } from '../context'
 import { ERROR_CODES, amountFormatter, TRADE_TYPES } from '../utils'
-import shweatpants from './Gallery/SHE.png'
+import shweatpants from './Gallery/pantsToken.png'
 import agaave from './Gallery/agaave.png'
 // import { ethers } from 'ethers'
 
@@ -113,7 +113,7 @@ export default function BuyAndSell({
         if (pending && hash) {
           return 'Waiting for confirmation'
         } else {
-          return `Buy ${state.drippSelected}`
+          return `Buy $PANTS`
         }
       }
     } else {
@@ -213,7 +213,6 @@ export default function BuyAndSell({
         <ImgStyle src={state.drippSelected === 'ALVIN' ? agaave : shweatpants} alt="Logo" />
         <InfoFrame pending={pending}>
           <CurrentPrice>
-            
             <USDPrice>{dollarPrice && `$${amountFormatter(dollarPrice, 18, 2)} USD`}</USDPrice>
             <SockCount>{reserveDrippToken && `${amountFormatter(reserveDrippToken, 18, 0)}/100 available`}</SockCount>
           </CurrentPrice>
@@ -234,18 +233,18 @@ export default function BuyAndSell({
       ) : (
         <CheckoutControls buying={buying}>
           <CheckoutPrompt>
-            <i>{buying ? 'How do you want to pay?' : 'What token do you want to receive?'}</i>
+            <i>{buying ? 'Want to buy $PANTS?' : 'Want to sell $PANTS'}</i>
           </CheckoutPrompt>
-          <SelectToken
+          {/* <SelectToken
             selectedTokenSymbol={selectedTokenSymbol}
             setSelectedTokenSymbol={setSelectedTokenSymbol}
             prefix={TokenVal()}
-          />
+          />  */}
         </CheckoutControls>
       )}
       {shouldRenderUnlock ? (
         <ButtonFrame
-          text={`Unlock ${buying ? selectedTokenSymbol : state.drippSelected}`}
+          text={`Unlock ${buying ? '$PANTS' : state.drippSelected}`}
           type={'cta'}
           pending={pending}
           onClick={() => {
@@ -282,6 +281,19 @@ export default function BuyAndSell({
           }}
         />
       )}
+      <CheckoutPrompt style={{ textAlign: 'center' }}>
+        <i>OR</i>
+      </CheckoutPrompt>
+
+      <ButtonFrame
+        text={buying ? `Buy On An Exchange` : `Sell On An Exchange`}
+        type={'cta'}
+        onClick={e => {
+          e.preventDefault()
+          window.location.href =
+            'https://swapr.eth.link/#/swap?outputCurrency=0x0dae13fae64180d3cadcad22329a4abcaef15ca6&chainId=100'
+        }}
+      ></ButtonFrame>
     </>
   )
 }

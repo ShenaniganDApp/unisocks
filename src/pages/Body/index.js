@@ -21,7 +21,7 @@ import agaave from '../../components/Gallery/agaave.png'
 import SHE from '../../components/Gallery/sweatpantsnftmedium.mp4'
 import Button from '../../components/Button'
 import Migrate from '../../components/Migrate'
-import { useAddressAllowance, useAddressBalance } from '../../hooks'
+import { useAddPantsToMetamask, useAddressAllowance, useAddressBalance } from '../../hooks'
 
 export function Header({
   totalSHWEATPANTSSupply,
@@ -181,6 +181,7 @@ export default function Body({
   migrate
 }) {
   const { account } = useWeb3Context()
+  const { addToken } = useAddPantsToMetamask()
   const [currentTransaction, _setCurrentTransaction] = useState({})
   const setCurrentTransaction = useCallback((hash, type, amount) => {
     _setCurrentTransaction({ hash, type, amount })
@@ -287,6 +288,7 @@ export default function Body({
               How it works.
             </a>
           </SubInfo> */}
+            <Button type="cta" text={"Add 👖 to Metamask"} onClick={addToken} style={{ textAlign: 'center', color: 'black' }}/>
           </Info>
           <BuyButtons color={'#ff006c'} balanceDripp={balanceSHWEATPANTS} drippSelected={'SHWEATPANTS'} />
           <RedeemButton balanceDripp={balanceSHWEATPANTS} drippSelected={'SHWEATPANTS'} />
