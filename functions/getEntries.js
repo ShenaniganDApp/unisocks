@@ -40,13 +40,14 @@ export async function handler(event) {
     `This signature is proof that I control the private key of ${address} as of the timestamp ${timestamp}.\n\n It will be used to access my Unisocks order history.`,
     signature
   )
+
   if (addressOfSigner !== address || Math.round(Date.now() / 1000) - timestamp >= 60 * 60) {
     return returnError('Unauthorized', 401)
   }
 
   try {
     const allRefs = await client.query(q.Paginate(q.Match(q.Index('get_by_address'), address)))
-
+  console.log(allRefs)
     if (allRefs.data.length === 0) {
       return returnSuccess([])
     }

@@ -8,7 +8,7 @@ import close from './Gallery/close.svg'
 import sent from './Gallery/sent.png'
 import { useAppContext } from '../context'
 import agaave from './Gallery/agaave.png'
-import SHE from './Gallery/SHE.png'
+import SHE from './Gallery/pants.png'
 
 const ConfirmedFrame = styled.div`
   width: 100%;

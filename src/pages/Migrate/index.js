@@ -18,7 +18,7 @@ import {
   TOKEN_ADDRESSES
 } from '../../utils'
 import agaave from '../../components/Gallery/agaave.png'
-import SHE from '../../components/Gallery/SHE.png'
+import SHE from '../../components/Gallery/pants.png'
 import Button from '../../components/Button'
 import Migrate from '../../components/Migrate'
 import { useAddressAllowance, useAddressBalance } from '../../hooks'

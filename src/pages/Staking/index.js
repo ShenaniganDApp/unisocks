@@ -7,7 +7,7 @@ import { useAppContext } from '../../context'
 import Card from '../../components/Card'
 import { amountFormatter, TOKEN_ADDRESSES, STAKING_ADDRESS, STAKING_ADDRESSES } from '../../utils'
 import agaave from '../../components/Gallery/agaave.png'
-import SHE from '../../components/Gallery/SHE.png'
+import SHE from '../../components/Gallery/pants.png'
 import Input from '../../components/Input'
 import StakeButton from '../../components/Button'
 import {
