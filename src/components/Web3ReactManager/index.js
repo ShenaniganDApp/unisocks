@@ -31,6 +31,10 @@ export default function Web3ReactManager({ children }) {
     }
   }, [active, setConnector])
 
+  // useEffect(() => {
+  //   addChain()
+  // }, [])
+
   const [showLoader, setShowLoader] = useState(false)
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -45,7 +49,7 @@ export default function Web3ReactManager({ children }) {
     console.error(error)
     return <Message>Connection Error.</Message>
   } else if (!active) {
-    return showLoader ? <Message>Initializing...Make sure you are on the xDai chain {addChain()}</Message> : null
+    return showLoader ? <Message>Initializing...Make sure you are on the xDai chain</Message> : null
   } else {
     return children
   }

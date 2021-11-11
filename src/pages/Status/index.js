@@ -40,7 +40,7 @@ export default function Body({ totalSHWEATPANTSSupply, totalALVINSupply, ready, 
     if (account && signature && timestamp) {
       fetch('/.netlify/functions/getEntries', {
         method: 'POST',
-        body: JSON.stringify({ address: account, signature: signature, timestamp: timestamp })
+        body: JSON.stringify({ "address": account, "signature": signature, "timestamp": timestamp })
       }).then(async response => {
         if (response.status !== 200) {
           const parsed = await response.json().catch(() => ({ error: 'Unknown Error' }))
@@ -75,7 +75,7 @@ export default function Body({ totalSHWEATPANTSSupply, totalALVINSupply, ready, 
           setShowConnect={() => {}}
         />
         <Content>
-          <p>You can use this page to check the status of your Dripp order, please bookmark it for future reference.</p>
+          <p>You can use this page to check the status of your Pants order, please bookmark it for future reference.</p>
 
           {error && <p>Error</p>}
 
@@ -96,7 +96,9 @@ export default function Body({ totalSHWEATPANTSSupply, totalALVINSupply, ready, 
                           timeStyle: 'short'
                         })}
                       </li>
-                      <li>${d.drippItem} Redeemed: {d.numberOfDripp}</li>
+                      <li>
+                        ${d.drippItem} Redeemed: {d.numberOfDripp}
+                      </li>
                       <li>
                         Status:{' '}
                         {d.invalid
@@ -138,7 +140,7 @@ export default function Body({ totalSHWEATPANTSSupply, totalALVINSupply, ready, 
           <p style={{ fontSize: '.75rem', textAlign: 'center' }}>
             Problem with an order?{' '}
             <a
-              href={`mailto:contact@uniswap.io?Subject=Unipig%20Order%20for%20${account}`}
+              href={`mailto:pants@she.energy?Subject=Unipig%20Order%20for%20${account}`}
               target="_blank"
               rel="noopener noreferrer"
             >

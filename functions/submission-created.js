@@ -29,7 +29,9 @@ function returnSuccess(data, statusCode = 200) {
 }
 
 export async function handler(event) {
-  const { payload } = JSON.parse(event.body)
+
+
+  const { payload } = event.body
   const { data } = payload
 
   const {
@@ -44,7 +46,6 @@ export async function handler(event) {
     address: _address,
     timestamp,
     'number-burned': numberBurned,
-    drippItem,
     signature
   } = data
 
@@ -57,7 +58,7 @@ export async function handler(event) {
 
   const m1 = `PLEASE VERIFY YOUR ADDRESS.\nYour data will never be shared publicly.`
   const m2 = `Name: ${name}\nStreet Address: ${line1}\nUnit: ${line2}\nCity: ${city}\nState: ${state}\nZIP: ${zip}\nCountry: ${country}\nEmail: ${email}`
-  const m3 = `Ethereum Address: ${address}\nTime: ${timestamp}\nDripp Redeemed: ${numberBurned}\nDripp Item: ${drippItem}`
+  const m3 = `Ethereum Address: ${address}\nTime: ${timestamp}\nPANTS Redeemed: ${numberBurned}`
 
   const addressOfSigner = ethers.utils.verifyMessage(`${m1}\n\n${m2}\n${m3}`, signature)
   const isInvalid = addressOfSigner !== address
@@ -70,8 +71,7 @@ export async function handler(event) {
     await client.query(
       q.Create(q.Collection('addresses'), {
         data: {
-          numberOfDripp: Number(numberBurned),
-          item: drippItem,
+          numberOfPants: Number(numberBurned),
           timestamp: Number(timestamp),
           addressPhysical: {
             name,

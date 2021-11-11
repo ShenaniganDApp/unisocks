@@ -9,9 +9,8 @@ import RedeemForm from './RedeemForm'
 import { amountFormatter } from '../utils'
 
 import IncrementToken from './IncrementToken'
-import shweatpants from './Gallery/SHE.png'
-import agaave from './Gallery/agaave.png'
-import nfc from './Gallery/nfc.png'
+import shweatpants from './Gallery/pants.png'
+import pants from './Gallery/nft.png'
 import sent from './Gallery/sent.png'
 
 import close from './Gallery/close.svg'
@@ -37,9 +36,9 @@ export function Controls({ closeCheckout, theme, type }) {
     <FrameControls>
       <Unicorn theme={theme}>
         <span role="img" aria-label="unicorn">
-          💧
+          👖
         </span>{' '}
-        Pay{' '}
+        Redeem{' '}
         <span style={{ color: '#737373' }}>
           {' '}
           {type === 'confirm' ? ' / Order Details' : type === 'shipping' ? ' / Shipping Details' : ''}
@@ -96,7 +95,7 @@ export default function Redeem({
         <ButtonFrame
           className="button"
           disabled={false}
-          text={account === null ? 'Connect Wallet' : 'Redeem Dripp'}
+          text={account === null ? 'Connect Wallet' : 'Redeem Pants'}
           type={'cta'}
           onClick={() => {
             setConnector('Injected', { suppressAndThrowErrors: true }).catch(() => {
@@ -110,15 +109,11 @@ export default function Redeem({
         <>
           <TopFrame hasPickedAmount={hasPickedAmount}>
             <Controls closeCheckout={closeCheckout} />
-            <ImgStyle
-              src={state.drippSelected === 'SHWEATPANTS' ? shweatpants : agaave}
-              alt="Logo"
-              hasPickedAmount={hasPickedAmount}
-            />
+            <ImgStyle src={shweatpants} alt="Logo" hasPickedAmount={hasPickedAmount} />
             <InfoFrame pending={pending}>
               <Owned>
                 <SockCount>You own {balanceDripp && `${amountFormatter(balanceDripp, 18, 0)}`}</SockCount>
-                <p>Redeem {state.drippSelected}</p>
+                <p>Redeem PANTS</p>
               </Owned>
               <IncrementToken
                 initialValue={Number(amountFormatter(balanceDripp, 18, 0))}
@@ -128,8 +123,8 @@ export default function Redeem({
           </TopFrame>
           <ButtonFrame
             className="button"
-            disabled={true}
-            text={'Coming Soon'}
+            disabled={false}
+            text={'Next'}
             type={'cta'}
             onClick={() => {
               setNumberBurned(state.count)
@@ -145,14 +140,10 @@ export default function Redeem({
             <Controls closeCheckout={closeCheckout} type="shipping" />
 
             <InfoFrame hasPickedAmount={hasPickedAmount}>
-              <ImgStyle
-                src={state.drippSelected === 'SHWEATPANTS' ? shweatpants : agaave}
-                alt="Logo"
-                hasPickedAmount={hasPickedAmount}
-              />
+              <ImgStyle src={shweatpants} alt="Logo" hasPickedAmount={hasPickedAmount} />
               <Owned>
                 <p>
-                  {state.count} {state.drippSelected === 'SHWEATPANTS' ? 'Shenanigan Shweatpants' : 'Agaave Alvin'}
+                  {state.count} {'Shenanigan Pants'}
                 </p>
                 <p style={{ fontSize: '20px', fontWeight: '400', color: '#AEAEAE' }}>One size fits most</p>
                 <p style={{ fontSize: '14px', fontWeight: '500', marginTop: '16px', color: '#AEAEAE' }}>Edition 0</p>
@@ -186,14 +177,10 @@ export default function Redeem({
           <TopFrame hasPickedAmount={hasPickedAmount}>
             <Controls closeCheckout={closeCheckout} type="confirm" />
             <InfoFrame hasPickedAmount={hasPickedAmount}>
-              <ImgStyle
-                src={state.drippSelected === 'SHENANIGAN' ? shweatpants : agaave}
-                alt="Logo"
-                hasPickedAmount={hasPickedAmount}
-              />
+              <ImgStyle src={shweatpants} alt="Logo" hasPickedAmount={hasPickedAmount} />
               <Owned>
                 <p style={{ fontSize: '18px' }}>
-                  {state.count} {state.drippSelected === 'SHWEATPANTS' ? 'Shenanigan Shweatpants' : 'Agaave Alvin'}
+                  {state.count} {'Shenanigan Pants'}
                 </p>
                 <p style={{ fontSize: '14px', fontWeight: '500' }}>One size fits most</p>
                 <p
@@ -211,10 +198,10 @@ export default function Redeem({
             </InfoFrame>
 
             <InfoFrame hasPickedAmount={hasPickedAmount}>
-              <ImgStyle src={nfc} alt="Logo" hasPickedAmount={hasPickedAmount} />
+              <ImgStyle src={pants} alt="Logo" hasPickedAmount={hasPickedAmount} />
               <Bonus>Bonus</Bonus>
               <Owned>
-                <p style={{ fontSize: '18px' }}>{state.count}NFT</p>
+                <p style={{ fontSize: '18px' }}>{state.count} NFT</p>
                 <p style={{ fontSize: '14px', fontWeight: '500' }}>Digital Collectible (10kb)</p>
                 <p
                   style={{
@@ -245,31 +232,7 @@ export default function Redeem({
             disabled={pending}
             pending={pending}
             // text={pending ? `Waiting for confirmation...` : `Redeem ${numberBurned} SOCKS`}
-            text={pending ? `Waiting for confirmation...` : `Place order (Redeem ${numberBurned} SOCKS) `}
-            type={'cta'}
-            onClick={() => {
-              burn(numberBurned.toString())
-                .then(response => {
-                  setTransactionHash(response.hash)
-                })
-                .catch(error => {
-                  console.error(error)
-                  // setTransactionHash(
-                  //   true
-                  //     ? '0x888503cb966a67192afb74c740abaec0b7e8bda370bc8f853fb040eab247c63f'
-                  //     : '0x66dac079f7ee27ba7b2cae27eaabf64574c2011aacd007968be6d282b3c2065b'
-                  // )
-                })
-            }}
-          />
-          <ButtonFrame
-            className="button"
-            disabled={pending}
-            pending={pending}
-            // text={pending ? `Waiting for confirmation...` : `Redeem ${numberBurned} SOCKS`}
-            text={
-              pending ? `Waiting for confirmation...` : `Place order (Redeem ${numberBurned} ${state.drippSelected}`
-            }
+            text={pending ? `Waiting for confirmation...` : `Place order (Redeem ${numberBurned} PANTS`}
             type={'cta'}
             onClick={() => {
               burn(numberBurned.toString(), state.drippSelected)
@@ -289,7 +252,7 @@ export default function Redeem({
           <Back disabled={!!pending}>
             {pending ? (
               <EtherscanLink href={link(transactionHash)} target="_blank" rel="noopener noreferrer">
-                View on Etherscan.
+                View on Blockscout.
               </EtherscanLink>
             ) : (
               <span
@@ -311,12 +274,12 @@ export default function Redeem({
             <ImgStyle src={sent} alt="Logo" hasPickedAmount={hasPickedAmount} hasBurnt={hasBurnt} />
             <InfoFrame>
               <Owned>
-                <p>You got dripp!</p>
+                <p>You got pants!</p>
               </Owned>
             </InfoFrame>
           </TopFrame>
           <CheckoutPrompt>
-            Estimated shipping time 2-3 weeks. <br /> Shipping time will vary by region.
+            Estimated shipping time 1 month. <br /> Shipping time will vary by region.
           </CheckoutPrompt>
           <CheckoutPrompt>
             Your shipping details can be viewed <Link to="/status">here</Link>.

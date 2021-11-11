@@ -521,7 +521,7 @@ export function useAddXDaiToMetamask() {
                 symbol: 'xDai',
                 decimals: 18
               },
-              rpcUrls: ["https://rpc.xdaichain.com/"],
+              rpcUrls: ['https://rpc.xdaichain.com/'],
               blockExplorerUrls: [`https://blockscout.com/xdai/mainnet`]
             }
           ]
@@ -530,11 +530,10 @@ export function useAddXDaiToMetamask() {
           setSuccess(success)
           window.location.reload()
         })
-        .catch(() => setSuccess(false))
     } else {
       setSuccess(false)
     }
-  }, [window.ethereum])
+  }, [chainId])
 
   return { addChain, success }
 }
