@@ -31,7 +31,8 @@ function returnSuccess(data, statusCode = 200) {
 export async function handler(event) {
 
 
-  const { payload } = event.body
+  const { payload } = JSON.parse(event && event.body ? event.body : {})
+
   const { data } = payload
 
   const {
