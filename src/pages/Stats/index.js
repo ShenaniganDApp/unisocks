@@ -26,56 +26,28 @@ export default function Body({
         setShowConnect={() => {}}
       />
       <Content>
-        <Title>Dripp Stats</Title>
-        {/* <Description>
-          <p>
-            <span role="img" aria-label="alvin">
-              🧸
-            </span>
-            Initial ALVIN
-          </p>
-          <p>122</p>
-        </Description> */}
-        {/* <Description>
-          <p>
-            <span role="img" aria-label="alvin">
-              🔥
-            </span>
-            Redeemed ALVIN
-          </p>
-          <p>{50 - totalALVINSupply}</p>
-        </Description> */}
-        {/* <Description>
-          <p>
-            <span role="img" aria-label="alvin">
-              💦
-            </span>
-            ALVIN Pool
-          </p>
-          <p>{amountFormatter(reserveALVINToken, 18, 0)}</p>
-        </Description> */}
-        {/* <Divider /> */}
+        <Title>PANTS Stats</Title>
         <Description>
           <p>
-            <span role="img" aria-label="pants">
-              👖
+            <span role="img" aria-label="socks">
+             👖
             </span>
             Initial PANTS
           </p>
           <p>100</p>
         </Description>
-        {/* <Description>
-          <p>
-            <span role="img" aria-label="shweatpants">
-              🔥
-            </span>
-            Redeemed SHWEATPANTS
-          </p>
-          <p>{100 - totalSHWEATPANTSSupply}</p>
-        </Description> */}
         <Description>
           <p>
-            <span role="img" aria-label="pants">
+            <span role="img" aria-label="socks">
+              🔥
+            </span>
+            Redeemed PANTS
+          </p>
+          <p>{100 - totalSHWEATPANTSSupply}</p>
+        </Description>
+        <Description>
+          <p>
+            <span role="img" aria-label="socks">
               💦
             </span>
             PANTS Pool
@@ -84,7 +56,7 @@ export default function Body({
         </Description>
         <Shim />
         <Footer>
-          The price of Pants changes when tokens are bought and sold.
+          The price of PANTS changes when tokens are bought and sold.
           <br />
           <br />
           <a
