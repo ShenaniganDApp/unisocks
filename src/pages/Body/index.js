@@ -43,43 +43,36 @@ export function Header({
     <HeaderFrame balanceSHWEATPANTS={balanceSHWEATPANTS}>
       <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
         <Unicorn>
-          <span>👖</span>
+          <span role="img" aria-label="unicorn">
+            👖
+          </span>
           Pants
         </Unicorn>
       </Link>
       <div style={{ display: 'flex', flexDirection: 'row' }}>
-        {/* {totalSHWEATPANTSSupply && (
+        {totalSHWEATPANTSSupply && (
           <Link to="/stats" style={{ textDecoration: 'none' }}>
             <Burned>
               <span role="img" aria-label="fire">
-                🤸‍♀️
+                🔥
               </span>{' '}
               {100 - totalSHWEATPANTSSupply} <HideMobile>redeemed</HideMobile>
             </Burned>
           </Link>
         )}
-        {totalALVINSupply && (
-          <Link to="/stats" style={{ textDecoration: 'none' }}>
-            <Burned>
-              <span role="img" aria-label="fire">
-                🐝
-              </span>{' '}
-              {100 - totalALVINSupply} <HideMobile>redeemed</HideMobile>
-            </Burned>
-          </Link>
-        )} */}
-        <Flex style={{ flexDirection: 'column' }}>
-          <Account onClick={() => handleAccount()} balanceSHWEATPANTS={balanceSHWEATPANTS}>
-            {account ? <SockCount>{account.slice(0, 6)}...</SockCount> : <SockCount>Connect Wallet</SockCount>}
+        <Account onClick={() => handleAccount()} balanceSHWEATPANTS={balanceSHWEATPANTS}>
+          {account ? (
+            balanceSHWEATPANTS > 0 ? (
+              <SockCount>{balanceSHWEATPANTS && `${amountFormatter(balanceSHWEATPANTS, 18, 0)}`} PANTS</SockCount>
+            ) : (
+              <SockCount>{account.slice(0, 6)}...</SockCount>
+            )
+          ) : (
+            <SockCount>Connect Wallet</SockCount>
+          )}
 
-            <Status
-              balanceSHWEATPANTS={balanceSHWEATPANTS}
-              // balanceALVIN={balanceALVIN}
-              ready={ready}
-              account={account}
-            />
-          </Account>
-        </Flex>
+          <Status balanceSHWEATPANTS={balanceSHWEATPANTS} ready={ready} account={account} />
+        </Account>
       </div>
     </HeaderFrame>
   )
@@ -288,7 +281,12 @@ export default function Body({
               How it works.
             </a>
           </SubInfo> */}
-            <Button type="cta" text={"Add 👖 to Metamask"} onClick={addToken} style={{ textAlign: 'center', color: 'black' }}/>
+            <Button
+              type="cta"
+              text={'Add 👖 to Metamask'}
+              onClick={addToken}
+              style={{ textAlign: 'center', color: 'black' }}
+            />
           </Info>
           <BuyButtons color={'#ff006c'} balanceDripp={balanceSHWEATPANTS} drippSelected={'SHWEATPANTS'} />
           <RedeemButton balanceDripp={balanceSHWEATPANTS} drippSelected={'SHWEATPANTS'} />
@@ -304,8 +302,8 @@ export default function Body({
         </Link> */}
       </div>
 
-      <a href="https://discord.gg/5MaXATcaPN" style={{ textDecoration: 'none', width: '100%', textAlign: 'center' }}>
-        <h3>Curious about Alvin?</h3>
+      <a href="https://www.youtube.com/watch?v=1pKSjAWu0m8" style={{ textDecoration: 'none', width: '100%', textAlign: 'center' }}>
+        <h3>ALVIN is BACK!</h3>
       </a>
 
       <Checkout
@@ -346,7 +344,6 @@ const AppWrapper = styled.div`
   flex-direction: column;
   flex-wrap: wrap;
   align-items: center;
-  overflow: ${props => (props.overlay ? 'hidden' : 'scroll')};
   scroll-behavior: smooth;
   position: ${props => (props.overlay ? 'fixed' : 'initial')};
   background-color: #fff;
