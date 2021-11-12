@@ -95,6 +95,7 @@ export default function Redeem({
         <ButtonFrame
           className="button"
           disabled={false}
+          background={'#ff006c'}
           text={account === null ? 'Connect Wallet' : 'Redeem Pants'}
           type={'cta'}
           onClick={() => {
@@ -126,6 +127,7 @@ export default function Redeem({
             disabled={false}
             text={'Next'}
             type={'cta'}
+            background={'#ff006c'}
             onClick={() => {
               setNumberBurned(state.count)
               setHasPickedAmount(true)
@@ -234,6 +236,7 @@ export default function Redeem({
             // text={pending ? `Waiting for confirmation...` : `Redeem ${numberBurned} SOCKS`}
             text={pending ? `Waiting for confirmation...` : `Place order (Redeem ${numberBurned} PANTS`}
             type={'cta'}
+            background={'#ff006c'}
             onClick={() => {
               burn(numberBurned.toString(), state.drippSelected)
                 .then(response => {
