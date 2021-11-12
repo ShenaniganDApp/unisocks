@@ -93,11 +93,10 @@ export default function Body({ totalSHWEATPANTSSupply, totalALVINSupply, ready, 
                         Order Date:{' '}
                         {new Date(Number(d.timestamp) * 1000).toLocaleDateString(undefined, {
                           dateStyle: 'long',
-                          timeStyle: 'short'
                         })}
                       </li>
                       <li>
-                        ${d.drippItem} Redeemed: {d.numberOfDripp}
+                        PANTS Redeemed: {d.numberOfPants}
                       </li>
                       <li>
                         Status:{' '}
