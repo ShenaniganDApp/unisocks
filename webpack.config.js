@@ -6,7 +6,7 @@ const Dotenv = require('dotenv-webpack')
 // @see https://github.com/netlify/netlify-lambda#webpack-configuration
 module.exports = {
   mode: 'development',
-  plugins: [new webpack.DefinePlugin({ 'global.GENTLY': false }), new Dotenv()],
+  plugins: [new webpack.DefinePlugin({ 'global.GENTLY': false }), new Dotenv({ systemvars: true })],
   node: {
     __dirname: true
   }
