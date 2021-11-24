@@ -5,6 +5,7 @@ import { useWeb3Context } from 'web3-react'
 import ReCAPTCHA from 'react-google-recaptcha'
 
 import Suggest from './Suggest'
+import { stripZeros } from 'ethers/utils'
 
 // we need to capture the full address into netlify...
 // https://www.netlify.com/blog/2017/07/20/how-to-integrate-netlifys-form-handling-in-a-react-app/
@@ -28,6 +29,7 @@ const address = 'address'
 const timestamp = 'timestamp'
 const numberBurned = 'number-burned'
 const signature = 'signature'
+const size = 'size'
 
 // map from variables to display text for each field
 const nameMap = {
@@ -41,11 +43,23 @@ const nameMap = {
   [email]: 'Email',
   [address]: 'Ethereum Address',
   [timestamp]: 'Time',
-  [numberBurned]: 'SOCKS Redeemed'
+  [numberBurned]: 'SOCKS Redeemed',
+  [size]: 'Choose Size'
 }
 
+const sizes = [
+  { value: 'XS', label: 'XSmall' },
+  { value: 'S', label: 'Small' },
+  { value: 'M', label: 'Medium' },
+  { value: 'L', label: 'Large' },
+  { value: 'XL', label: 'XLarge' },
+  { value: '2XL', label: '2XLarge' },
+  { value: '3XL', label: '3XLarge' },
+  { value: '4XL', label: '4XLarge' }
+]
+
 // the order for fields that will be submitted
-const nameOrder = [name, line1, line2, city, state, zip, country, email]
+const nameOrder = [name, line1, line2, city, state, zip, country, size, email]
 
 // default for each form field
 const defaultState = {
@@ -57,6 +71,7 @@ const defaultState = {
   [state]: '',
   [zip]: '',
   [country]: '',
+  [size]: '',
   [email]: ''
 }
 
@@ -143,6 +158,7 @@ export default function RedeemForm({ setHasConfirmedAddress, setUserAddress, num
     formState[state] &&
     formState[zip] &&
     formState[country] &&
+    formState[size] &&
     formState[email]
 
   function onRecaptcha(value) {
@@ -228,6 +244,12 @@ export default function RedeemForm({ setHasConfirmedAddress, setUserAddress, num
         autoComplete="country-name"
       />
 
+      <select required name={size} value={formState[size]} onChange={handleChange} placeholder={nameMap[size]}>
+        {sizes.map(({ value, label }, index) => (
+          <option value={value}>{label}</option>
+        ))}
+      </select>
+
       <input
         required
         type="email"
@@ -294,6 +316,22 @@ const FormFrame = styled.form`
   flex-wrap: wrap;
 
   input {
+    border: none;
+    background-image: none;
+    background-color: transparent;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    color: #000;
+    background-color: #f1f2f6;
+    padding: 8px;
+    margin: 4px 0 4px 0;
+    font-size: 16px;
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 4px;
+  }
+  select {
     border: none;
     background-image: none;
     background-color: transparent;
