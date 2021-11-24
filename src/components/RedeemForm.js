@@ -44,7 +44,7 @@ const nameMap = {
   [address]: 'Ethereum Address',
   [timestamp]: 'Time',
   [numberBurned]: 'SOCKS Redeemed',
-  [size]: 'Choose Size'
+  [size]: 'Size'
 }
 
 const sizes = [
@@ -245,6 +245,9 @@ export default function RedeemForm({ setHasConfirmedAddress, setUserAddress, num
       />
 
       <select required name={size} value={formState[size]} onChange={handleChange} placeholder={nameMap[size]}>
+        <option value="" selected disabled>
+          Choose Size
+        </option>
         {sizes.map(({ value, label }, index) => (
           <option value={value}>{label}</option>
         ))}
