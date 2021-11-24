@@ -44,6 +44,7 @@ export async function handler(event) {
     zip,
     country,
     email,
+    size,
     address: _address,
     timestamp,
     'number-burned': numberBurned,
@@ -58,7 +59,7 @@ export async function handler(event) {
   }
 
   const m1 = `PLEASE VERIFY YOUR ADDRESS.\nYour data will never be shared publicly.`
-  const m2 = `Name: ${name}\nStreet Address: ${line1}\nUnit: ${line2}\nCity: ${city}\nState: ${state}\nZIP: ${zip}\nCountry: ${country}\nEmail: ${email}`
+  const m2 = `Name: ${name}\nStreet Address: ${line1}\nUnit: ${line2}\nCity: ${city}\nState: ${state}\nZIP: ${zip}\nSize: ${size}\nCountry: ${country} Email: ${email}`
   const m3 = `Ethereum Address: ${address}\nTime: ${timestamp}\nPANTS Redeemed: ${numberBurned}`
 
   const addressOfSigner = ethers.utils.verifyMessage(`${m1}\n\n${m2}\n${m3}`, signature)
@@ -82,6 +83,7 @@ export async function handler(event) {
             state,
             zip,
             country,
+            size,
             email
           },
           addressEthereum: address,
